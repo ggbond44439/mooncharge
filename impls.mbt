@@ -246,3 +246,39 @@ pub extend RemoteStopTransactionResponse with Eq::{not_equal, equal}
 
 ///|
 pub extend RemoteStopTransactionResponse with @debug.Debug::{to_repr}
+
+///|
+pub extend ResetType with Eq::{not_equal, equal}
+
+///|
+pub extend ResetType with @debug.Debug::{to_repr}
+
+///|
+pub extend ResetRequest with Eq::{not_equal, equal}
+
+///|
+pub extend ResetRequest with @debug.Debug::{to_repr}
+
+///|
+pub extend ResetResponse with Eq::{not_equal, equal}
+
+///|
+pub extend ResetResponse with @debug.Debug::{to_repr}
+
+///|
+pub extend AvailabilityType with Eq::{not_equal, equal}
+
+///|
+pub extend AvailabilityType with @debug.Debug::{to_repr}
+
+///|
+pub extend ChangeAvailabilityRequest with Eq::{not_equal, equal}
+
+///|
+pub extend ChangeAvailabilityRequest with @debug.Debug::{to_repr}
+
+///|
+pub extend ChangeAvailabilityResponse with Eq::{not_equal, equal}
+
+///|
+pub extend ChangeAvailabilityResponse with @debug.Debug::{to_repr}

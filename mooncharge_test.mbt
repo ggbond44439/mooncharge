@@ -314,3 +314,31 @@ test "remote start and stop commands round-trip" {
     Err(error) => fail(error.message())
   }
 }
+
+///|
+test "reset and availability commands are strictly enum-checked" {
+  let reset_payload = match
+    parsed_frame("[2,\"reset-1\",\"Reset\",{\"type\":\"Soft\"}]") {
+    Call(_, _, payload) => payload
+    _ => return
+  }
+  let reset = match @mooncharge.ResetRequest::from_json(reset_payload) {
+    Ok(value) => value
+    Err(error) => fail(error.message())
+  }
+  assert_eq(reset.kind, @mooncharge.ResetType::Soft)
+  let availability_payload = match
+    parsed_frame(
+      "[2,\"avail-1\",\"ChangeAvailability\",{\"connectorId\":1,\"type\":\"Inoperative\"}]",
+    ) {
+    Call(_, _, payload) => payload
+    _ => return
+  }
+  match @mooncharge.ChangeAvailabilityRequest::from_json(availability_payload) {
+    Ok(value) => {
+      assert_eq(value.connector_id, 1)
+      assert_eq(value.kind, @mooncharge.AvailabilityType::Inoperative)
+    }
+    Err(error) => fail(error.message())
+  }
+}

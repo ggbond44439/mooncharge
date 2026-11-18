@@ -49,6 +49,14 @@ pub fn AuthorizeResponse::not_equal(Self, Self) -> Bool
 pub fn AuthorizeResponse::to_json(Self) -> Json
 pub fn AuthorizeResponse::to_repr(Self) -> @debug.Repr
 
+pub(all) enum AvailabilityType {
+  Operative
+  Inoperative
+} derive(Eq, @debug.Debug)
+pub fn AvailabilityType::equal(Self, Self) -> Bool
+pub fn AvailabilityType::not_equal(Self, Self) -> Bool
+pub fn AvailabilityType::to_repr(Self) -> @debug.Repr
+
 pub(all) struct BootNotificationRequest {
   charge_point_vendor : String
   charge_point_model : String
@@ -75,6 +83,25 @@ pub fn BootNotificationResponse::from_json(Json) -> Result[Self, ProtocolError]
 pub fn BootNotificationResponse::not_equal(Self, Self) -> Bool
 pub fn BootNotificationResponse::to_json(Self) -> Json
 pub fn BootNotificationResponse::to_repr(Self) -> @debug.Repr
+
+pub(all) struct ChangeAvailabilityRequest {
+  connector_id : Int32
+  kind : AvailabilityType
+} derive(Eq, @debug.Debug)
+pub fn ChangeAvailabilityRequest::equal(Self, Self) -> Bool
+pub fn ChangeAvailabilityRequest::from_json(Json) -> Result[Self, ProtocolError]
+pub fn ChangeAvailabilityRequest::not_equal(Self, Self) -> Bool
+pub fn ChangeAvailabilityRequest::to_json(Self) -> Json
+pub fn ChangeAvailabilityRequest::to_repr(Self) -> @debug.Repr
+
+pub(all) struct ChangeAvailabilityResponse {
+  status : RemoteCommandStatus
+} derive(Eq, @debug.Debug)
+pub fn ChangeAvailabilityResponse::equal(Self, Self) -> Bool
+pub fn ChangeAvailabilityResponse::from_json(Json) -> Result[Self, ProtocolError]
+pub fn ChangeAvailabilityResponse::not_equal(Self, Self) -> Bool
+pub fn ChangeAvailabilityResponse::to_json(Self) -> Json
+pub fn ChangeAvailabilityResponse::to_repr(Self) -> @debug.Repr
 
 pub(all) enum ChargePointErrorCode {
   NoError
@@ -408,6 +435,32 @@ pub fn RemoteStopTransactionResponse::from_json(Json) -> Result[Self, ProtocolEr
 pub fn RemoteStopTransactionResponse::not_equal(Self, Self) -> Bool
 pub fn RemoteStopTransactionResponse::to_json(Self) -> Json
 pub fn RemoteStopTransactionResponse::to_repr(Self) -> @debug.Repr
+
+pub(all) struct ResetRequest {
+  kind : ResetType
+} derive(Eq, @debug.Debug)
+pub fn ResetRequest::equal(Self, Self) -> Bool
+pub fn ResetRequest::from_json(Json) -> Result[Self, ProtocolError]
+pub fn ResetRequest::not_equal(Self, Self) -> Bool
+pub fn ResetRequest::to_json(Self) -> Json
+pub fn ResetRequest::to_repr(Self) -> @debug.Repr
+
+pub(all) struct ResetResponse {
+  status : RemoteCommandStatus
+} derive(Eq, @debug.Debug)
+pub fn ResetResponse::equal(Self, Self) -> Bool
+pub fn ResetResponse::from_json(Json) -> Result[Self, ProtocolError]
+pub fn ResetResponse::not_equal(Self, Self) -> Bool
+pub fn ResetResponse::to_json(Self) -> Json
+pub fn ResetResponse::to_repr(Self) -> @debug.Repr
+
+pub(all) enum ResetType {
+  Hard
+  Soft
+} derive(Eq, @debug.Debug)
+pub fn ResetType::equal(Self, Self) -> Bool
+pub fn ResetType::not_equal(Self, Self) -> Bool
+pub fn ResetType::to_repr(Self) -> @debug.Repr
 
 pub(all) struct RpcError {
   code : RpcErrorCode
