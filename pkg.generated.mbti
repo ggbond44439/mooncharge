@@ -3,6 +3,7 @@ package "ggbond44439/mooncharge"
 
 import {
   "moonbitlang/core/debug",
+  "moonbitlang/core/json",
 }
 
 // Values
@@ -22,43 +23,48 @@ pub(all) suberror ProtocolFailure {
 }
 
 // Types and methods
+#derive(Eq, @debug.Debug)
 pub(all) enum AuthorizationStatus {
   Accepted
   Blocked
   Expired
   Invalid
   ConcurrentTx
-} derive(Eq, @debug.Debug)
+}
 pub fn AuthorizationStatus::equal(Self, Self) -> Bool
 pub fn AuthorizationStatus::not_equal(Self, Self) -> Bool
 pub fn AuthorizationStatus::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct AuthorizeRequest {
   id_tag : String
-} derive(Eq, @debug.Debug)
+}
 pub fn AuthorizeRequest::equal(Self, Self) -> Bool
-pub fn AuthorizeRequest::from_json(Json) -> Result[Self, ProtocolError]
+pub fn AuthorizeRequest::from_json(@json.Json) -> Result[Self, ProtocolError]
 pub fn AuthorizeRequest::not_equal(Self, Self) -> Bool
-pub fn AuthorizeRequest::to_json(Self) -> Json
+pub fn AuthorizeRequest::to_json(Self) -> @json.Json
 pub fn AuthorizeRequest::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct AuthorizeResponse {
   id_tag_info : IdTagInfo
-} derive(Eq, @debug.Debug)
+}
 pub fn AuthorizeResponse::equal(Self, Self) -> Bool
-pub fn AuthorizeResponse::from_json(Json) -> Result[Self, ProtocolError]
+pub fn AuthorizeResponse::from_json(@json.Json) -> Result[Self, ProtocolError]
 pub fn AuthorizeResponse::not_equal(Self, Self) -> Bool
-pub fn AuthorizeResponse::to_json(Self) -> Json
+pub fn AuthorizeResponse::to_json(Self) -> @json.Json
 pub fn AuthorizeResponse::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) enum AvailabilityType {
   Operative
   Inoperative
-} derive(Eq, @debug.Debug)
+}
 pub fn AvailabilityType::equal(Self, Self) -> Bool
 pub fn AvailabilityType::not_equal(Self, Self) -> Bool
 pub fn AvailabilityType::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct BootNotificationRequest {
   charge_point_vendor : String
   charge_point_model : String
@@ -68,62 +74,68 @@ pub(all) struct BootNotificationRequest {
   meter_serial_number : String?
   iccid : String?
   imsi : String?
-} derive(Eq, @debug.Debug)
+}
 pub fn BootNotificationRequest::equal(Self, Self) -> Bool
-pub fn BootNotificationRequest::from_json(Json) -> Result[Self, ProtocolError]
+pub fn BootNotificationRequest::from_json(@json.Json) -> Result[Self, ProtocolError]
 pub fn BootNotificationRequest::not_equal(Self, Self) -> Bool
-pub fn BootNotificationRequest::to_json(Self) -> Json
+pub fn BootNotificationRequest::to_json(Self) -> @json.Json
 pub fn BootNotificationRequest::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct BootNotificationResponse {
   status : RegistrationStatus
   current_time : String
   heartbeat_interval : Int32
-} derive(Eq, @debug.Debug)
+}
 pub fn BootNotificationResponse::equal(Self, Self) -> Bool
-pub fn BootNotificationResponse::from_json(Json) -> Result[Self, ProtocolError]
+pub fn BootNotificationResponse::from_json(@json.Json) -> Result[Self, ProtocolError]
 pub fn BootNotificationResponse::not_equal(Self, Self) -> Bool
-pub fn BootNotificationResponse::to_json(Self) -> Json
+pub fn BootNotificationResponse::to_json(Self) -> @json.Json
 pub fn BootNotificationResponse::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct ChangeAvailabilityRequest {
   connector_id : Int32
   kind : AvailabilityType
-} derive(Eq, @debug.Debug)
+}
 pub fn ChangeAvailabilityRequest::equal(Self, Self) -> Bool
-pub fn ChangeAvailabilityRequest::from_json(Json) -> Result[Self, ProtocolError]
+pub fn ChangeAvailabilityRequest::from_json(@json.Json) -> Result[Self, ProtocolError]
 pub fn ChangeAvailabilityRequest::not_equal(Self, Self) -> Bool
-pub fn ChangeAvailabilityRequest::to_json(Self) -> Json
+pub fn ChangeAvailabilityRequest::to_json(Self) -> @json.Json
 pub fn ChangeAvailabilityRequest::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct ChangeAvailabilityResponse {
   status : RemoteCommandStatus
-} derive(Eq, @debug.Debug)
+}
 pub fn ChangeAvailabilityResponse::equal(Self, Self) -> Bool
-pub fn ChangeAvailabilityResponse::from_json(Json) -> Result[Self, ProtocolError]
+pub fn ChangeAvailabilityResponse::from_json(@json.Json) -> Result[Self, ProtocolError]
 pub fn ChangeAvailabilityResponse::not_equal(Self, Self) -> Bool
-pub fn ChangeAvailabilityResponse::to_json(Self) -> Json
+pub fn ChangeAvailabilityResponse::to_json(Self) -> @json.Json
 pub fn ChangeAvailabilityResponse::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct ChangeConfigurationRequest {
   key : String
   value : String
-} derive(Eq, @debug.Debug)
+}
 pub fn ChangeConfigurationRequest::equal(Self, Self) -> Bool
-pub fn ChangeConfigurationRequest::from_json(Json) -> Result[Self, ProtocolError]
+pub fn ChangeConfigurationRequest::from_json(@json.Json) -> Result[Self, ProtocolError]
 pub fn ChangeConfigurationRequest::not_equal(Self, Self) -> Bool
-pub fn ChangeConfigurationRequest::to_json(Self) -> Json
+pub fn ChangeConfigurationRequest::to_json(Self) -> @json.Json
 pub fn ChangeConfigurationRequest::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct ChangeConfigurationResponse {
   status : ConfigurationStatus
-} derive(Eq, @debug.Debug)
+}
 pub fn ChangeConfigurationResponse::equal(Self, Self) -> Bool
-pub fn ChangeConfigurationResponse::from_json(Json) -> Result[Self, ProtocolError]
+pub fn ChangeConfigurationResponse::from_json(@json.Json) -> Result[Self, ProtocolError]
 pub fn ChangeConfigurationResponse::not_equal(Self, Self) -> Bool
-pub fn ChangeConfigurationResponse::to_json(Self) -> Json
+pub fn ChangeConfigurationResponse::to_json(Self) -> @json.Json
 pub fn ChangeConfigurationResponse::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) enum ChargePointErrorCode {
   NoError
   ConnectorLockFailure
@@ -140,11 +152,12 @@ pub(all) enum ChargePointErrorCode {
   ResetFailure
   UnderVoltage
   WeakSignal
-} derive(Eq, @debug.Debug)
+}
 pub fn ChargePointErrorCode::equal(Self, Self) -> Bool
 pub fn ChargePointErrorCode::not_equal(Self, Self) -> Bool
 pub fn ChargePointErrorCode::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) enum ChargePointStatus {
   Available
   Preparing
@@ -155,23 +168,25 @@ pub(all) enum ChargePointStatus {
   Reserved
   Unavailable
   Faulted
-} derive(Eq, @debug.Debug)
+}
 pub fn ChargePointStatus::equal(Self, Self) -> Bool
 pub fn ChargePointStatus::name(Self) -> String
 pub fn ChargePointStatus::not_equal(Self, Self) -> Bool
 pub fn ChargePointStatus::parse(String) -> Self?
 pub fn ChargePointStatus::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct ChargingDecision {
   limit : Double
   unit : ChargingRateUnit
   profile_id : Int32
   capped_by_charge_point_max : Bool
-} derive(Eq, @debug.Debug)
+}
 pub fn ChargingDecision::equal(Self, Self) -> Bool
 pub fn ChargingDecision::not_equal(Self, Self) -> Bool
 pub fn ChargingDecision::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct ChargingProfile {
   charging_profile_id : Int32
   transaction_id : Int32?
@@ -182,81 +197,89 @@ pub(all) struct ChargingProfile {
   valid_from : String?
   valid_to : String?
   charging_schedule : ChargingSchedule
-} derive(Eq, @debug.Debug)
+}
 pub fn ChargingProfile::equal(Self, Self) -> Bool
-pub fn ChargingProfile::from_json(Json) -> Result[Self, ProtocolError]
+pub fn ChargingProfile::from_json(@json.Json) -> Result[Self, ProtocolError]
 pub fn ChargingProfile::not_equal(Self, Self) -> Bool
-pub fn ChargingProfile::to_json(Self) -> Json
+pub fn ChargingProfile::to_json(Self) -> @json.Json
 pub fn ChargingProfile::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) enum ChargingProfileError {
   NoActiveProfile
   RateUnitMismatch
   InvalidElapsedTime
-} derive(Eq, @debug.Debug)
+}
 pub fn ChargingProfileError::equal(Self, Self) -> Bool
 pub fn ChargingProfileError::not_equal(Self, Self) -> Bool
 pub fn ChargingProfileError::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) enum ChargingProfileKind {
   Absolute
   Recurring
   Relative
-} derive(Eq, @debug.Debug)
+}
 pub fn ChargingProfileKind::equal(Self, Self) -> Bool
 pub fn ChargingProfileKind::not_equal(Self, Self) -> Bool
 pub fn ChargingProfileKind::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) enum ChargingProfilePurpose {
   ChargePointMaxProfile
   TxDefaultProfile
   TxProfile
-} derive(Eq, @debug.Debug)
+}
 pub fn ChargingProfilePurpose::equal(Self, Self) -> Bool
 pub fn ChargingProfilePurpose::not_equal(Self, Self) -> Bool
 pub fn ChargingProfilePurpose::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) enum ChargingProfileStatus {
   Accepted
   Rejected
   NotSupported
-} derive(Eq, @debug.Debug)
+}
 pub fn ChargingProfileStatus::equal(Self, Self) -> Bool
 pub fn ChargingProfileStatus::not_equal(Self, Self) -> Bool
 pub fn ChargingProfileStatus::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) enum ChargingRateUnit {
   Amps
   Watts
-} derive(Eq, @debug.Debug)
+}
 pub fn ChargingRateUnit::equal(Self, Self) -> Bool
 pub fn ChargingRateUnit::not_equal(Self, Self) -> Bool
 pub fn ChargingRateUnit::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct ChargingSchedule {
   start_schedule : String?
   duration : Int32?
   min_charging_rate : Double?
   charging_rate_unit : ChargingRateUnit
   periods : Array[ChargingSchedulePeriod]
-} derive(Eq, @debug.Debug)
+}
 pub fn ChargingSchedule::equal(Self, Self) -> Bool
-pub fn ChargingSchedule::from_json(Json) -> Result[Self, ProtocolError]
+pub fn ChargingSchedule::from_json(@json.Json) -> Result[Self, ProtocolError]
 pub fn ChargingSchedule::not_equal(Self, Self) -> Bool
-pub fn ChargingSchedule::to_json(Self) -> Json
+pub fn ChargingSchedule::to_json(Self) -> @json.Json
 pub fn ChargingSchedule::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct ChargingSchedulePeriod {
   start_period : Int32
   limit : Double
   number_phases : Int32?
-} derive(Eq, @debug.Debug)
+}
 pub fn ChargingSchedulePeriod::equal(Self, Self) -> Bool
-pub fn ChargingSchedulePeriod::from_json(Json) -> Result[Self, ProtocolError]
+pub fn ChargingSchedulePeriod::from_json(@json.Json) -> Result[Self, ProtocolError]
 pub fn ChargingSchedulePeriod::not_equal(Self, Self) -> Bool
-pub fn ChargingSchedulePeriod::to_json(Self) -> Json
+pub fn ChargingSchedulePeriod::to_json(Self) -> @json.Json
 pub fn ChargingSchedulePeriod::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct ChargingTransaction {
   transaction_id : Int32
   id_tag : String
@@ -265,36 +288,39 @@ pub(all) struct ChargingTransaction {
   meter_stop : Int32?
   stop_timestamp : String?
   stop_reason : StopReason?
-} derive(Eq, @debug.Debug)
+}
 pub fn ChargingTransaction::equal(Self, Self) -> Bool
 pub fn ChargingTransaction::not_equal(Self, Self) -> Bool
 pub fn ChargingTransaction::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct ClearChargingProfileRequest {
   id : Int32?
   connector_id : Int32?
   charging_profile_purpose : ChargingProfilePurpose?
   stack_level : Int32?
-} derive(Eq, @debug.Debug)
+}
 pub fn ClearChargingProfileRequest::equal(Self, Self) -> Bool
-pub fn ClearChargingProfileRequest::from_json(Json) -> Result[Self, ProtocolError]
+pub fn ClearChargingProfileRequest::from_json(@json.Json) -> Result[Self, ProtocolError]
 pub fn ClearChargingProfileRequest::not_equal(Self, Self) -> Bool
-pub fn ClearChargingProfileRequest::to_json(Self) -> Json
+pub fn ClearChargingProfileRequest::to_json(Self) -> @json.Json
 pub fn ClearChargingProfileRequest::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct ClearChargingProfileResponse {
   status : ClearChargingProfileStatus
-} derive(Eq, @debug.Debug)
+}
 pub fn ClearChargingProfileResponse::equal(Self, Self) -> Bool
-pub fn ClearChargingProfileResponse::from_json(Json) -> Result[Self, ProtocolError]
+pub fn ClearChargingProfileResponse::from_json(@json.Json) -> Result[Self, ProtocolError]
 pub fn ClearChargingProfileResponse::not_equal(Self, Self) -> Bool
-pub fn ClearChargingProfileResponse::to_json(Self) -> Json
+pub fn ClearChargingProfileResponse::to_json(Self) -> @json.Json
 pub fn ClearChargingProfileResponse::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) enum ClearChargingProfileStatus {
   Accepted
   Unknown
-} derive(Eq, @debug.Debug)
+}
 pub fn ClearChargingProfileStatus::equal(Self, Self) -> Bool
 pub fn ClearChargingProfileStatus::not_equal(Self, Self) -> Bool
 pub fn ClearChargingProfileStatus::to_repr(Self) -> @debug.Repr
@@ -305,32 +331,35 @@ pub(all) struct CliOutput {
   exit_code : Int32
 }
 
+#derive(Eq, @debug.Debug)
 pub(all) struct ConfigurationKey {
   key : String
   is_readonly : Bool
   value : String?
-} derive(Eq, @debug.Debug)
+}
 pub fn ConfigurationKey::equal(Self, Self) -> Bool
-pub fn ConfigurationKey::from_json(Json) -> Result[Self, ProtocolError]
+pub fn ConfigurationKey::from_json(@json.Json) -> Result[Self, ProtocolError]
 pub fn ConfigurationKey::not_equal(Self, Self) -> Bool
-pub fn ConfigurationKey::to_json(Self) -> Json
+pub fn ConfigurationKey::to_json(Self) -> @json.Json
 pub fn ConfigurationKey::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) enum ConfigurationStatus {
   Accepted
   Rejected
   RebootRequired
   NotSupported
-} derive(Eq, @debug.Debug)
+}
 pub fn ConfigurationStatus::equal(Self, Self) -> Bool
 pub fn ConfigurationStatus::not_equal(Self, Self) -> Bool
 pub fn ConfigurationStatus::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct ConnectorSession {
   connector_id : Int32
   status : ChargePointStatus
   transaction : ChargingTransaction?
-} derive(Eq, @debug.Debug)
+}
 pub fn ConnectorSession::apply_status(Self, ChargePointStatus) -> Self
 pub fn ConnectorSession::begin_charging(Self) -> Result[Self, SessionError]
 pub fn ConnectorSession::begin_transaction(Self, Int32, String, Int32, String) -> Result[Self, SessionError]
@@ -342,136 +371,150 @@ pub fn ConnectorSession::not_equal(Self, Self) -> Bool
 pub fn ConnectorSession::release_transaction(Self, Int32) -> Result[Self, SessionError]
 pub fn ConnectorSession::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct DataTransferRequest {
   vendor_id : String
   message_id : String?
   data : String?
-} derive(Eq, @debug.Debug)
+}
 pub fn DataTransferRequest::equal(Self, Self) -> Bool
-pub fn DataTransferRequest::from_json(Json) -> Result[Self, ProtocolError]
+pub fn DataTransferRequest::from_json(@json.Json) -> Result[Self, ProtocolError]
 pub fn DataTransferRequest::not_equal(Self, Self) -> Bool
-pub fn DataTransferRequest::to_json(Self) -> Json
+pub fn DataTransferRequest::to_json(Self) -> @json.Json
 pub fn DataTransferRequest::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct DataTransferResponse {
   status : DataTransferStatus
   data : String?
-} derive(Eq, @debug.Debug)
+}
 pub fn DataTransferResponse::equal(Self, Self) -> Bool
-pub fn DataTransferResponse::from_json(Json) -> Result[Self, ProtocolError]
+pub fn DataTransferResponse::from_json(@json.Json) -> Result[Self, ProtocolError]
 pub fn DataTransferResponse::not_equal(Self, Self) -> Bool
-pub fn DataTransferResponse::to_json(Self) -> Json
+pub fn DataTransferResponse::to_json(Self) -> @json.Json
 pub fn DataTransferResponse::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) enum DataTransferStatus {
   Accepted
   Rejected
   UnknownMessageId
   UnknownVendorId
-} derive(Eq, @debug.Debug)
+}
 pub fn DataTransferStatus::equal(Self, Self) -> Bool
 pub fn DataTransferStatus::not_equal(Self, Self) -> Bool
 pub fn DataTransferStatus::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) enum DispatchError {
   NotACall
   InvalidAction(ProtocolError)
   WrongDirection(MessageDirection, MessageDirection)
   InvalidPayload(ProtocolError)
-} derive(Eq, @debug.Debug)
+}
 pub fn DispatchError::equal(Self, Self) -> Bool
 pub fn DispatchError::not_equal(Self, Self) -> Bool
 pub fn DispatchError::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) enum Frame {
-  Call(MessageId, String, Json)
-  CallResult(MessageId, Json)
+  Call(MessageId, String, @json.Json)
+  CallResult(MessageId, @json.Json)
   CallError(MessageId, RpcError)
-} derive(Eq, @debug.Debug)
+}
 pub fn Frame::encode(Self) -> String
 pub fn Frame::equal(Self, Self) -> Bool
 pub fn Frame::not_equal(Self, Self) -> Bool
-pub fn Frame::to_json(Self) -> Json
+pub fn Frame::to_json(Self) -> @json.Json
 pub fn Frame::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct GetConfigurationRequest {
   keys : Array[String]
-} derive(Eq, @debug.Debug)
+}
 pub fn GetConfigurationRequest::equal(Self, Self) -> Bool
-pub fn GetConfigurationRequest::from_json(Json) -> Result[Self, ProtocolError]
+pub fn GetConfigurationRequest::from_json(@json.Json) -> Result[Self, ProtocolError]
 pub fn GetConfigurationRequest::not_equal(Self, Self) -> Bool
-pub fn GetConfigurationRequest::to_json(Self) -> Json
+pub fn GetConfigurationRequest::to_json(Self) -> @json.Json
 pub fn GetConfigurationRequest::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct GetConfigurationResponse {
   configuration_key : Array[ConfigurationKey]
   unknown_key : Array[String]
-} derive(Eq, @debug.Debug)
+}
 pub fn GetConfigurationResponse::equal(Self, Self) -> Bool
-pub fn GetConfigurationResponse::from_json(Json) -> Result[Self, ProtocolError]
+pub fn GetConfigurationResponse::from_json(@json.Json) -> Result[Self, ProtocolError]
 pub fn GetConfigurationResponse::not_equal(Self, Self) -> Bool
-pub fn GetConfigurationResponse::to_json(Self) -> Json
+pub fn GetConfigurationResponse::to_json(Self) -> @json.Json
 pub fn GetConfigurationResponse::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct HeartbeatResponse {
   current_time : String
-} derive(Eq, @debug.Debug)
+}
 pub fn HeartbeatResponse::equal(Self, Self) -> Bool
-pub fn HeartbeatResponse::from_json(Json) -> Result[Self, ProtocolError]
+pub fn HeartbeatResponse::from_json(@json.Json) -> Result[Self, ProtocolError]
 pub fn HeartbeatResponse::not_equal(Self, Self) -> Bool
-pub fn HeartbeatResponse::to_json(Self) -> Json
+pub fn HeartbeatResponse::to_json(Self) -> @json.Json
 pub fn HeartbeatResponse::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct IdTagInfo {
   status : AuthorizationStatus
   expiry_date : String?
   parent_id_tag : String?
-} derive(Eq, @debug.Debug)
+}
 pub fn IdTagInfo::equal(Self, Self) -> Bool
-pub fn IdTagInfo::from_json(Json) -> Result[Self, ProtocolError]
+pub fn IdTagInfo::from_json(@json.Json) -> Result[Self, ProtocolError]
 pub fn IdTagInfo::not_equal(Self, Self) -> Bool
-pub fn IdTagInfo::to_json(Self) -> Json
+pub fn IdTagInfo::to_json(Self) -> @json.Json
 pub fn IdTagInfo::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) enum MessageDirection {
   ChargePointToCentralSystem
   CentralSystemToChargePoint
-} derive(Eq, @debug.Debug)
+}
 pub fn MessageDirection::equal(Self, Self) -> Bool
 pub fn MessageDirection::not_equal(Self, Self) -> Bool
 pub fn MessageDirection::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) enum MessageId {
   Text(String)
   Number(String)
   Null
-} derive(Eq, @debug.Debug)
+}
 pub fn MessageId::equal(Self, Self) -> Bool
 pub fn MessageId::not_equal(Self, Self) -> Bool
-pub fn MessageId::to_json(Self) -> Json
+pub fn MessageId::to_json(Self) -> @json.Json
 pub fn MessageId::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct MeterValue {
   timestamp : String
   sampled_value : Array[SampledValue]
-} derive(Eq, @debug.Debug)
+}
 pub fn MeterValue::equal(Self, Self) -> Bool
-pub fn MeterValue::from_json(Json) -> Result[Self, ProtocolError]
+pub fn MeterValue::from_json(@json.Json) -> Result[Self, ProtocolError]
 pub fn MeterValue::not_equal(Self, Self) -> Bool
-pub fn MeterValue::to_json(Self) -> Json
+pub fn MeterValue::to_json(Self) -> @json.Json
 pub fn MeterValue::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct MeterValuesRequest {
   connector_id : Int32
   transaction_id : Int32?
   meter_value : Array[MeterValue]
-} derive(Eq, @debug.Debug)
+}
 pub fn MeterValuesRequest::equal(Self, Self) -> Bool
-pub fn MeterValuesRequest::from_json(Json) -> Result[Self, ProtocolError]
+pub fn MeterValuesRequest::from_json(@json.Json) -> Result[Self, ProtocolError]
 pub fn MeterValuesRequest::not_equal(Self, Self) -> Bool
-pub fn MeterValuesRequest::to_json(Self) -> Json
+pub fn MeterValuesRequest::to_json(Self) -> @json.Json
 pub fn MeterValuesRequest::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) enum OcppAction {
   Authorize
   BootNotification
@@ -493,7 +536,7 @@ pub(all) enum OcppAction {
   Reset
   SetChargingProfile
   UnlockConnector
-} derive(Eq, @debug.Debug)
+}
 pub fn OcppAction::equal(Self, Self) -> Bool
 pub fn OcppAction::name(Self) -> String
 pub fn OcppAction::not_equal(Self, Self) -> Bool
@@ -501,6 +544,7 @@ pub fn OcppAction::parse(String) -> Self?
 pub fn OcppAction::request_direction(Self) -> MessageDirection
 pub fn OcppAction::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) enum ProtocolError {
   InvalidJson
   FrameMustBeArray
@@ -512,7 +556,7 @@ pub(all) enum ProtocolError {
   MissingField(String)
   InvalidField(String)
   UnsupportedValue(String, String)
-} derive(Eq, @debug.Debug)
+}
 pub fn ProtocolError::equal(Self, Self) -> Bool
 pub fn ProtocolError::message(Self) -> String
 pub fn ProtocolError::not_equal(Self, Self) -> Bool
@@ -521,96 +565,107 @@ pub fn ProtocolError::to_repr(Self) -> @debug.Repr
 pub fn ProtocolError::to_string(Self) -> String
 pub impl Show for ProtocolError
 
+#derive(Eq, @debug.Debug)
 pub(all) enum RegistrationStatus {
   Accepted
   Pending
   Rejected
-} derive(Eq, @debug.Debug)
+}
 pub fn RegistrationStatus::equal(Self, Self) -> Bool
 pub fn RegistrationStatus::not_equal(Self, Self) -> Bool
 pub fn RegistrationStatus::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) enum RemoteCommandStatus {
   Accepted
   Rejected
-} derive(Eq, @debug.Debug)
+}
 pub fn RemoteCommandStatus::equal(Self, Self) -> Bool
 pub fn RemoteCommandStatus::not_equal(Self, Self) -> Bool
 pub fn RemoteCommandStatus::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct RemoteStartTransactionRequest {
   id_tag : String
   connector_id : Int32?
   charging_profile : ChargingProfile?
-} derive(Eq, @debug.Debug)
+}
 pub fn RemoteStartTransactionRequest::equal(Self, Self) -> Bool
-pub fn RemoteStartTransactionRequest::from_json(Json) -> Result[Self, ProtocolError]
+pub fn RemoteStartTransactionRequest::from_json(@json.Json) -> Result[Self, ProtocolError]
 pub fn RemoteStartTransactionRequest::not_equal(Self, Self) -> Bool
-pub fn RemoteStartTransactionRequest::to_json(Self) -> Json
+pub fn RemoteStartTransactionRequest::to_json(Self) -> @json.Json
 pub fn RemoteStartTransactionRequest::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct RemoteStartTransactionResponse {
   status : RemoteCommandStatus
-} derive(Eq, @debug.Debug)
+}
 pub fn RemoteStartTransactionResponse::equal(Self, Self) -> Bool
-pub fn RemoteStartTransactionResponse::from_json(Json) -> Result[Self, ProtocolError]
+pub fn RemoteStartTransactionResponse::from_json(@json.Json) -> Result[Self, ProtocolError]
 pub fn RemoteStartTransactionResponse::not_equal(Self, Self) -> Bool
-pub fn RemoteStartTransactionResponse::to_json(Self) -> Json
+pub fn RemoteStartTransactionResponse::to_json(Self) -> @json.Json
 pub fn RemoteStartTransactionResponse::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct RemoteStopTransactionRequest {
   transaction_id : Int32
-} derive(Eq, @debug.Debug)
+}
 pub fn RemoteStopTransactionRequest::equal(Self, Self) -> Bool
-pub fn RemoteStopTransactionRequest::from_json(Json) -> Result[Self, ProtocolError]
+pub fn RemoteStopTransactionRequest::from_json(@json.Json) -> Result[Self, ProtocolError]
 pub fn RemoteStopTransactionRequest::not_equal(Self, Self) -> Bool
-pub fn RemoteStopTransactionRequest::to_json(Self) -> Json
+pub fn RemoteStopTransactionRequest::to_json(Self) -> @json.Json
 pub fn RemoteStopTransactionRequest::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct RemoteStopTransactionResponse {
   status : RemoteCommandStatus
-} derive(Eq, @debug.Debug)
+}
 pub fn RemoteStopTransactionResponse::equal(Self, Self) -> Bool
-pub fn RemoteStopTransactionResponse::from_json(Json) -> Result[Self, ProtocolError]
+pub fn RemoteStopTransactionResponse::from_json(@json.Json) -> Result[Self, ProtocolError]
 pub fn RemoteStopTransactionResponse::not_equal(Self, Self) -> Bool
-pub fn RemoteStopTransactionResponse::to_json(Self) -> Json
+pub fn RemoteStopTransactionResponse::to_json(Self) -> @json.Json
 pub fn RemoteStopTransactionResponse::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct ResetRequest {
   kind : ResetType
-} derive(Eq, @debug.Debug)
+}
 pub fn ResetRequest::equal(Self, Self) -> Bool
-pub fn ResetRequest::from_json(Json) -> Result[Self, ProtocolError]
+pub fn ResetRequest::from_json(@json.Json) -> Result[Self, ProtocolError]
 pub fn ResetRequest::not_equal(Self, Self) -> Bool
-pub fn ResetRequest::to_json(Self) -> Json
+pub fn ResetRequest::to_json(Self) -> @json.Json
 pub fn ResetRequest::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct ResetResponse {
   status : RemoteCommandStatus
-} derive(Eq, @debug.Debug)
+}
 pub fn ResetResponse::equal(Self, Self) -> Bool
-pub fn ResetResponse::from_json(Json) -> Result[Self, ProtocolError]
+pub fn ResetResponse::from_json(@json.Json) -> Result[Self, ProtocolError]
 pub fn ResetResponse::not_equal(Self, Self) -> Bool
-pub fn ResetResponse::to_json(Self) -> Json
+pub fn ResetResponse::to_json(Self) -> @json.Json
 pub fn ResetResponse::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) enum ResetType {
   Hard
   Soft
-} derive(Eq, @debug.Debug)
+}
 pub fn ResetType::equal(Self, Self) -> Bool
 pub fn ResetType::not_equal(Self, Self) -> Bool
 pub fn ResetType::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct RpcError {
   code : RpcErrorCode
   description : String
-  details : Json
-} derive(Eq, @debug.Debug)
+  details : @json.Json
+}
 pub fn RpcError::equal(Self, Self) -> Bool
 pub fn RpcError::not_equal(Self, Self) -> Bool
 pub fn RpcError::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) enum RpcErrorCode {
   NotImplemented
   NotSupported
@@ -623,13 +678,14 @@ pub(all) enum RpcErrorCode {
   TypeConstraintViolation
   GenericError
   Unknown(String)
-} derive(Eq, @debug.Debug)
+}
 pub fn RpcErrorCode::equal(Self, Self) -> Bool
 pub fn RpcErrorCode::not_equal(Self, Self) -> Bool
 pub fn RpcErrorCode::parse(String) -> Self
 pub fn RpcErrorCode::to_repr(Self) -> @debug.Repr
 pub fn RpcErrorCode::to_string(Self) -> String
 
+#derive(Eq, @debug.Debug)
 pub(all) struct SampledValue {
   value : String
   context : String?
@@ -638,13 +694,14 @@ pub(all) struct SampledValue {
   phase : String?
   location : String?
   unit : String?
-} derive(Eq, @debug.Debug)
+}
 pub fn SampledValue::equal(Self, Self) -> Bool
-pub fn SampledValue::from_json(Json) -> Result[Self, ProtocolError]
+pub fn SampledValue::from_json(@json.Json) -> Result[Self, ProtocolError]
 pub fn SampledValue::not_equal(Self, Self) -> Bool
-pub fn SampledValue::to_json(Self) -> Json
+pub fn SampledValue::to_json(Self) -> @json.Json
 pub fn SampledValue::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) enum SessionError {
   InvalidConnectorId(Int32)
   TransactionAlreadyActive(Int32)
@@ -653,53 +710,58 @@ pub(all) enum SessionError {
   TransactionIdAlreadyUsed(Int32)
   MeterRegression(Int32, Int32)
   InvalidIdTag
-} derive(Eq, @debug.Debug)
+}
 pub fn SessionError::equal(Self, Self) -> Bool
 pub fn SessionError::not_equal(Self, Self) -> Bool
 pub fn SessionError::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct SetChargingProfileRequest {
   connector_id : Int32
   cs_charging_profiles : ChargingProfile
-} derive(Eq, @debug.Debug)
+}
 pub fn SetChargingProfileRequest::equal(Self, Self) -> Bool
-pub fn SetChargingProfileRequest::from_json(Json) -> Result[Self, ProtocolError]
+pub fn SetChargingProfileRequest::from_json(@json.Json) -> Result[Self, ProtocolError]
 pub fn SetChargingProfileRequest::not_equal(Self, Self) -> Bool
-pub fn SetChargingProfileRequest::to_json(Self) -> Json
+pub fn SetChargingProfileRequest::to_json(Self) -> @json.Json
 pub fn SetChargingProfileRequest::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct SetChargingProfileResponse {
   status : ChargingProfileStatus
-} derive(Eq, @debug.Debug)
+}
 pub fn SetChargingProfileResponse::equal(Self, Self) -> Bool
-pub fn SetChargingProfileResponse::from_json(Json) -> Result[Self, ProtocolError]
+pub fn SetChargingProfileResponse::from_json(@json.Json) -> Result[Self, ProtocolError]
 pub fn SetChargingProfileResponse::not_equal(Self, Self) -> Bool
-pub fn SetChargingProfileResponse::to_json(Self) -> Json
+pub fn SetChargingProfileResponse::to_json(Self) -> @json.Json
 pub fn SetChargingProfileResponse::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct StartTransactionRequest {
   connector_id : Int32
   id_tag : String
   meter_start : Int32
   reservation_id : Int32?
   timestamp : String
-} derive(Eq, @debug.Debug)
+}
 pub fn StartTransactionRequest::equal(Self, Self) -> Bool
-pub fn StartTransactionRequest::from_json(Json) -> Result[Self, ProtocolError]
+pub fn StartTransactionRequest::from_json(@json.Json) -> Result[Self, ProtocolError]
 pub fn StartTransactionRequest::not_equal(Self, Self) -> Bool
-pub fn StartTransactionRequest::to_json(Self) -> Json
+pub fn StartTransactionRequest::to_json(Self) -> @json.Json
 pub fn StartTransactionRequest::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct StartTransactionResponse {
   transaction_id : Int32
   id_tag_info : IdTagInfo
-} derive(Eq, @debug.Debug)
+}
 pub fn StartTransactionResponse::equal(Self, Self) -> Bool
-pub fn StartTransactionResponse::from_json(Json) -> Result[Self, ProtocolError]
+pub fn StartTransactionResponse::from_json(@json.Json) -> Result[Self, ProtocolError]
 pub fn StartTransactionResponse::not_equal(Self, Self) -> Bool
-pub fn StartTransactionResponse::to_json(Self) -> Json
+pub fn StartTransactionResponse::to_json(Self) -> @json.Json
 pub fn StartTransactionResponse::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct StatusNotificationRequest {
   connector_id : Int32
   error_code : ChargePointErrorCode
@@ -708,13 +770,14 @@ pub(all) struct StatusNotificationRequest {
   info : String?
   vendor_id : String?
   vendor_error_code : String?
-} derive(Eq, @debug.Debug)
+}
 pub fn StatusNotificationRequest::equal(Self, Self) -> Bool
-pub fn StatusNotificationRequest::from_json(Json) -> Result[Self, ProtocolError]
+pub fn StatusNotificationRequest::from_json(@json.Json) -> Result[Self, ProtocolError]
 pub fn StatusNotificationRequest::not_equal(Self, Self) -> Bool
-pub fn StatusNotificationRequest::to_json(Self) -> Json
+pub fn StatusNotificationRequest::to_json(Self) -> @json.Json
 pub fn StatusNotificationRequest::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) enum StopReason {
   EmergencyStop
   EVDisconnected
@@ -727,24 +790,26 @@ pub(all) enum StopReason {
   SoftReset
   UnlockCommand
   DeAuthorized
-} derive(Eq, @debug.Debug)
+}
 pub fn StopReason::equal(Self, Self) -> Bool
 pub fn StopReason::not_equal(Self, Self) -> Bool
 pub fn StopReason::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct StopTransactionRequest {
   transaction_id : Int32
   meter_stop : Int32
   timestamp : String
   reason : StopReason?
   id_tag : String?
-} derive(Eq, @debug.Debug)
+}
 pub fn StopTransactionRequest::equal(Self, Self) -> Bool
-pub fn StopTransactionRequest::from_json(Json) -> Result[Self, ProtocolError]
+pub fn StopTransactionRequest::from_json(@json.Json) -> Result[Self, ProtocolError]
 pub fn StopTransactionRequest::not_equal(Self, Self) -> Bool
-pub fn StopTransactionRequest::to_json(Self) -> Json
+pub fn StopTransactionRequest::to_json(Self) -> @json.Json
 pub fn StopTransactionRequest::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) enum TypedCall {
   Authorize(AuthorizeRequest)
   BootNotification(BootNotificationRequest)
@@ -761,8 +826,8 @@ pub(all) enum TypedCall {
   GetConfiguration(GetConfigurationRequest)
   SetChargingProfile(SetChargingProfileRequest)
   ClearChargingProfile(ClearChargingProfileRequest)
-  UnsupportedAction(String, Json)
-} derive(Eq, @debug.Debug)
+  UnsupportedAction(String, @json.Json)
+}
 pub fn TypedCall::action_name(Self) -> String
 pub fn TypedCall::equal(Self, Self) -> Bool
 pub fn TypedCall::not_equal(Self, Self) -> Bool
