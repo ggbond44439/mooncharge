@@ -18,8 +18,16 @@ jobs:
       - name: Update MoonBit registry
         run: moon update
 
+      - name: Show toolchain
+        run: moon version --all
+
       - name: Format check
         run: moon fmt --check
+
+      - name: Check generated interfaces
+        run: |
+          moon info
+          git diff --exit-code
 
       - name: Check all targets
         run: moon check --target all
@@ -36,5 +44,11 @@ jobs:
           moon run examples/session_walkthrough
           moon run examples/profile_eval
 
-      - name: Check package contents
+      - name: CLI smoke test
+        run: |
+          moon run cmd/main -- frame '[2,"ci-1","Heartbeat",{}]'
+          moon run cmd/main -- dispatch cp '[2,"ci-2","Authorize",{"idTag":"RFID-CI"}]'
+          moon run cmd/main -- action SetChargingProfile request
+
+      - name: Package and inspect contents
         run: moon package --list
