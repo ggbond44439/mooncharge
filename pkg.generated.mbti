@@ -363,6 +363,52 @@ pub fn RegistrationStatus::equal(Self, Self) -> Bool
 pub fn RegistrationStatus::not_equal(Self, Self) -> Bool
 pub fn RegistrationStatus::to_repr(Self) -> @debug.Repr
 
+pub(all) enum RemoteCommandStatus {
+  Accepted
+  Rejected
+} derive(Eq, @debug.Debug)
+pub fn RemoteCommandStatus::equal(Self, Self) -> Bool
+pub fn RemoteCommandStatus::not_equal(Self, Self) -> Bool
+pub fn RemoteCommandStatus::to_repr(Self) -> @debug.Repr
+
+pub(all) struct RemoteStartTransactionRequest {
+  id_tag : String
+  connector_id : Int32?
+  charging_profile : ChargingProfile?
+} derive(Eq, @debug.Debug)
+pub fn RemoteStartTransactionRequest::equal(Self, Self) -> Bool
+pub fn RemoteStartTransactionRequest::from_json(Json) -> Result[Self, ProtocolError]
+pub fn RemoteStartTransactionRequest::not_equal(Self, Self) -> Bool
+pub fn RemoteStartTransactionRequest::to_json(Self) -> Json
+pub fn RemoteStartTransactionRequest::to_repr(Self) -> @debug.Repr
+
+pub(all) struct RemoteStartTransactionResponse {
+  status : RemoteCommandStatus
+} derive(Eq, @debug.Debug)
+pub fn RemoteStartTransactionResponse::equal(Self, Self) -> Bool
+pub fn RemoteStartTransactionResponse::from_json(Json) -> Result[Self, ProtocolError]
+pub fn RemoteStartTransactionResponse::not_equal(Self, Self) -> Bool
+pub fn RemoteStartTransactionResponse::to_json(Self) -> Json
+pub fn RemoteStartTransactionResponse::to_repr(Self) -> @debug.Repr
+
+pub(all) struct RemoteStopTransactionRequest {
+  transaction_id : Int32
+} derive(Eq, @debug.Debug)
+pub fn RemoteStopTransactionRequest::equal(Self, Self) -> Bool
+pub fn RemoteStopTransactionRequest::from_json(Json) -> Result[Self, ProtocolError]
+pub fn RemoteStopTransactionRequest::not_equal(Self, Self) -> Bool
+pub fn RemoteStopTransactionRequest::to_json(Self) -> Json
+pub fn RemoteStopTransactionRequest::to_repr(Self) -> @debug.Repr
+
+pub(all) struct RemoteStopTransactionResponse {
+  status : RemoteCommandStatus
+} derive(Eq, @debug.Debug)
+pub fn RemoteStopTransactionResponse::equal(Self, Self) -> Bool
+pub fn RemoteStopTransactionResponse::from_json(Json) -> Result[Self, ProtocolError]
+pub fn RemoteStopTransactionResponse::not_equal(Self, Self) -> Bool
+pub fn RemoteStopTransactionResponse::to_json(Self) -> Json
+pub fn RemoteStopTransactionResponse::to_repr(Self) -> @debug.Repr
+
 pub(all) struct RpcError {
   code : RpcErrorCode
   description : String

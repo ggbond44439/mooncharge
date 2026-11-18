@@ -285,3 +285,32 @@ test "CLI rejects invalid commands with a non-zero status" {
   assert_eq(output.exit_code, 2)
   assert_true(output.stderr.contains("action expects"))
 }
+
+///|
+test "remote start and stop commands round-trip" {
+  let start_payload = match
+    parsed_frame(
+      "[2,\"rs-1\",\"RemoteStartTransaction\",{\"idTag\":\"RFID-9\",\"connectorId\":2}]",
+    ) {
+    Call(_, _, payload) => payload
+    _ => return
+  }
+  let start = match
+    @mooncharge.RemoteStartTransactionRequest::from_json(start_payload) {
+    Ok(value) => value
+    Err(error) => fail(error.message())
+  }
+  assert_eq(start.id_tag, "RFID-9")
+  assert_eq(start.connector_id, Some(2))
+  let stop_payload = match
+    parsed_frame(
+      "[2,\"rs-2\",\"RemoteStopTransaction\",{\"transactionId\":77}]",
+    ) {
+    Call(_, _, payload) => payload
+    _ => return
+  }
+  match @mooncharge.RemoteStopTransactionRequest::from_json(stop_payload) {
+    Ok(stop) => assert_eq(stop.transaction_id, 77)
+    Err(error) => fail(error.message())
+  }
+}

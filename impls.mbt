@@ -216,3 +216,33 @@ pub extend SessionError with Eq::{not_equal, equal}
 
 ///|
 pub extend SessionError with @debug.Debug::{to_repr}
+
+///|
+pub extend RemoteCommandStatus with Eq::{not_equal, equal}
+
+///|
+pub extend RemoteCommandStatus with @debug.Debug::{to_repr}
+
+///|
+pub extend RemoteStartTransactionRequest with Eq::{not_equal, equal}
+
+///|
+pub extend RemoteStartTransactionRequest with @debug.Debug::{to_repr}
+
+///|
+pub extend RemoteStartTransactionResponse with Eq::{not_equal, equal}
+
+///|
+pub extend RemoteStartTransactionResponse with @debug.Debug::{to_repr}
+
+///|
+pub extend RemoteStopTransactionRequest with Eq::{not_equal, equal}
+
+///|
+pub extend RemoteStopTransactionRequest with @debug.Debug::{to_repr}
+
+///|
+pub extend RemoteStopTransactionResponse with Eq::{not_equal, equal}
+
+///|
+pub extend RemoteStopTransactionResponse with @debug.Debug::{to_repr}
