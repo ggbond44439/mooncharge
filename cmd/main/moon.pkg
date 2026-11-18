@@ -1,0 +1,6 @@
+import {
+  "ggbond44439/mooncharge",
+  "moonbitlang/core/env",
+}
+
+pkgtype(kind: "executable")
