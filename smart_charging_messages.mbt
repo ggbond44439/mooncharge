@@ -1,9 +1,10 @@
 ///|
+#derive(Eq, @debug.Debug)
 pub(all) enum ChargingProfileStatus {
   Accepted
   Rejected
   NotSupported
-} derive(Eq, @debug.Debug)
+}
 
 ///|
 fn parse_charging_profile_status(
@@ -27,10 +28,11 @@ fn charging_profile_status_name(value : ChargingProfileStatus) -> String {
 }
 
 ///|
+#derive(Eq, @debug.Debug)
 pub(all) struct SetChargingProfileRequest {
   connector_id : Int32
   cs_charging_profiles : ChargingProfile
-} derive(Eq, @debug.Debug)
+}
 
 ///|
 fn parse_set_charging_profile(
@@ -62,9 +64,10 @@ pub fn SetChargingProfileRequest::to_json(
 }
 
 ///|
+#derive(Eq, @debug.Debug)
 pub(all) struct SetChargingProfileResponse {
   status : ChargingProfileStatus
-} derive(Eq, @debug.Debug)
+}
 
 ///|
 fn parse_set_charging_profile_response(
@@ -90,12 +93,13 @@ pub fn SetChargingProfileResponse::to_json(
 }
 
 ///|
+#derive(Eq, @debug.Debug)
 pub(all) struct ClearChargingProfileRequest {
   id : Int32?
   connector_id : Int32?
   charging_profile_purpose : ChargingProfilePurpose?
   stack_level : Int32?
-} derive(Eq, @debug.Debug)
+}
 
 ///|
 fn optional_profile_purpose(
@@ -161,10 +165,11 @@ pub fn ClearChargingProfileRequest::to_json(
 }
 
 ///|
+#derive(Eq, @debug.Debug)
 pub(all) enum ClearChargingProfileStatus {
   Accepted
   Unknown
-} derive(Eq, @debug.Debug)
+}
 
 ///|
 fn parse_clear_profile_status(
@@ -178,9 +183,10 @@ fn parse_clear_profile_status(
 }
 
 ///|
+#derive(Eq, @debug.Debug)
 pub(all) struct ClearChargingProfileResponse {
   status : ClearChargingProfileStatus
-} derive(Eq, @debug.Debug)
+}
 
 ///|
 fn parse_clear_profile_response(

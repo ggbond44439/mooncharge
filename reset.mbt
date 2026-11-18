@@ -1,8 +1,9 @@
 ///|
+#derive(Eq, @debug.Debug)
 pub(all) enum ResetType {
   Hard
   Soft
-} derive(Eq, @debug.Debug)
+}
 
 ///|
 fn parse_reset_type(value : String) -> ResetType raise ProtocolFailure {
@@ -22,9 +23,10 @@ fn reset_type_name(value : ResetType) -> String {
 }
 
 ///|
+#derive(Eq, @debug.Debug)
 pub(all) struct ResetRequest {
   kind : ResetType
-} derive(Eq, @debug.Debug)
+}
 
 ///|
 fn parse_reset_request(value : Json) -> ResetRequest raise ProtocolFailure {
@@ -44,9 +46,10 @@ pub fn ResetRequest::to_json(self : ResetRequest) -> Json {
 }
 
 ///|
+#derive(Eq, @debug.Debug)
 pub(all) struct ResetResponse {
   status : RemoteCommandStatus
-} derive(Eq, @debug.Debug)
+}
 
 ///|
 fn parse_reset_response(value : Json) -> ResetResponse raise ProtocolFailure {
@@ -68,10 +71,11 @@ pub fn ResetResponse::to_json(self : ResetResponse) -> Json {
 }
 
 ///|
+#derive(Eq, @debug.Debug)
 pub(all) enum AvailabilityType {
   Operative
   Inoperative
-} derive(Eq, @debug.Debug)
+}
 
 ///|
 fn parse_availability_type(
@@ -93,10 +97,11 @@ fn availability_type_name(value : AvailabilityType) -> String {
 }
 
 ///|
+#derive(Eq, @debug.Debug)
 pub(all) struct ChangeAvailabilityRequest {
   connector_id : Int32
   kind : AvailabilityType
-} derive(Eq, @debug.Debug)
+}
 
 ///|
 fn parse_change_availability(
@@ -126,9 +131,10 @@ pub fn ChangeAvailabilityRequest::to_json(
 }
 
 ///|
+#derive(Eq, @debug.Debug)
 pub(all) struct ChangeAvailabilityResponse {
   status : RemoteCommandStatus
-} derive(Eq, @debug.Debug)
+}
 
 ///|
 fn parse_change_availability_response(

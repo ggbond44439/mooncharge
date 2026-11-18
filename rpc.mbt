@@ -1,5 +1,6 @@
 ///|
 /// Faults detected while decoding an OCPP JSON-RPC frame or payload.
+#derive(Eq, @debug.Debug)
 pub(all) enum ProtocolError {
   InvalidJson
   FrameMustBeArray
@@ -11,7 +12,7 @@ pub(all) enum ProtocolError {
   MissingField(String)
   InvalidField(String)
   UnsupportedValue(String, String)
-} derive(Eq, @debug.Debug)
+}
 
 ///|
 pub fn ProtocolError::message(self : ProtocolError) -> String {
@@ -32,11 +33,12 @@ pub fn ProtocolError::message(self : ProtocolError) -> String {
 
 ///|
 /// A JSON-RPC id. Numeric ids keep their exact source spelling.
+#derive(Eq, @debug.Debug)
 pub(all) enum MessageId {
   Text(String)
   Number(String)
   Null
-} derive(Eq, @debug.Debug)
+}
 
 ///|
 pub fn MessageId::to_json(self : MessageId) -> Json {
@@ -59,6 +61,7 @@ fn message_id_from_json(value : Json) -> MessageId? {
 
 ///|
 /// OCPP-defined JSON-RPC error codes plus forward-compatible unknown codes.
+#derive(Eq, @debug.Debug)
 pub(all) enum RpcErrorCode {
   NotImplemented
   NotSupported
@@ -71,7 +74,7 @@ pub(all) enum RpcErrorCode {
   TypeConstraintViolation
   GenericError
   Unknown(String)
-} derive(Eq, @debug.Debug)
+}
 
 ///|
 pub fn RpcErrorCode::to_string(self : RpcErrorCode) -> String {
@@ -108,19 +111,21 @@ pub fn RpcErrorCode::parse(value : String) -> RpcErrorCode {
 }
 
 ///|
+#derive(Eq, @debug.Debug)
 pub(all) struct RpcError {
   code : RpcErrorCode
   description : String
   details : Json
-} derive(Eq, @debug.Debug)
+}
 
 ///|
 /// A decoded OCPP 1.6J WebSocket frame.
+#derive(Eq, @debug.Debug)
 pub(all) enum Frame {
   Call(MessageId, String, Json)
   CallResult(MessageId, Json)
   CallError(MessageId, RpcError)
-} derive(Eq, @debug.Debug)
+}
 
 ///|
 pub fn Frame::to_json(self : Frame) -> Json {

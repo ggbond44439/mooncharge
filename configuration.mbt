@@ -1,10 +1,11 @@
 ///|
+#derive(Eq, @debug.Debug)
 pub(all) enum ConfigurationStatus {
   Accepted
   Rejected
   RebootRequired
   NotSupported
-} derive(Eq, @debug.Debug)
+}
 
 ///|
 fn parse_configuration_status(
@@ -30,10 +31,11 @@ fn configuration_status_name(value : ConfigurationStatus) -> String {
 }
 
 ///|
+#derive(Eq, @debug.Debug)
 pub(all) struct ChangeConfigurationRequest {
   key : String
   value : String
-} derive(Eq, @debug.Debug)
+}
 
 ///|
 fn parse_change_configuration(
@@ -64,9 +66,10 @@ pub fn ChangeConfigurationRequest::to_json(
 }
 
 ///|
+#derive(Eq, @debug.Debug)
 pub(all) struct ChangeConfigurationResponse {
   status : ConfigurationStatus
-} derive(Eq, @debug.Debug)
+}
 
 ///|
 fn parse_change_configuration_response(
@@ -92,9 +95,10 @@ pub fn ChangeConfigurationResponse::to_json(
 }
 
 ///|
+#derive(Eq, @debug.Debug)
 pub(all) struct GetConfigurationRequest {
   keys : Array[String]
-} derive(Eq, @debug.Debug)
+}
 
 ///|
 fn string_array(
@@ -146,11 +150,12 @@ pub fn GetConfigurationRequest::to_json(self : GetConfigurationRequest) -> Json 
 }
 
 ///|
+#derive(Eq, @debug.Debug)
 pub(all) struct ConfigurationKey {
   key : String
   is_readonly : Bool
   value : String?
-} derive(Eq, @debug.Debug)
+}
 
 ///|
 fn parse_configuration_key(
@@ -186,10 +191,11 @@ pub fn ConfigurationKey::to_json(self : ConfigurationKey) -> Json {
 }
 
 ///|
+#derive(Eq, @debug.Debug)
 pub(all) struct GetConfigurationResponse {
   configuration_key : Array[ConfigurationKey]
   unknown_key : Array[String]
-} derive(Eq, @debug.Debug)
+}
 
 ///|
 fn parse_get_configuration_response(

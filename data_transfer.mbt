@@ -1,9 +1,10 @@
 ///|
+#derive(Eq, @debug.Debug)
 pub(all) struct DataTransferRequest {
   vendor_id : String
   message_id : String?
   data : String?
-} derive(Eq, @debug.Debug)
+}
 
 ///|
 fn parse_data_transfer(
@@ -36,12 +37,13 @@ pub fn DataTransferRequest::to_json(self : DataTransferRequest) -> Json {
 }
 
 ///|
+#derive(Eq, @debug.Debug)
 pub(all) enum DataTransferStatus {
   Accepted
   Rejected
   UnknownMessageId
   UnknownVendorId
-} derive(Eq, @debug.Debug)
+}
 
 ///|
 fn parse_data_transfer_status(
@@ -67,10 +69,11 @@ fn data_transfer_status_name(value : DataTransferStatus) -> String {
 }
 
 ///|
+#derive(Eq, @debug.Debug)
 pub(all) struct DataTransferResponse {
   status : DataTransferStatus
   data : String?
-} derive(Eq, @debug.Debug)
+}
 
 ///|
 fn parse_data_transfer_response(

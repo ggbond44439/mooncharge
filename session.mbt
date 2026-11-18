@@ -1,4 +1,5 @@
 ///|
+#derive(Eq, @debug.Debug)
 pub(all) struct ChargingTransaction {
   transaction_id : Int32
   id_tag : String
@@ -7,16 +8,18 @@ pub(all) struct ChargingTransaction {
   meter_stop : Int32?
   stop_timestamp : String?
   stop_reason : StopReason?
-} derive(Eq, @debug.Debug)
+}
 
 ///|
+#derive(Eq, @debug.Debug)
 pub(all) struct ConnectorSession {
   connector_id : Int32
   status : ChargePointStatus
   transaction : ChargingTransaction?
-} derive(Eq, @debug.Debug)
+}
 
 ///|
+#derive(Eq, @debug.Debug)
 pub(all) enum SessionError {
   InvalidConnectorId(Int32)
   TransactionAlreadyActive(Int32)
@@ -25,7 +28,7 @@ pub(all) enum SessionError {
   TransactionIdAlreadyUsed(Int32)
   MeterRegression(Int32, Int32)
   InvalidIdTag
-} derive(Eq, @debug.Debug)
+}
 
 ///|
 pub fn ConnectorSession::new(

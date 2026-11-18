@@ -130,11 +130,12 @@ fn set_optional_string(
 }
 
 ///|
+#derive(Eq, @debug.Debug)
 pub(all) enum RegistrationStatus {
   Accepted
   Pending
   Rejected
-} derive(Eq, @debug.Debug)
+}
 
 ///|
 fn registration_status(
@@ -158,13 +159,14 @@ fn registration_status_name(value : RegistrationStatus) -> String {
 }
 
 ///|
+#derive(Eq, @debug.Debug)
 pub(all) enum AuthorizationStatus {
   Accepted
   Blocked
   Expired
   Invalid
   ConcurrentTx
-} derive(Eq, @debug.Debug)
+}
 
 ///|
 fn authorization_status(
@@ -193,6 +195,7 @@ fn authorization_status_name(value : AuthorizationStatus) -> String {
 }
 
 ///|
+#derive(Eq, @debug.Debug)
 pub(all) enum ChargePointStatus {
   Available
   Preparing
@@ -203,7 +206,7 @@ pub(all) enum ChargePointStatus {
   Reserved
   Unavailable
   Faulted
-} derive(Eq, @debug.Debug)
+}
 
 ///|
 pub fn ChargePointStatus::parse(value : String) -> ChargePointStatus? {
@@ -237,6 +240,7 @@ pub fn ChargePointStatus::name(self : ChargePointStatus) -> String {
 }
 
 ///|
+#derive(Eq, @debug.Debug)
 pub(all) enum ChargePointErrorCode {
   NoError
   ConnectorLockFailure
@@ -253,7 +257,7 @@ pub(all) enum ChargePointErrorCode {
   ResetFailure
   UnderVoltage
   WeakSignal
-} derive(Eq, @debug.Debug)
+}
 
 ///|
 fn error_code(value : String) -> ChargePointErrorCode raise ProtocolFailure {
@@ -299,6 +303,7 @@ fn error_code_name(value : ChargePointErrorCode) -> String {
 }
 
 ///|
+#derive(Eq, @debug.Debug)
 pub(all) enum StopReason {
   EmergencyStop
   EVDisconnected
@@ -311,7 +316,7 @@ pub(all) enum StopReason {
   SoftReset
   UnlockCommand
   DeAuthorized
-} derive(Eq, @debug.Debug)
+}
 
 ///|
 fn stop_reason(value : String) -> StopReason raise ProtocolFailure {
@@ -349,11 +354,12 @@ fn stop_reason_name(value : StopReason) -> String {
 }
 
 ///|
+#derive(Eq, @debug.Debug)
 pub(all) struct IdTagInfo {
   status : AuthorizationStatus
   expiry_date : String?
   parent_id_tag : String?
-} derive(Eq, @debug.Debug)
+}
 
 ///|
 fn parse_id_tag_info(value : Json) -> IdTagInfo raise ProtocolFailure {
@@ -380,6 +386,7 @@ pub fn IdTagInfo::to_json(self : IdTagInfo) -> Json {
 }
 
 ///|
+#derive(Eq, @debug.Debug)
 pub(all) struct BootNotificationRequest {
   charge_point_vendor : String
   charge_point_model : String
@@ -389,7 +396,7 @@ pub(all) struct BootNotificationRequest {
   meter_serial_number : String?
   iccid : String?
   imsi : String?
-} derive(Eq, @debug.Debug)
+}
 
 ///|
 fn parse_boot_notification_request(
@@ -442,11 +449,12 @@ pub fn BootNotificationRequest::to_json(self : BootNotificationRequest) -> Json 
 }
 
 ///|
+#derive(Eq, @debug.Debug)
 pub(all) struct BootNotificationResponse {
   status : RegistrationStatus
   current_time : String
   heartbeat_interval : Int32
-} derive(Eq, @debug.Debug)
+}
 
 ///|
 fn parse_boot_notification_response(
@@ -478,9 +486,10 @@ pub fn BootNotificationResponse::to_json(
 }
 
 ///|
+#derive(Eq, @debug.Debug)
 pub(all) struct HeartbeatResponse {
   current_time : String
-} derive(Eq, @debug.Debug)
+}
 
 ///|
 fn parse_heartbeat_response(
@@ -502,6 +511,7 @@ pub fn HeartbeatResponse::to_json(self : HeartbeatResponse) -> Json {
 }
 
 ///|
+#derive(Eq, @debug.Debug)
 pub(all) struct StatusNotificationRequest {
   connector_id : Int32
   error_code : ChargePointErrorCode
@@ -510,7 +520,7 @@ pub(all) struct StatusNotificationRequest {
   info : String?
   vendor_id : String?
   vendor_error_code : String?
-} derive(Eq, @debug.Debug)
+}
 
 ///|
 fn parse_status_notification_request(
@@ -556,9 +566,10 @@ pub fn StatusNotificationRequest::to_json(
 }
 
 ///|
+#derive(Eq, @debug.Debug)
 pub(all) struct AuthorizeRequest {
   id_tag : String
-} derive(Eq, @debug.Debug)
+}
 
 ///|
 fn parse_authorize_request(
@@ -584,9 +595,10 @@ pub fn AuthorizeRequest::to_json(self : AuthorizeRequest) -> Json {
 }
 
 ///|
+#derive(Eq, @debug.Debug)
 pub(all) struct AuthorizeResponse {
   id_tag_info : IdTagInfo
-} derive(Eq, @debug.Debug)
+}
 
 ///|
 fn parse_authorize_response(
@@ -608,13 +620,14 @@ pub fn AuthorizeResponse::to_json(self : AuthorizeResponse) -> Json {
 }
 
 ///|
+#derive(Eq, @debug.Debug)
 pub(all) struct StartTransactionRequest {
   connector_id : Int32
   id_tag : String
   meter_start : Int32
   reservation_id : Int32?
   timestamp : String
-} derive(Eq, @debug.Debug)
+}
 
 ///|
 fn parse_start_transaction_request(
@@ -656,10 +669,11 @@ pub fn StartTransactionRequest::to_json(self : StartTransactionRequest) -> Json 
 }
 
 ///|
+#derive(Eq, @debug.Debug)
 pub(all) struct StartTransactionResponse {
   transaction_id : Int32
   id_tag_info : IdTagInfo
-} derive(Eq, @debug.Debug)
+}
 
 ///|
 fn parse_start_transaction_response(
@@ -689,13 +703,14 @@ pub fn StartTransactionResponse::to_json(
 }
 
 ///|
+#derive(Eq, @debug.Debug)
 pub(all) struct StopTransactionRequest {
   transaction_id : Int32
   meter_stop : Int32
   timestamp : String
   reason : StopReason?
   id_tag : String?
-} derive(Eq, @debug.Debug)
+}
 
 ///|
 fn parse_stop_transaction_request(
@@ -737,6 +752,7 @@ pub fn StopTransactionRequest::to_json(self : StopTransactionRequest) -> Json {
 }
 
 ///|
+#derive(Eq, @debug.Debug)
 pub(all) struct SampledValue {
   value : String
   context : String?
@@ -745,7 +761,7 @@ pub(all) struct SampledValue {
   phase : String?
   location : String?
   unit : String?
-} derive(Eq, @debug.Debug)
+}
 
 ///|
 fn parse_sampled_value(value : Json) -> SampledValue raise ProtocolFailure {
@@ -784,10 +800,11 @@ pub fn SampledValue::to_json(self : SampledValue) -> Json {
 }
 
 ///|
+#derive(Eq, @debug.Debug)
 pub(all) struct MeterValue {
   timestamp : String
   sampled_value : Array[SampledValue]
-} derive(Eq, @debug.Debug)
+}
 
 ///|
 fn parse_meter_value(value : Json) -> MeterValue raise ProtocolFailure {
@@ -818,11 +835,12 @@ pub fn MeterValue::to_json(self : MeterValue) -> Json {
 }
 
 ///|
+#derive(Eq, @debug.Debug)
 pub(all) struct MeterValuesRequest {
   connector_id : Int32
   transaction_id : Int32?
   meter_value : Array[MeterValue]
-} derive(Eq, @debug.Debug)
+}
 
 ///|
 fn parse_meter_values_request(

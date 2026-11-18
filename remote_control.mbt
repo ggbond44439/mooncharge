@@ -1,8 +1,9 @@
 ///|
+#derive(Eq, @debug.Debug)
 pub(all) enum RemoteCommandStatus {
   Accepted
   Rejected
-} derive(Eq, @debug.Debug)
+}
 
 ///|
 fn remote_command_status(
@@ -24,11 +25,12 @@ fn remote_command_status_name(value : RemoteCommandStatus) -> String {
 }
 
 ///|
+#derive(Eq, @debug.Debug)
 pub(all) struct RemoteStartTransactionRequest {
   id_tag : String
   connector_id : Int32?
   charging_profile : ChargingProfile?
-} derive(Eq, @debug.Debug)
+}
 
 ///|
 fn parse_remote_start(
@@ -77,9 +79,10 @@ pub fn RemoteStartTransactionRequest::to_json(
 }
 
 ///|
+#derive(Eq, @debug.Debug)
 pub(all) struct RemoteStartTransactionResponse {
   status : RemoteCommandStatus
-} derive(Eq, @debug.Debug)
+}
 
 ///|
 fn parse_remote_start_response(
@@ -105,9 +108,10 @@ pub fn RemoteStartTransactionResponse::to_json(
 }
 
 ///|
+#derive(Eq, @debug.Debug)
 pub(all) struct RemoteStopTransactionRequest {
   transaction_id : Int32
-} derive(Eq, @debug.Debug)
+}
 
 ///|
 fn parse_remote_stop(
@@ -131,9 +135,10 @@ pub fn RemoteStopTransactionRequest::to_json(
 }
 
 ///|
+#derive(Eq, @debug.Debug)
 pub(all) struct RemoteStopTransactionResponse {
   status : RemoteCommandStatus
-} derive(Eq, @debug.Debug)
+}
 
 ///|
 fn parse_remote_stop_response(

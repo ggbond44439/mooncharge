@@ -1,13 +1,15 @@
 ///|
 /// Direction of an OCPP 1.6J action.
+#derive(Eq, @debug.Debug)
 pub(all) enum MessageDirection {
   ChargePointToCentralSystem
   CentralSystemToChargePoint
-} derive(Eq, @debug.Debug)
+}
 
 ///|
 /// Supported OCPP 1.6J action names. Requests and confirmations share an action
 /// name but travel in opposite directions.
+#derive(Eq, @debug.Debug)
 pub(all) enum OcppAction {
   Authorize
   BootNotification
@@ -29,7 +31,7 @@ pub(all) enum OcppAction {
   Reset
   SetChargingProfile
   UnlockConnector
-} derive(Eq, @debug.Debug)
+}
 
 ///|
 pub fn OcppAction::parse(value : String) -> OcppAction? {

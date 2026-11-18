@@ -1,4 +1,5 @@
 ///|
+#derive(Eq, @debug.Debug)
 pub(all) enum TypedCall {
   Authorize(AuthorizeRequest)
   BootNotification(BootNotificationRequest)
@@ -16,7 +17,7 @@ pub(all) enum TypedCall {
   SetChargingProfile(SetChargingProfileRequest)
   ClearChargingProfile(ClearChargingProfileRequest)
   UnsupportedAction(String, Json)
-} derive(Eq, @debug.Debug)
+}
 
 ///|
 pub fn TypedCall::action_name(self : TypedCall) -> String {
@@ -41,12 +42,13 @@ pub fn TypedCall::action_name(self : TypedCall) -> String {
 }
 
 ///|
+#derive(Eq, @debug.Debug)
 pub(all) enum DispatchError {
   NotACall
   InvalidAction(ProtocolError)
   WrongDirection(MessageDirection, MessageDirection)
   InvalidPayload(ProtocolError)
-} derive(Eq, @debug.Debug)
+}
 
 ///|
 fn parse_typed_call(

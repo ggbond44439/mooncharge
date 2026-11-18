@@ -1,22 +1,25 @@
 ///|
+#derive(Eq, @debug.Debug)
 pub(all) enum ChargingProfilePurpose {
   ChargePointMaxProfile
   TxDefaultProfile
   TxProfile
-} derive(Eq, @debug.Debug)
+}
 
 ///|
+#derive(Eq, @debug.Debug)
 pub(all) enum ChargingProfileKind {
   Absolute
   Recurring
   Relative
-} derive(Eq, @debug.Debug)
+}
 
 ///|
+#derive(Eq, @debug.Debug)
 pub(all) enum ChargingRateUnit {
   Amps
   Watts
-} derive(Eq, @debug.Debug)
+}
 
 ///|
 fn parse_profile_purpose(
@@ -60,11 +63,12 @@ fn rate_unit_name(value : ChargingRateUnit) -> String {
 }
 
 ///|
+#derive(Eq, @debug.Debug)
 pub(all) struct ChargingSchedulePeriod {
   start_period : Int32
   limit : Double
   number_phases : Int32?
-} derive(Eq, @debug.Debug)
+}
 
 ///|
 fn parse_schedule_period(
@@ -103,13 +107,14 @@ pub fn ChargingSchedulePeriod::to_json(self : ChargingSchedulePeriod) -> Json {
 }
 
 ///|
+#derive(Eq, @debug.Debug)
 pub(all) struct ChargingSchedule {
   start_schedule : String?
   duration : Int32?
   min_charging_rate : Double?
   charging_rate_unit : ChargingRateUnit
   periods : Array[ChargingSchedulePeriod]
-} derive(Eq, @debug.Debug)
+}
 
 ///|
 fn parse_charging_schedule(
@@ -191,6 +196,7 @@ pub fn ChargingSchedule::to_json(self : ChargingSchedule) -> Json {
 }
 
 ///|
+#derive(Eq, @debug.Debug)
 pub(all) struct ChargingProfile {
   charging_profile_id : Int32
   transaction_id : Int32?
@@ -201,7 +207,7 @@ pub(all) struct ChargingProfile {
   valid_from : String?
   valid_to : String?
   charging_schedule : ChargingSchedule
-} derive(Eq, @debug.Debug)
+}
 
 ///|
 fn parse_charging_profile(
@@ -272,19 +278,21 @@ pub fn ChargingProfile::to_json(self : ChargingProfile) -> Json {
 }
 
 ///|
+#derive(Eq, @debug.Debug)
 pub(all) enum ChargingProfileError {
   NoActiveProfile
   RateUnitMismatch
   InvalidElapsedTime
-} derive(Eq, @debug.Debug)
+}
 
 ///|
+#derive(Eq, @debug.Debug)
 pub(all) struct ChargingDecision {
   limit : Double
   unit : ChargingRateUnit
   profile_id : Int32
   capped_by_charge_point_max : Bool
-} derive(Eq, @debug.Debug)
+}
 
 ///|
 fn active_limit(profile : ChargingProfile, elapsed_seconds : Int32) -> Double? {
