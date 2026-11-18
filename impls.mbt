@@ -282,3 +282,39 @@ pub extend ChangeAvailabilityResponse with Eq::{not_equal, equal}
 
 ///|
 pub extend ChangeAvailabilityResponse with @debug.Debug::{to_repr}
+
+///|
+pub extend ConfigurationStatus with Eq::{not_equal, equal}
+
+///|
+pub extend ConfigurationStatus with @debug.Debug::{to_repr}
+
+///|
+pub extend ChangeConfigurationRequest with Eq::{not_equal, equal}
+
+///|
+pub extend ChangeConfigurationRequest with @debug.Debug::{to_repr}
+
+///|
+pub extend ChangeConfigurationResponse with Eq::{not_equal, equal}
+
+///|
+pub extend ChangeConfigurationResponse with @debug.Debug::{to_repr}
+
+///|
+pub extend GetConfigurationRequest with Eq::{not_equal, equal}
+
+///|
+pub extend GetConfigurationRequest with @debug.Debug::{to_repr}
+
+///|
+pub extend ConfigurationKey with Eq::{not_equal, equal}
+
+///|
+pub extend ConfigurationKey with @debug.Debug::{to_repr}
+
+///|
+pub extend GetConfigurationResponse with Eq::{not_equal, equal}
+
+///|
+pub extend GetConfigurationResponse with @debug.Debug::{to_repr}

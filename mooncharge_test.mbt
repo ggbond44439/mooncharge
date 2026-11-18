@@ -342,3 +342,36 @@ test "reset and availability commands are strictly enum-checked" {
     Err(error) => fail(error.message())
   }
 }
+
+///|
+test "configuration commands preserve readonly and unknown keys" {
+  let change_payload = match
+    parsed_frame(
+      "[2,\"cfg-1\",\"ChangeConfiguration\",{\"key\":\"HeartbeatInterval\",\"value\":\"60\"}]",
+    ) {
+    Call(_, _, payload) => payload
+    _ => return
+  }
+  match @mooncharge.ChangeConfigurationRequest::from_json(change_payload) {
+    Ok(request) => {
+      assert_eq(request.key, "HeartbeatInterval")
+      assert_eq(request.value, "60")
+    }
+    Err(error) => fail(error.message())
+  }
+  let response_payload = match
+    parsed_frame(
+      "[3,\"cfg-1\",{\"configurationKey\":[{\"key\":\"HeartbeatInterval\",\"readonly\":false,\"value\":\"60\"}],\"unknownKey\":[\"Missing\"]}]",
+    ) {
+    CallResult(_, payload) => payload
+    _ => return
+  }
+  let response = match
+    @mooncharge.GetConfigurationResponse::from_json(response_payload) {
+    Ok(value) => value
+    Err(error) => fail(error.message())
+  }
+  assert_eq(response.configuration_key.length(), 1)
+  assert_eq(response.unknown_key, ["Missing"])
+  assert_eq(response.configuration_key[0].value, Some("60"))
+}

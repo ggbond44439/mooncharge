@@ -103,6 +103,25 @@ pub fn ChangeAvailabilityResponse::not_equal(Self, Self) -> Bool
 pub fn ChangeAvailabilityResponse::to_json(Self) -> Json
 pub fn ChangeAvailabilityResponse::to_repr(Self) -> @debug.Repr
 
+pub(all) struct ChangeConfigurationRequest {
+  key : String
+  value : String
+} derive(Eq, @debug.Debug)
+pub fn ChangeConfigurationRequest::equal(Self, Self) -> Bool
+pub fn ChangeConfigurationRequest::from_json(Json) -> Result[Self, ProtocolError]
+pub fn ChangeConfigurationRequest::not_equal(Self, Self) -> Bool
+pub fn ChangeConfigurationRequest::to_json(Self) -> Json
+pub fn ChangeConfigurationRequest::to_repr(Self) -> @debug.Repr
+
+pub(all) struct ChangeConfigurationResponse {
+  status : ConfigurationStatus
+} derive(Eq, @debug.Debug)
+pub fn ChangeConfigurationResponse::equal(Self, Self) -> Bool
+pub fn ChangeConfigurationResponse::from_json(Json) -> Result[Self, ProtocolError]
+pub fn ChangeConfigurationResponse::not_equal(Self, Self) -> Bool
+pub fn ChangeConfigurationResponse::to_json(Self) -> Json
+pub fn ChangeConfigurationResponse::to_repr(Self) -> @debug.Repr
+
 pub(all) enum ChargePointErrorCode {
   NoError
   ConnectorLockFailure
@@ -246,6 +265,27 @@ pub(all) struct CliOutput {
   exit_code : Int32
 }
 
+pub(all) struct ConfigurationKey {
+  key : String
+  is_readonly : Bool
+  value : String?
+} derive(Eq, @debug.Debug)
+pub fn ConfigurationKey::equal(Self, Self) -> Bool
+pub fn ConfigurationKey::from_json(Json) -> Result[Self, ProtocolError]
+pub fn ConfigurationKey::not_equal(Self, Self) -> Bool
+pub fn ConfigurationKey::to_json(Self) -> Json
+pub fn ConfigurationKey::to_repr(Self) -> @debug.Repr
+
+pub(all) enum ConfigurationStatus {
+  Accepted
+  Rejected
+  RebootRequired
+  NotSupported
+} derive(Eq, @debug.Debug)
+pub fn ConfigurationStatus::equal(Self, Self) -> Bool
+pub fn ConfigurationStatus::not_equal(Self, Self) -> Bool
+pub fn ConfigurationStatus::to_repr(Self) -> @debug.Repr
+
 pub(all) struct ConnectorSession {
   connector_id : Int32
   status : ChargePointStatus
@@ -272,6 +312,25 @@ pub fn Frame::equal(Self, Self) -> Bool
 pub fn Frame::not_equal(Self, Self) -> Bool
 pub fn Frame::to_json(Self) -> Json
 pub fn Frame::to_repr(Self) -> @debug.Repr
+
+pub(all) struct GetConfigurationRequest {
+  keys : Array[String]
+} derive(Eq, @debug.Debug)
+pub fn GetConfigurationRequest::equal(Self, Self) -> Bool
+pub fn GetConfigurationRequest::from_json(Json) -> Result[Self, ProtocolError]
+pub fn GetConfigurationRequest::not_equal(Self, Self) -> Bool
+pub fn GetConfigurationRequest::to_json(Self) -> Json
+pub fn GetConfigurationRequest::to_repr(Self) -> @debug.Repr
+
+pub(all) struct GetConfigurationResponse {
+  configuration_key : Array[ConfigurationKey]
+  unknown_key : Array[String]
+} derive(Eq, @debug.Debug)
+pub fn GetConfigurationResponse::equal(Self, Self) -> Bool
+pub fn GetConfigurationResponse::from_json(Json) -> Result[Self, ProtocolError]
+pub fn GetConfigurationResponse::not_equal(Self, Self) -> Bool
+pub fn GetConfigurationResponse::to_json(Self) -> Json
+pub fn GetConfigurationResponse::to_repr(Self) -> @debug.Repr
 
 pub(all) struct HeartbeatResponse {
   current_time : String
