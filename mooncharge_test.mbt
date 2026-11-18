@@ -410,3 +410,43 @@ test "SetChargingProfile reuses the validated profile model" {
     Some(@mooncharge.ChargingProfilePurpose::TxProfile),
   )
 }
+
+///|
+test "typed dispatch checks direction and preserves extensions" {
+  let call = parsed_frame(
+    "[2,\"remote-1\",\"RemoteStartTransaction\",{\"idTag\":\"RFID-4\"}]",
+  )
+  match
+    @mooncharge.dispatch_call(
+      call,
+      @mooncharge.MessageDirection::CentralSystemToChargePoint,
+    ) {
+    Ok(@mooncharge.TypedCall::RemoteStartTransaction(request)) =>
+      assert_eq(request.id_tag, "RFID-4")
+    _ => fail("expected typed RemoteStartTransaction")
+  }
+  assert_eq(
+    @mooncharge.dispatch_call(
+      call,
+      @mooncharge.MessageDirection::ChargePointToCentralSystem,
+    ),
+    Err(
+      @mooncharge.DispatchError::WrongDirection(
+        @mooncharge.MessageDirection::CentralSystemToChargePoint,
+        @mooncharge.MessageDirection::ChargePointToCentralSystem,
+      ),
+    ),
+  )
+  let extension = parsed_frame(
+    "[2,\"ext-1\",\"VendorExtension\",{\"feature\":\"reserve\"}]",
+  )
+  match
+    @mooncharge.dispatch_call(
+      extension,
+      @mooncharge.MessageDirection::CentralSystemToChargePoint,
+    ) {
+    Ok(@mooncharge.TypedCall::UnsupportedAction(action, _)) =>
+      assert_eq(action, "VendorExtension")
+    _ => fail("expected an extension action")
+  }
+}

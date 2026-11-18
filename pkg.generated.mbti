@@ -8,6 +8,8 @@ import {
 // Values
 pub fn action_direction(String, Bool) -> Result[MessageDirection, ProtocolError]
 
+pub fn dispatch_call(Frame, MessageDirection) -> Result[TypedCall, DispatchError]
+
 pub fn evaluate_charging_profiles(Array[ChargingProfile], Int32?, Int32) -> Result[ChargingDecision, ChargingProfileError]
 
 pub fn parse_frame(String) -> Result[Frame, ProtocolError]
@@ -339,6 +341,16 @@ pub fn ConnectorSession::new(Int32) -> Result[Self, SessionError]
 pub fn ConnectorSession::not_equal(Self, Self) -> Bool
 pub fn ConnectorSession::release_transaction(Self, Int32) -> Result[Self, SessionError]
 pub fn ConnectorSession::to_repr(Self) -> @debug.Repr
+
+pub(all) enum DispatchError {
+  NotACall
+  InvalidAction(ProtocolError)
+  WrongDirection(MessageDirection, MessageDirection)
+  InvalidPayload(ProtocolError)
+} derive(Eq, @debug.Debug)
+pub fn DispatchError::equal(Self, Self) -> Bool
+pub fn DispatchError::not_equal(Self, Self) -> Bool
+pub fn DispatchError::to_repr(Self) -> @debug.Repr
 
 pub(all) enum Frame {
   Call(MessageId, String, Json)
@@ -701,6 +713,28 @@ pub fn StopTransactionRequest::from_json(Json) -> Result[Self, ProtocolError]
 pub fn StopTransactionRequest::not_equal(Self, Self) -> Bool
 pub fn StopTransactionRequest::to_json(Self) -> Json
 pub fn StopTransactionRequest::to_repr(Self) -> @debug.Repr
+
+pub(all) enum TypedCall {
+  Authorize(AuthorizeRequest)
+  BootNotification(BootNotificationRequest)
+  StatusNotification(StatusNotificationRequest)
+  StartTransaction(StartTransactionRequest)
+  StopTransaction(StopTransactionRequest)
+  MeterValues(MeterValuesRequest)
+  RemoteStartTransaction(RemoteStartTransactionRequest)
+  RemoteStopTransaction(RemoteStopTransactionRequest)
+  Reset(ResetRequest)
+  ChangeAvailability(ChangeAvailabilityRequest)
+  ChangeConfiguration(ChangeConfigurationRequest)
+  GetConfiguration(GetConfigurationRequest)
+  SetChargingProfile(SetChargingProfileRequest)
+  ClearChargingProfile(ClearChargingProfileRequest)
+  UnsupportedAction(String, Json)
+} derive(Eq, @debug.Debug)
+pub fn TypedCall::action_name(Self) -> String
+pub fn TypedCall::equal(Self, Self) -> Bool
+pub fn TypedCall::not_equal(Self, Self) -> Bool
+pub fn TypedCall::to_repr(Self) -> @debug.Repr
 
 // Type aliases
 

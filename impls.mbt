@@ -354,3 +354,15 @@ pub extend ClearChargingProfileResponse with Eq::{not_equal, equal}
 
 ///|
 pub extend ClearChargingProfileResponse with @debug.Debug::{to_repr}
+
+///|
+pub extend TypedCall with Eq::{not_equal, equal}
+
+///|
+pub extend TypedCall with @debug.Debug::{to_repr}
+
+///|
+pub extend DispatchError with Eq::{not_equal, equal}
+
+///|
+pub extend DispatchError with @debug.Debug::{to_repr}
