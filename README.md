@@ -176,6 +176,9 @@ MoonCharge 与以下作品功能不重合：
 
 MoonCharge 关注的是 OCPP 的充电域消息语义、交易不变量和功率策略。
 
+更细的动作覆盖矩阵与边界见 [docs/coverage.md](docs/coverage.md)，版本变更见
+[CHANGELOG.md](CHANGELOG.md)。
+
 ## License
 
 Apache-2.0
