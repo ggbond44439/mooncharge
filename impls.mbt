@@ -366,3 +366,21 @@ pub extend DispatchError with Eq::{not_equal, equal}
 
 ///|
 pub extend DispatchError with @debug.Debug::{to_repr}
+
+///|
+pub extend DataTransferRequest with Eq::{not_equal, equal}
+
+///|
+pub extend DataTransferRequest with @debug.Debug::{to_repr}
+
+///|
+pub extend DataTransferStatus with Eq::{not_equal, equal}
+
+///|
+pub extend DataTransferStatus with @debug.Debug::{to_repr}
+
+///|
+pub extend DataTransferResponse with Eq::{not_equal, equal}
+
+///|
+pub extend DataTransferResponse with @debug.Debug::{to_repr}

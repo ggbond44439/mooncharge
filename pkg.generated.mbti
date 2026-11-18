@@ -342,6 +342,37 @@ pub fn ConnectorSession::not_equal(Self, Self) -> Bool
 pub fn ConnectorSession::release_transaction(Self, Int32) -> Result[Self, SessionError]
 pub fn ConnectorSession::to_repr(Self) -> @debug.Repr
 
+pub(all) struct DataTransferRequest {
+  vendor_id : String
+  message_id : String?
+  data : String?
+} derive(Eq, @debug.Debug)
+pub fn DataTransferRequest::equal(Self, Self) -> Bool
+pub fn DataTransferRequest::from_json(Json) -> Result[Self, ProtocolError]
+pub fn DataTransferRequest::not_equal(Self, Self) -> Bool
+pub fn DataTransferRequest::to_json(Self) -> Json
+pub fn DataTransferRequest::to_repr(Self) -> @debug.Repr
+
+pub(all) struct DataTransferResponse {
+  status : DataTransferStatus
+  data : String?
+} derive(Eq, @debug.Debug)
+pub fn DataTransferResponse::equal(Self, Self) -> Bool
+pub fn DataTransferResponse::from_json(Json) -> Result[Self, ProtocolError]
+pub fn DataTransferResponse::not_equal(Self, Self) -> Bool
+pub fn DataTransferResponse::to_json(Self) -> Json
+pub fn DataTransferResponse::to_repr(Self) -> @debug.Repr
+
+pub(all) enum DataTransferStatus {
+  Accepted
+  Rejected
+  UnknownMessageId
+  UnknownVendorId
+} derive(Eq, @debug.Debug)
+pub fn DataTransferStatus::equal(Self, Self) -> Bool
+pub fn DataTransferStatus::not_equal(Self, Self) -> Bool
+pub fn DataTransferStatus::to_repr(Self) -> @debug.Repr
+
 pub(all) enum DispatchError {
   NotACall
   InvalidAction(ProtocolError)
@@ -717,6 +748,7 @@ pub fn StopTransactionRequest::to_repr(Self) -> @debug.Repr
 pub(all) enum TypedCall {
   Authorize(AuthorizeRequest)
   BootNotification(BootNotificationRequest)
+  DataTransfer(DataTransferRequest)
   StatusNotification(StatusNotificationRequest)
   StartTransaction(StartTransactionRequest)
   StopTransaction(StopTransactionRequest)

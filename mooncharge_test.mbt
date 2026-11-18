@@ -450,3 +450,21 @@ test "typed dispatch checks direction and preserves extensions" {
     _ => fail("expected an extension action")
   }
 }
+
+///|
+test "DataTransfer keeps opaque vendor payloads intact" {
+  let frame = parsed_frame(
+    "[2,\"data-1\",\"DataTransfer\",{\"vendorId\":\"com.example.meter\",\"messageId\":\"sample\",\"data\":\"AQID\"}]",
+  )
+  match
+    @mooncharge.dispatch_call(
+      frame,
+      @mooncharge.MessageDirection::ChargePointToCentralSystem,
+    ) {
+    Ok(@mooncharge.TypedCall::DataTransfer(request)) => {
+      assert_eq(request.vendor_id, "com.example.meter")
+      assert_eq(request.data, Some("AQID"))
+    }
+    _ => fail("expected typed DataTransfer")
+  }
+}

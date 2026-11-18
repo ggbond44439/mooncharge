@@ -2,6 +2,7 @@
 pub(all) enum TypedCall {
   Authorize(AuthorizeRequest)
   BootNotification(BootNotificationRequest)
+  DataTransfer(DataTransferRequest)
   StatusNotification(StatusNotificationRequest)
   StartTransaction(StartTransactionRequest)
   StopTransaction(StopTransactionRequest)
@@ -22,6 +23,7 @@ pub fn TypedCall::action_name(self : TypedCall) -> String {
   match self {
     Authorize(_) => "Authorize"
     BootNotification(_) => "BootNotification"
+    DataTransfer(_) => "DataTransfer"
     StatusNotification(_) => "StatusNotification"
     StartTransaction(_) => "StartTransaction"
     StopTransaction(_) => "StopTransaction"
@@ -55,6 +57,7 @@ fn parse_typed_call(
     "Authorize" => Authorize(parse_authorize_request(payload))
     "BootNotification" =>
       BootNotification(parse_boot_notification_request(payload))
+    "DataTransfer" => DataTransfer(parse_data_transfer(payload))
     "StatusNotification" =>
       StatusNotification(parse_status_notification_request(payload))
     "StartTransaction" =>
