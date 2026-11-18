@@ -468,3 +468,15 @@ test "DataTransfer keeps opaque vendor payloads intact" {
     _ => fail("expected typed DataTransfer")
   }
 }
+
+///|
+test "CLI dispatches typed calls with explicit direction" {
+  let output = @mooncharge.run_cli([
+    "dispatch", "cp", "[2,\"auth-1\",\"Authorize\",{\"idTag\":\"RFID-1\"}]",
+  ])
+  assert_eq(output.exit_code, 0)
+  assert_eq(
+    output.stdout,
+    "typed=Authorize direction=charge-point-to-central-system",
+  )
+}

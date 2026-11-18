@@ -10,6 +10,7 @@ fn usage() -> String {
   (
     #|mooncharge frame <ocpp-json-frame>
     #|mooncharge action <ActionName> <request|confirmation>
+    #|mooncharge dispatch <cp|cs> <ocpp-json-frame>
     #|mooncharge profile <profile-json|profile-array-json> <elapsed-seconds> [transaction-id]
   )
 }
@@ -74,6 +75,33 @@ pub fn run_cli(args : Array[String]) -> CliOutput {
       } else {
         match action_direction(args[1], args[2] == "request") {
           Ok(direction) => cli_ok(direction_name(direction))
+          Err(error) => cli_error(error.message())
+        }
+      }
+    "dispatch" =>
+      if args.length() != 3 || (args[1] != "cp" && args[1] != "cs") {
+        cli_error("dispatch expects <cp|cs> <ocpp-json-frame>")
+      } else {
+        let direction = if args[1] == "cp" {
+          ChargePointToCentralSystem
+        } else {
+          CentralSystemToChargePoint
+        }
+        match parse_frame(args[2]) {
+          Ok(frame) =>
+            match dispatch_call(frame, direction) {
+              Ok(call) =>
+                cli_ok(
+                  "typed=\{call.action_name()} direction=\{direction_name(direction)}",
+                )
+              Err(NotACall) => cli_error("dispatch requires a CALL frame")
+              Err(WrongDirection(expected, actual)) =>
+                cli_error(
+                  "wrong direction: expected \{direction_name(expected)}, got \{direction_name(actual)}",
+                )
+              Err(InvalidAction(error) | InvalidPayload(error)) =>
+                cli_error(error.message())
+            }
           Err(error) => cli_error(error.message())
         }
       }

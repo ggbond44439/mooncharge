@@ -123,6 +123,9 @@ moon run cmd/main -- frame '[2,"req-1","Heartbeat",{}]'
 moon run cmd/main -- action SetChargingProfile request
 # central-system-to-charge-point
 
+moon run cmd/main -- dispatch cp '[2,"auth-1","Authorize",{"idTag":"RFID-1"}]'
+# typed=Authorize direction=charge-point-to-central-system
+
 moon run cmd/main -- profile '<profile-json>' 120 42
 # limit=22000 unit=W profile=8 capped=false
 ```
