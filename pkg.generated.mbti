@@ -214,6 +214,15 @@ pub fn ChargingProfilePurpose::equal(Self, Self) -> Bool
 pub fn ChargingProfilePurpose::not_equal(Self, Self) -> Bool
 pub fn ChargingProfilePurpose::to_repr(Self) -> @debug.Repr
 
+pub(all) enum ChargingProfileStatus {
+  Accepted
+  Rejected
+  NotSupported
+} derive(Eq, @debug.Debug)
+pub fn ChargingProfileStatus::equal(Self, Self) -> Bool
+pub fn ChargingProfileStatus::not_equal(Self, Self) -> Bool
+pub fn ChargingProfileStatus::to_repr(Self) -> @debug.Repr
+
 pub(all) enum ChargingRateUnit {
   Amps
   Watts
@@ -258,6 +267,35 @@ pub(all) struct ChargingTransaction {
 pub fn ChargingTransaction::equal(Self, Self) -> Bool
 pub fn ChargingTransaction::not_equal(Self, Self) -> Bool
 pub fn ChargingTransaction::to_repr(Self) -> @debug.Repr
+
+pub(all) struct ClearChargingProfileRequest {
+  id : Int32?
+  connector_id : Int32?
+  charging_profile_purpose : ChargingProfilePurpose?
+  stack_level : Int32?
+} derive(Eq, @debug.Debug)
+pub fn ClearChargingProfileRequest::equal(Self, Self) -> Bool
+pub fn ClearChargingProfileRequest::from_json(Json) -> Result[Self, ProtocolError]
+pub fn ClearChargingProfileRequest::not_equal(Self, Self) -> Bool
+pub fn ClearChargingProfileRequest::to_json(Self) -> Json
+pub fn ClearChargingProfileRequest::to_repr(Self) -> @debug.Repr
+
+pub(all) struct ClearChargingProfileResponse {
+  status : ClearChargingProfileStatus
+} derive(Eq, @debug.Debug)
+pub fn ClearChargingProfileResponse::equal(Self, Self) -> Bool
+pub fn ClearChargingProfileResponse::from_json(Json) -> Result[Self, ProtocolError]
+pub fn ClearChargingProfileResponse::not_equal(Self, Self) -> Bool
+pub fn ClearChargingProfileResponse::to_json(Self) -> Json
+pub fn ClearChargingProfileResponse::to_repr(Self) -> @debug.Repr
+
+pub(all) enum ClearChargingProfileStatus {
+  Accepted
+  Unknown
+} derive(Eq, @debug.Debug)
+pub fn ClearChargingProfileStatus::equal(Self, Self) -> Bool
+pub fn ClearChargingProfileStatus::not_equal(Self, Self) -> Bool
+pub fn ClearChargingProfileStatus::to_repr(Self) -> @debug.Repr
 
 pub(all) struct CliOutput {
   stdout : String
@@ -576,6 +614,25 @@ pub(all) enum SessionError {
 pub fn SessionError::equal(Self, Self) -> Bool
 pub fn SessionError::not_equal(Self, Self) -> Bool
 pub fn SessionError::to_repr(Self) -> @debug.Repr
+
+pub(all) struct SetChargingProfileRequest {
+  connector_id : Int32
+  cs_charging_profiles : ChargingProfile
+} derive(Eq, @debug.Debug)
+pub fn SetChargingProfileRequest::equal(Self, Self) -> Bool
+pub fn SetChargingProfileRequest::from_json(Json) -> Result[Self, ProtocolError]
+pub fn SetChargingProfileRequest::not_equal(Self, Self) -> Bool
+pub fn SetChargingProfileRequest::to_json(Self) -> Json
+pub fn SetChargingProfileRequest::to_repr(Self) -> @debug.Repr
+
+pub(all) struct SetChargingProfileResponse {
+  status : ChargingProfileStatus
+} derive(Eq, @debug.Debug)
+pub fn SetChargingProfileResponse::equal(Self, Self) -> Bool
+pub fn SetChargingProfileResponse::from_json(Json) -> Result[Self, ProtocolError]
+pub fn SetChargingProfileResponse::not_equal(Self, Self) -> Bool
+pub fn SetChargingProfileResponse::to_json(Self) -> Json
+pub fn SetChargingProfileResponse::to_repr(Self) -> @debug.Repr
 
 pub(all) struct StartTransactionRequest {
   connector_id : Int32

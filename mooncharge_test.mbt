@@ -375,3 +375,38 @@ test "configuration commands preserve readonly and unknown keys" {
   assert_eq(response.unknown_key, ["Missing"])
   assert_eq(response.configuration_key[0].value, Some("60"))
 }
+
+///|
+test "SetChargingProfile reuses the validated profile model" {
+  let payload = match
+    parsed_frame(
+      "[2,\"profile-1\",\"SetChargingProfile\",{\"connectorId\":1,\"csChargingProfiles\":{\"chargingProfileId\":8,\"stackLevel\":2,\"chargingProfilePurpose\":\"TxProfile\",\"transactionId\":44,\"chargingProfileKind\":\"Absolute\",\"chargingSchedule\":{\"chargingRateUnit\":\"A\",\"duration\":600,\"chargingSchedulePeriod\":[{\"startPeriod\":0,\"limit\":16}]}}}]",
+    ) {
+    Call(_, _, payload) => payload
+    _ => return
+  }
+  match @mooncharge.SetChargingProfileRequest::from_json(payload) {
+    Ok(request) => {
+      assert_eq(request.connector_id, 1)
+      assert_eq(request.cs_charging_profiles.charging_profile_id, 8)
+      assert_eq(request.cs_charging_profiles.transaction_id, Some(44))
+    }
+    Err(error) => fail(error.message())
+  }
+  let clear_payload = match
+    parsed_frame(
+      "[2,\"clear-1\",\"ClearChargingProfile\",{\"connectorId\":1,\"chargingProfilePurpose\":\"TxProfile\",\"stackLevel\":2}]",
+    ) {
+    Call(_, _, payload) => payload
+    _ => return
+  }
+  let clear = match
+    @mooncharge.ClearChargingProfileRequest::from_json(clear_payload) {
+    Ok(value) => value
+    Err(error) => fail(error.message())
+  }
+  assert_eq(
+    clear.charging_profile_purpose,
+    Some(@mooncharge.ChargingProfilePurpose::TxProfile),
+  )
+}

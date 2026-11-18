@@ -318,3 +318,39 @@ pub extend GetConfigurationResponse with Eq::{not_equal, equal}
 
 ///|
 pub extend GetConfigurationResponse with @debug.Debug::{to_repr}
+
+///|
+pub extend ChargingProfileStatus with Eq::{not_equal, equal}
+
+///|
+pub extend ChargingProfileStatus with @debug.Debug::{to_repr}
+
+///|
+pub extend SetChargingProfileRequest with Eq::{not_equal, equal}
+
+///|
+pub extend SetChargingProfileRequest with @debug.Debug::{to_repr}
+
+///|
+pub extend SetChargingProfileResponse with Eq::{not_equal, equal}
+
+///|
+pub extend SetChargingProfileResponse with @debug.Debug::{to_repr}
+
+///|
+pub extend ClearChargingProfileRequest with Eq::{not_equal, equal}
+
+///|
+pub extend ClearChargingProfileRequest with @debug.Debug::{to_repr}
+
+///|
+pub extend ClearChargingProfileStatus with Eq::{not_equal, equal}
+
+///|
+pub extend ClearChargingProfileStatus with @debug.Debug::{to_repr}
+
+///|
+pub extend ClearChargingProfileResponse with Eq::{not_equal, equal}
+
+///|
+pub extend ClearChargingProfileResponse with @debug.Debug::{to_repr}
