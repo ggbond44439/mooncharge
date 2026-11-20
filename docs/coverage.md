@@ -14,6 +14,12 @@ can be inspected even when its action has no typed payload yet.
 Unknown OCPP error-code strings are preserved as `RpcErrorCode::Unknown`.
 Unknown actions are preserved as `TypedCall::UnsupportedAction`.
 
+`OcppVersion::V16J` is the supported protocol context. `VersionedFrame`,
+`parse_versioned_frame`, `dispatch_versioned_call`,
+`versioned_action_direction` and `audit_versioned_frame` require an explicit
+version. `V201` is reserved and currently fails closed with
+`UnsupportedProtocolVersion` or `UnsupportedVersion`.
+
 `parse_frame` applies `FrameLimits::default()`. Callers handling untrusted
 traffic can use `parse_frame_with_limits` to bound UTF-8 input bytes, nesting,
 message-id length, action length and top-level payload field count. Duplicate

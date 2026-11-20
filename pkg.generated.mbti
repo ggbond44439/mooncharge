@@ -11,23 +11,39 @@ pub fn action_direction(String, Bool) -> Result[MessageDirection, ProtocolError]
 
 pub fn action_specs() -> Array[ActionSpec]
 
+pub fn action_specs_for(OcppVersion) -> Result[Array[ActionSpec], ProtocolError]
+
 pub fn audit_frame(Frame, MessageDirection) -> ConformanceReport
 
 pub fn audit_payload(String, PayloadPhase, MessageDirection, @json.Json) -> ConformanceReport
 
+pub fn audit_versioned_frame(VersionedFrame, MessageDirection) -> ConformanceReport
+
 pub fn conformance_summary() -> ConformanceSummary
 
+pub fn conformance_summary_for(OcppVersion) -> Result[ConformanceSummary, ProtocolError]
+
 pub fn dispatch_call(Frame, MessageDirection) -> Result[TypedCall, DispatchError]
+
+pub fn dispatch_versioned_call(VersionedFrame, MessageDirection) -> Result[TypedCall, DispatchError]
 
 pub fn evaluate_charging_profiles(Array[ChargingProfile], Int32?, Int32) -> Result[ChargingDecision, ChargingProfileError]
 
 pub fn find_action_spec(String) -> ActionSpec?
 
+pub fn find_action_spec_for(OcppVersion, String) -> Result[ActionSpec?, ProtocolError]
+
 pub fn parse_frame(String) -> Result[Frame, ProtocolError]
 
 pub fn parse_frame_with_limits(String, FrameLimits) -> Result[Frame, ProtocolError]
 
+pub fn parse_versioned_frame(OcppVersion, String) -> Result[VersionedFrame, ProtocolError]
+
+pub fn parse_versioned_frame_with_limits(OcppVersion, String, FrameLimits) -> Result[VersionedFrame, ProtocolError]
+
 pub fn run_cli(Array[String]) -> CliOutput
+
+pub fn versioned_action_direction(OcppVersion, String, Bool) -> Result[MessageDirection, ProtocolError]
 
 // Errors
 pub(all) suberror ProtocolFailure {
@@ -386,6 +402,7 @@ pub(all) enum ConformanceIssue {
   WrongDirection(MessageDirection, MessageDirection)
   PayloadNotObject(PayloadPhase)
   MissingRequiredField(PayloadPhase, String)
+  UnsupportedVersion(OcppVersion)
 }
 pub fn ConformanceIssue::equal(Self, Self) -> Bool
 pub fn ConformanceIssue::not_equal(Self, Self) -> Bool
@@ -471,6 +488,7 @@ pub(all) enum DispatchError {
   InvalidAction(ProtocolError)
   WrongDirection(MessageDirection, MessageDirection)
   InvalidPayload(ProtocolError)
+  UnsupportedVersion(OcppVersion)
 }
 pub fn DispatchError::equal(Self, Self) -> Bool
 pub fn DispatchError::not_equal(Self, Self) -> Bool
@@ -638,6 +656,17 @@ pub fn OcppAction::request_direction(Self) -> MessageDirection
 pub fn OcppAction::to_repr(Self) -> @debug.Repr
 
 #derive(Eq, @debug.Debug)
+pub(all) enum OcppVersion {
+  V16J
+  V201
+}
+pub fn OcppVersion::equal(Self, Self) -> Bool
+pub fn OcppVersion::is_supported(Self) -> Bool
+pub fn OcppVersion::label(Self) -> String
+pub fn OcppVersion::not_equal(Self, Self) -> Bool
+pub fn OcppVersion::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
 pub(all) enum PayloadCoverage {
   Typed
   CatalogOnly
@@ -671,6 +700,7 @@ pub(all) enum ProtocolError {
   InvalidLimits(String)
   FieldTooLong(String, Int32, Int32)
   TooManyPayloadFields(Int32, Int32)
+  UnsupportedProtocolVersion(OcppVersion)
 }
 pub fn ProtocolError::equal(Self, Self) -> Bool
 pub fn ProtocolError::message(Self) -> String
@@ -947,6 +977,16 @@ pub fn TypedCall::action_name(Self) -> String
 pub fn TypedCall::equal(Self, Self) -> Bool
 pub fn TypedCall::not_equal(Self, Self) -> Bool
 pub fn TypedCall::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) struct VersionedFrame {
+  version : OcppVersion
+  frame : Frame
+}
+pub fn VersionedFrame::encode(Self) -> String
+pub fn VersionedFrame::equal(Self, Self) -> Bool
+pub fn VersionedFrame::not_equal(Self, Self) -> Bool
+pub fn VersionedFrame::to_repr(Self) -> @debug.Repr
 
 // Type aliases
 

@@ -41,6 +41,7 @@ pub(all) enum ConformanceIssue {
   WrongDirection(MessageDirection, MessageDirection)
   PayloadNotObject(PayloadPhase)
   MissingRequiredField(PayloadPhase, String)
+  UnsupportedVersion(OcppVersion)
 }
 
 ///|
@@ -173,6 +174,16 @@ pub fn action_specs() -> Array[ActionSpec] {
 }
 
 ///|
+pub fn action_specs_for(
+  version : OcppVersion,
+) -> Result[Array[ActionSpec], ProtocolError] {
+  match version {
+    V16J => Ok(action_specs())
+    V201 => Err(UnsupportedProtocolVersion(version))
+  }
+}
+
+///|
 pub fn find_action_spec(action : String) -> ActionSpec? {
   for spec in action_specs() {
     if spec.action == action {
@@ -180,6 +191,17 @@ pub fn find_action_spec(action : String) -> ActionSpec? {
     }
   }
   None
+}
+
+///|
+pub fn find_action_spec_for(
+  version : OcppVersion,
+  action : String,
+) -> Result[ActionSpec?, ProtocolError] {
+  match version {
+    V16J => Ok(find_action_spec(action))
+    V201 => Err(UnsupportedProtocolVersion(version))
+  }
 }
 
 ///|
@@ -201,6 +223,16 @@ pub fn conformance_summary() -> ConformanceSummary {
     typed_responses,
     catalog_only_requests: specs.length() - typed_requests,
     catalog_only_responses: specs.length() - typed_responses,
+  }
+}
+
+///|
+pub fn conformance_summary_for(
+  version : OcppVersion,
+) -> Result[ConformanceSummary, ProtocolError] {
+  match version {
+    V16J => Ok(conformance_summary())
+    V201 => Err(UnsupportedProtocolVersion(version))
   }
 }
 

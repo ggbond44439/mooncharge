@@ -16,6 +16,7 @@ pub(all) enum ProtocolError {
   InvalidLimits(String)
   FieldTooLong(String, Int32, Int32)
   TooManyPayloadFields(Int32, Int32)
+  UnsupportedProtocolVersion(OcppVersion)
 }
 
 ///|
@@ -39,6 +40,8 @@ pub fn ProtocolError::message(self : ProtocolError) -> String {
       "\{name} exceeds limit: \{actual} > \{limit} bytes"
     TooManyPayloadFields(limit, actual) =>
       "payload has too many fields: \{actual} > \{limit}"
+    UnsupportedProtocolVersion(version) =>
+      "unsupported OCPP version \{version.label()}"
   }
 }
 

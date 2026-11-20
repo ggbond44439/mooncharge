@@ -7,6 +7,9 @@
 - Configurable `FrameLimits` for input bytes, nesting depth, message-id/action
   byte lengths and payload field count.
 - Duplicate JSON key rejection by default, with an explicit compatibility mode.
+- Explicit protocol-version context through `OcppVersion` and
+  `VersionedFrame`, with version-bound parsing, dispatch, direction lookup and
+  conformance audit APIs.
 - Complete 39-action OCPP 1.6 conformance catalog with request direction,
   required fields and typed-coverage metadata.
 - Payload and CALL audit APIs for unknown actions, wrong directions, invalid

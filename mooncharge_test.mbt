@@ -707,3 +707,88 @@ test "duplicate JSON keys are rejected by default" {
     _ => fail("expected duplicate-key compatibility mode")
   }
 }
+
+///|
+test "versioned parsing binds OCPP 1.6J explicitly" {
+  let text = "[2,\"v1\",\"Heartbeat\",{}]"
+  let value = match
+    @mooncharge.parse_versioned_frame(@mooncharge.OcppVersion::V16J, text) {
+    Ok(value) => value
+    Err(error) => fail(error.message())
+  }
+  assert_eq(value.version, @mooncharge.OcppVersion::V16J)
+  assert_eq(value.encode(), text)
+  assert_eq(@mooncharge.OcppVersion::V16J.label(), "1.6J")
+  assert_true(@mooncharge.OcppVersion::V16J.is_supported())
+}
+
+///|
+test "unsupported protocol versions fail closed across versioned APIs" {
+  assert_eq(
+    @mooncharge.parse_versioned_frame(
+      @mooncharge.OcppVersion::V201,
+      "[2,\"v2\",\"Heartbeat\",{}]",
+    ),
+    Err(
+      @mooncharge.ProtocolError::UnsupportedProtocolVersion(
+        @mooncharge.OcppVersion::V201,
+      ),
+    ),
+  )
+  assert_eq(
+    @mooncharge.action_specs_for(@mooncharge.OcppVersion::V201),
+    Err(
+      @mooncharge.ProtocolError::UnsupportedProtocolVersion(
+        @mooncharge.OcppVersion::V201,
+      ),
+    ),
+  )
+  let frame = parsed_frame("[2,\"v2\",\"Heartbeat\",{}]")
+  let value : @mooncharge.VersionedFrame = {
+    version: @mooncharge.OcppVersion::V201,
+    frame,
+  }
+  assert_eq(
+    @mooncharge.dispatch_versioned_call(
+      value,
+      @mooncharge.MessageDirection::ChargePointToCentralSystem,
+    ),
+    Err(
+      @mooncharge.DispatchError::UnsupportedVersion(
+        @mooncharge.OcppVersion::V201,
+      ),
+    ),
+  )
+  assert_eq(
+    @mooncharge.audit_versioned_frame(
+      value,
+      @mooncharge.MessageDirection::ChargePointToCentralSystem,
+    ),
+    {
+      action: "",
+      phase: @mooncharge.PayloadPhase::Request,
+      issues: [
+        @mooncharge.ConformanceIssue::UnsupportedVersion(
+          @mooncharge.OcppVersion::V201,
+        ),
+      ],
+    },
+  )
+}
+
+///|
+test "CLI exposes supported versions and version-bound parsing" {
+  assert_eq(
+    @mooncharge.run_cli(["version"]).stdout,
+    "supported=1.6J known=1.6J,2.0.1",
+  )
+  assert_eq(
+    @mooncharge.run_cli(["versioned", "1.6J", "[2,\"hb\",\"Heartbeat\",{}]"]).stdout,
+    "version=1.6J kind=call id=hb action=Heartbeat",
+  )
+  let unsupported = @mooncharge.run_cli([
+    "versioned", "2.0.1", "[2,\"hb\",\"Heartbeat\",{}]",
+  ])
+  assert_eq(unsupported.exit_code, 2)
+  assert_true(unsupported.stderr.contains("unsupported OCPP version 2.0.1"))
+}

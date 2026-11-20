@@ -9,6 +9,8 @@ pub(all) struct CliOutput {
 fn usage() -> String {
   (
     #|mooncharge frame <ocpp-json-frame>
+    #|mooncharge version
+    #|mooncharge versioned <1.6J|2.0.1> <ocpp-json-frame>
     #|mooncharge action <ActionName> <request|confirmation>
     #|mooncharge dispatch <cp|cs> <ocpp-json-frame>
     #|mooncharge conformance summary
@@ -82,6 +84,7 @@ fn issue_name(issue : ConformanceIssue) -> String {
     PayloadNotObject(phase) => "payload-not-object:\{phase_name(phase)}"
     MissingRequiredField(phase, field) =>
       "missing-field:\{phase_name(phase)}:\{field}"
+    UnsupportedVersion(version) => "unsupported-version:\{version.label()}"
   }
 }
 
@@ -103,6 +106,13 @@ pub fn run_cli(args : Array[String]) -> CliOutput {
     return cli_ok(usage())
   }
   match args[0] {
+    "version" =>
+      if args.length() == 1 {
+        cli_ok("supported=1.6J known=1.6J,2.0.1")
+      } else {
+        cli_error("version does not accept arguments")
+      }
+    "versioned" => run_versioned_cli(args)
     "frame" =>
       if args.length() != 2 {
         cli_error("frame expects exactly one JSON frame")
@@ -145,6 +155,8 @@ pub fn run_cli(args : Array[String]) -> CliOutput {
                 )
               Err(InvalidAction(error) | InvalidPayload(error)) =>
                 cli_error(error.message())
+              Err(UnsupportedVersion(version)) =>
+                cli_error("unsupported OCPP version \{version.label()}")
             }
           Err(error) => cli_error(error.message())
         }
@@ -152,6 +164,23 @@ pub fn run_cli(args : Array[String]) -> CliOutput {
     "conformance" => run_conformance_cli(args)
     "profile" => run_profile_cli(args)
     other => cli_error("unknown command '\{other}'\n\{usage()}")
+  }
+}
+
+///|
+fn run_versioned_cli(args : Array[String]) -> CliOutput {
+  if args.length() != 3 {
+    return cli_error("versioned expects <1.6J|2.0.1> <ocpp-json-frame>")
+  }
+  let version = match args[1] {
+    "1.6J" => V16J
+    "2.0.1" => V201
+    _ => return cli_error("unsupported version '\{args[1]}'")
+  }
+  match parse_versioned_frame(version, args[2]) {
+    Ok(value) =>
+      cli_ok("version=\{value.version.label()} \{frame_summary(value.frame)}")
+    Err(error) => cli_error(error.message())
   }
 }
 

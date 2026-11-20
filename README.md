@@ -29,6 +29,7 @@ MoonCharge 把这些容易出错的边界集中到一个无 I/O 的协议层中�
 - 字符串、数字和 `null` 消息 id；数字 id 保留原始文本。
 - `FrameLimits` 资源边界：UTF-8 输入大小、嵌套深度、消息 ID、动作和 payload 字段数。
 - 默认拒绝重复 JSON key，同时允许调用方显式启用兼容模式。
+- 显式 `OcppVersion` 上下文；`VersionedFrame` 将帧、方向、类型分发和一致性审计绑定到协议版本。
 - 完整 39 动作 OCPP 1.6 目录，包含方向、请求/确认必填字段和类型覆盖状态。
 - 帧级一致性审计：检查未知动作、方向错误、非对象 payload 和缺失必填字段。
 - 核心载荷的类型化解析和序列化：
@@ -70,6 +71,19 @@ let request = match frame {
 
 assert_eq(request.connector_id, 1)
 assert_eq(request.meter_start, 12000)
+```
+
+需要避免错误复用版本语义时，使用版本化入口：
+
+```moonbit
+let value = match
+  @mooncharge.parse_versioned_frame(
+    @mooncharge.OcppVersion::V16J,
+    "[2,\"hb-1\",\"Heartbeat\",{}]",
+  ) {
+  Ok(value) => value
+  Err(error) => fail(error.message())
+}
 ```
 
 ## 交易状态机
@@ -122,6 +136,12 @@ IANA 时区实现。
 ```text
 moon run cmd/main -- frame '[2,"req-1","Heartbeat",{}]'
 # kind=call id=req-1 action=Heartbeat
+
+moon run cmd/main -- version
+# supported=1.6J known=1.6J,2.0.1
+
+moon run cmd/main -- versioned 1.6J '[2,"hb-1","Heartbeat",{}]'
+# version=1.6J kind=call id=hb-1 action=Heartbeat
 
 moon run cmd/main -- action SetChargingProfile request
 # central-system-to-charge-point

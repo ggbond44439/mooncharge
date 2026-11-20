@@ -48,6 +48,7 @@ pub(all) enum DispatchError {
   InvalidAction(ProtocolError)
   WrongDirection(MessageDirection, MessageDirection)
   InvalidPayload(ProtocolError)
+  UnsupportedVersion(OcppVersion)
 }
 
 ///|

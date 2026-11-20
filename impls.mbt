@@ -420,3 +420,15 @@ pub extend ConformanceReport with Eq::{not_equal, equal}
 
 ///|
 pub extend ConformanceReport with @debug.Debug::{to_repr}
+
+///|
+pub extend OcppVersion with Eq::{not_equal, equal}
+
+///|
+pub extend OcppVersion with @debug.Debug::{to_repr}
+
+///|
+pub extend VersionedFrame with Eq::{not_equal, equal}
+
+///|
+pub extend VersionedFrame with @debug.Debug::{to_repr}
