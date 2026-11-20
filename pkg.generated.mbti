@@ -135,6 +135,35 @@ pub fn BootNotificationResponse::to_json(Self) -> @json.Json
 pub fn BootNotificationResponse::to_repr(Self) -> @debug.Repr
 
 #derive(Eq, @debug.Debug)
+pub(all) struct CancelReservationRequest {
+  reservation_id : Int32
+}
+pub fn CancelReservationRequest::equal(Self, Self) -> Bool
+pub fn CancelReservationRequest::from_json(@json.Json) -> Result[Self, ProtocolError]
+pub fn CancelReservationRequest::not_equal(Self, Self) -> Bool
+pub fn CancelReservationRequest::to_json(Self) -> @json.Json
+pub fn CancelReservationRequest::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) struct CancelReservationResponse {
+  status : CancelReservationStatus
+}
+pub fn CancelReservationResponse::equal(Self, Self) -> Bool
+pub fn CancelReservationResponse::from_json(@json.Json) -> Result[Self, ProtocolError]
+pub fn CancelReservationResponse::not_equal(Self, Self) -> Bool
+pub fn CancelReservationResponse::to_json(Self) -> @json.Json
+pub fn CancelReservationResponse::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) enum CancelReservationStatus {
+  Accepted
+  Rejected
+}
+pub fn CancelReservationStatus::equal(Self, Self) -> Bool
+pub fn CancelReservationStatus::not_equal(Self, Self) -> Bool
+pub fn CancelReservationStatus::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
 pub(all) struct ChangeAvailabilityRequest {
   connector_id : Int32
   kind : AvailabilityType
@@ -335,6 +364,36 @@ pub fn ChargingTransaction::not_equal(Self, Self) -> Bool
 pub fn ChargingTransaction::to_repr(Self) -> @debug.Repr
 
 #derive(Eq, @debug.Debug)
+pub struct ClearCacheRequest {
+  marker : Unit
+}
+pub fn ClearCacheRequest::equal(Self, Self) -> Bool
+pub fn ClearCacheRequest::from_json(@json.Json) -> Result[Self, ProtocolError]
+pub fn ClearCacheRequest::new() -> Self
+pub fn ClearCacheRequest::not_equal(Self, Self) -> Bool
+pub fn ClearCacheRequest::to_json(Self) -> @json.Json
+pub fn ClearCacheRequest::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) struct ClearCacheResponse {
+  status : ClearCacheStatus
+}
+pub fn ClearCacheResponse::equal(Self, Self) -> Bool
+pub fn ClearCacheResponse::from_json(@json.Json) -> Result[Self, ProtocolError]
+pub fn ClearCacheResponse::not_equal(Self, Self) -> Bool
+pub fn ClearCacheResponse::to_json(Self) -> @json.Json
+pub fn ClearCacheResponse::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) enum ClearCacheStatus {
+  Accepted
+  Rejected
+}
+pub fn ClearCacheStatus::equal(Self, Self) -> Bool
+pub fn ClearCacheStatus::not_equal(Self, Self) -> Bool
+pub fn ClearCacheStatus::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
 pub(all) struct ClearChargingProfileRequest {
   id : Int32?
   connector_id : Int32?
@@ -483,6 +542,38 @@ pub fn DataTransferStatus::not_equal(Self, Self) -> Bool
 pub fn DataTransferStatus::to_repr(Self) -> @debug.Repr
 
 #derive(Eq, @debug.Debug)
+pub(all) enum DiagnosticsStatus {
+  Idle
+  Uploaded
+  UploadFailed
+  Uploading
+}
+pub fn DiagnosticsStatus::equal(Self, Self) -> Bool
+pub fn DiagnosticsStatus::not_equal(Self, Self) -> Bool
+pub fn DiagnosticsStatus::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) struct DiagnosticsStatusNotificationRequest {
+  status : DiagnosticsStatus
+}
+pub fn DiagnosticsStatusNotificationRequest::equal(Self, Self) -> Bool
+pub fn DiagnosticsStatusNotificationRequest::from_json(@json.Json) -> Result[Self, ProtocolError]
+pub fn DiagnosticsStatusNotificationRequest::not_equal(Self, Self) -> Bool
+pub fn DiagnosticsStatusNotificationRequest::to_json(Self) -> @json.Json
+pub fn DiagnosticsStatusNotificationRequest::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub struct DiagnosticsStatusNotificationResponse {
+  marker : Unit
+}
+pub fn DiagnosticsStatusNotificationResponse::equal(Self, Self) -> Bool
+pub fn DiagnosticsStatusNotificationResponse::from_json(@json.Json) -> Result[Self, ProtocolError]
+pub fn DiagnosticsStatusNotificationResponse::new() -> Self
+pub fn DiagnosticsStatusNotificationResponse::not_equal(Self, Self) -> Bool
+pub fn DiagnosticsStatusNotificationResponse::to_json(Self) -> @json.Json
+pub fn DiagnosticsStatusNotificationResponse::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
 pub(all) enum DispatchError {
   NotACall
   InvalidAction(ProtocolError)
@@ -493,6 +584,41 @@ pub(all) enum DispatchError {
 pub fn DispatchError::equal(Self, Self) -> Bool
 pub fn DispatchError::not_equal(Self, Self) -> Bool
 pub fn DispatchError::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) enum FirmwareStatus {
+  Downloaded
+  DownloadFailed
+  Downloading
+  Idle
+  InstallationFailed
+  Installing
+  Installed
+}
+pub fn FirmwareStatus::equal(Self, Self) -> Bool
+pub fn FirmwareStatus::not_equal(Self, Self) -> Bool
+pub fn FirmwareStatus::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) struct FirmwareStatusNotificationRequest {
+  status : FirmwareStatus
+}
+pub fn FirmwareStatusNotificationRequest::equal(Self, Self) -> Bool
+pub fn FirmwareStatusNotificationRequest::from_json(@json.Json) -> Result[Self, ProtocolError]
+pub fn FirmwareStatusNotificationRequest::not_equal(Self, Self) -> Bool
+pub fn FirmwareStatusNotificationRequest::to_json(Self) -> @json.Json
+pub fn FirmwareStatusNotificationRequest::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub struct FirmwareStatusNotificationResponse {
+  marker : Unit
+}
+pub fn FirmwareStatusNotificationResponse::equal(Self, Self) -> Bool
+pub fn FirmwareStatusNotificationResponse::from_json(@json.Json) -> Result[Self, ProtocolError]
+pub fn FirmwareStatusNotificationResponse::new() -> Self
+pub fn FirmwareStatusNotificationResponse::not_equal(Self, Self) -> Bool
+pub fn FirmwareStatusNotificationResponse::to_json(Self) -> @json.Json
+pub fn FirmwareStatusNotificationResponse::to_repr(Self) -> @debug.Repr
 
 #derive(Eq, @debug.Debug)
 pub(all) enum Frame {
@@ -539,6 +665,17 @@ pub fn GetConfigurationResponse::from_json(@json.Json) -> Result[Self, ProtocolE
 pub fn GetConfigurationResponse::not_equal(Self, Self) -> Bool
 pub fn GetConfigurationResponse::to_json(Self) -> @json.Json
 pub fn GetConfigurationResponse::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub struct HeartbeatRequest {
+  marker : Unit
+}
+pub fn HeartbeatRequest::equal(Self, Self) -> Bool
+pub fn HeartbeatRequest::from_json(@json.Json) -> Result[Self, ProtocolError]
+pub fn HeartbeatRequest::new() -> Self
+pub fn HeartbeatRequest::not_equal(Self, Self) -> Bool
+pub fn HeartbeatRequest::to_json(Self) -> @json.Json
+pub fn HeartbeatRequest::to_repr(Self) -> @debug.Repr
 
 #derive(Eq, @debug.Debug)
 pub(all) struct HeartbeatResponse {
@@ -604,6 +741,17 @@ pub fn MeterValuesRequest::from_json(@json.Json) -> Result[Self, ProtocolError]
 pub fn MeterValuesRequest::not_equal(Self, Self) -> Bool
 pub fn MeterValuesRequest::to_json(Self) -> @json.Json
 pub fn MeterValuesRequest::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub struct MeterValuesResponse {
+  marker : Unit
+}
+pub fn MeterValuesResponse::equal(Self, Self) -> Bool
+pub fn MeterValuesResponse::from_json(@json.Json) -> Result[Self, ProtocolError]
+pub fn MeterValuesResponse::new() -> Self
+pub fn MeterValuesResponse::not_equal(Self, Self) -> Bool
+pub fn MeterValuesResponse::to_json(Self) -> @json.Json
+pub fn MeterValuesResponse::to_repr(Self) -> @debug.Repr
 
 #derive(Eq, @debug.Debug)
 pub(all) enum OcppAction {
@@ -923,6 +1071,17 @@ pub fn StatusNotificationRequest::to_json(Self) -> @json.Json
 pub fn StatusNotificationRequest::to_repr(Self) -> @debug.Repr
 
 #derive(Eq, @debug.Debug)
+pub struct StatusNotificationResponse {
+  marker : Unit
+}
+pub fn StatusNotificationResponse::equal(Self, Self) -> Bool
+pub fn StatusNotificationResponse::from_json(@json.Json) -> Result[Self, ProtocolError]
+pub fn StatusNotificationResponse::new() -> Self
+pub fn StatusNotificationResponse::not_equal(Self, Self) -> Bool
+pub fn StatusNotificationResponse::to_json(Self) -> @json.Json
+pub fn StatusNotificationResponse::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
 pub(all) enum StopReason {
   EmergencyStop
   EVDisconnected
@@ -955,10 +1114,25 @@ pub fn StopTransactionRequest::to_json(Self) -> @json.Json
 pub fn StopTransactionRequest::to_repr(Self) -> @debug.Repr
 
 #derive(Eq, @debug.Debug)
+pub(all) struct StopTransactionResponse {
+  id_tag_info : IdTagInfo?
+}
+pub fn StopTransactionResponse::equal(Self, Self) -> Bool
+pub fn StopTransactionResponse::from_json(@json.Json) -> Result[Self, ProtocolError]
+pub fn StopTransactionResponse::not_equal(Self, Self) -> Bool
+pub fn StopTransactionResponse::to_json(Self) -> @json.Json
+pub fn StopTransactionResponse::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
 pub(all) enum TypedCall {
   Authorize(AuthorizeRequest)
   BootNotification(BootNotificationRequest)
+  CancelReservation(CancelReservationRequest)
+  ClearCache(ClearCacheRequest)
   DataTransfer(DataTransferRequest)
+  DiagnosticsStatusNotification(DiagnosticsStatusNotificationRequest)
+  FirmwareStatusNotification(FirmwareStatusNotificationRequest)
+  Heartbeat(HeartbeatRequest)
   StatusNotification(StatusNotificationRequest)
   StartTransaction(StartTransactionRequest)
   StopTransaction(StopTransactionRequest)
@@ -971,12 +1145,43 @@ pub(all) enum TypedCall {
   GetConfiguration(GetConfigurationRequest)
   SetChargingProfile(SetChargingProfileRequest)
   ClearChargingProfile(ClearChargingProfileRequest)
+  UnlockConnector(UnlockConnectorRequest)
   UnsupportedAction(String, @json.Json)
 }
 pub fn TypedCall::action_name(Self) -> String
 pub fn TypedCall::equal(Self, Self) -> Bool
 pub fn TypedCall::not_equal(Self, Self) -> Bool
 pub fn TypedCall::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) struct UnlockConnectorRequest {
+  connector_id : Int32
+}
+pub fn UnlockConnectorRequest::equal(Self, Self) -> Bool
+pub fn UnlockConnectorRequest::from_json(@json.Json) -> Result[Self, ProtocolError]
+pub fn UnlockConnectorRequest::not_equal(Self, Self) -> Bool
+pub fn UnlockConnectorRequest::to_json(Self) -> @json.Json
+pub fn UnlockConnectorRequest::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) struct UnlockConnectorResponse {
+  status : UnlockStatus
+}
+pub fn UnlockConnectorResponse::equal(Self, Self) -> Bool
+pub fn UnlockConnectorResponse::from_json(@json.Json) -> Result[Self, ProtocolError]
+pub fn UnlockConnectorResponse::not_equal(Self, Self) -> Bool
+pub fn UnlockConnectorResponse::to_json(Self) -> @json.Json
+pub fn UnlockConnectorResponse::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) enum UnlockStatus {
+  Unlocked
+  UnlockFailed
+  NotSupported
+}
+pub fn UnlockStatus::equal(Self, Self) -> Bool
+pub fn UnlockStatus::not_equal(Self, Self) -> Bool
+pub fn UnlockStatus::to_repr(Self) -> @debug.Repr
 
 #derive(Eq, @debug.Debug)
 pub(all) struct VersionedFrame {

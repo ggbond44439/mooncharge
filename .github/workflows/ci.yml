@@ -50,6 +50,8 @@ jobs:
           moon run cmd/main -- frame '[2,"ci-1","Heartbeat",{}]'
           moon run cmd/main -- versioned 1.6J '[2,"ci-v","Heartbeat",{}]'
           moon run cmd/main -- dispatch cp '[2,"ci-2","Authorize",{"idTag":"RFID-CI"}]'
+          moon run cmd/main -- dispatch cp '[2,"ci-hb","Heartbeat",{}]'
+          moon run cmd/main -- dispatch cs '[2,"ci-cache","ClearCache",{}]'
           moon run cmd/main -- conformance summary
           moon run cmd/main -- conformance audit cp '[2,"ci-3","StartTransaction",{"connectorId":1,"idTag":"RFID-CI","meterStart":0,"timestamp":"2026-11-20T00:00:00Z"}]'
           moon run cmd/main -- action SetChargingProfile request

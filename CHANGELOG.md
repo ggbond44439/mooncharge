@@ -10,6 +10,9 @@
 - Explicit protocol-version context through `OcppVersion` and
   `VersionedFrame`, with version-bound parsing, dispatch, direction lookup and
   conformance audit APIs.
+- Typed Heartbeat, MeterValues, StatusNotification, StopTransaction, diagnostics,
+  firmware, CancelReservation, ClearCache and UnlockConnector payloads,
+  including strict empty-confirmation codecs.
 - Complete 39-action OCPP 1.6 conformance catalog with request direction,
   required fields and typed-coverage metadata.
 - Payload and CALL audit APIs for unknown actions, wrong directions, invalid

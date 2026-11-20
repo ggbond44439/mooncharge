@@ -32,10 +32,10 @@ The catalog contains 39 OCPP 1.6 actions and records their request direction,
 required request fields, required confirmation fields and current payload
 coverage. The initial baseline has:
 
-- 15 typed requests;
-- 13 typed confirmations;
-- 24 catalog-only requests;
-- 26 catalog-only confirmations.
+- 21 typed requests;
+- 21 typed confirmations;
+- 18 catalog-only requests;
+- 18 catalog-only confirmations.
 
 The required-field inventory was checked against the public
 `mobilityhouse/ocpp` OCPP 1.6 JSON Schemas. The catalog is available through:
@@ -52,27 +52,27 @@ The required-field inventory was checked against the public
 | --- | --- | --- |
 | `Authorize` | Typed | Typed |
 | `BootNotification` | Typed | Typed |
-| `CancelReservation` | Catalog only | Catalog only |
+| `CancelReservation` | Typed | Typed |
 | `CertificateSigned` | Catalog only | Catalog only |
 | `ChangeAvailability` | Typed | Typed |
 | `ChangeConfiguration` | Typed | Typed |
-| `ClearCache` | Catalog only | Catalog only |
+| `ClearCache` | Typed | Typed |
 | `ClearChargingProfile` | Typed | Typed |
 | `DataTransfer` | Typed | Typed |
 | `DeleteCertificate` | Catalog only | Catalog only |
-| `DiagnosticsStatusNotification` | Catalog only | Catalog only |
+| `DiagnosticsStatusNotification` | Typed | Typed |
 | `ExtendedTriggerMessage` | Catalog only | Catalog only |
-| `FirmwareStatusNotification` | Catalog only | Catalog only |
+| `FirmwareStatusNotification` | Typed | Typed |
 | `GetCompositeSchedule` | Catalog only | Catalog only |
 | `GetConfiguration` | Typed | Typed |
 | `GetDiagnostics` | Catalog only | Catalog only |
 | `GetInstalledCertificateIds` | Catalog only | Catalog only |
 | `GetLocalListVersion` | Catalog only | Catalog only |
 | `GetLog` | Catalog only | Catalog only |
-| `Heartbeat` | Catalog only | Typed |
+| `Heartbeat` | Typed | Typed |
 | `InstallCertificate` | Catalog only | Catalog only |
 | `LogStatusNotification` | Catalog only | Catalog only |
-| `MeterValues` | Typed | Catalog only |
+| `MeterValues` | Typed | Typed |
 | `RemoteStartTransaction` | Typed | Typed |
 | `RemoteStopTransaction` | Typed | Typed |
 | `ReserveNow` | Catalog only | Catalog only |
@@ -84,10 +84,10 @@ The required-field inventory was checked against the public
 | `SignedFirmwareStatusNotification` | Catalog only | Catalog only |
 | `SignedUpdateFirmware` | Catalog only | Catalog only |
 | `StartTransaction` | Typed | Typed |
-| `StatusNotification` | Typed | Catalog only |
-| `StopTransaction` | Typed | Catalog only |
+| `StatusNotification` | Typed | Typed |
+| `StopTransaction` | Typed | Typed |
 | `TriggerMessage` | Catalog only | Catalog only |
-| `UnlockConnector` | Catalog only | Catalog only |
+| `UnlockConnector` | Typed | Typed |
 | `UpdateFirmware` | Catalog only | Catalog only |
 
 “Catalog only” means MoonCharge exposes schema metadata and validates required

@@ -432,3 +432,117 @@ pub extend VersionedFrame with Eq::{not_equal, equal}
 
 ///|
 pub extend VersionedFrame with @debug.Debug::{to_repr}
+
+///|
+pub extend HeartbeatRequest with Eq::{not_equal, equal}
+
+///|
+pub extend HeartbeatRequest with @debug.Debug::{to_repr}
+
+///|
+pub extend MeterValuesResponse with Eq::{not_equal, equal}
+
+///|
+pub extend MeterValuesResponse with @debug.Debug::{to_repr}
+
+///|
+pub extend StatusNotificationResponse with Eq::{not_equal, equal}
+
+///|
+pub extend StatusNotificationResponse with @debug.Debug::{to_repr}
+
+///|
+pub extend StopTransactionResponse with Eq::{not_equal, equal}
+
+///|
+pub extend StopTransactionResponse with @debug.Debug::{to_repr}
+
+///|
+pub extend DiagnosticsStatus with Eq::{not_equal, equal}
+
+///|
+pub extend DiagnosticsStatus with @debug.Debug::{to_repr}
+
+///|
+pub extend DiagnosticsStatusNotificationRequest with Eq::{not_equal, equal}
+
+///|
+pub extend DiagnosticsStatusNotificationRequest with @debug.Debug::{to_repr}
+
+///|
+pub extend DiagnosticsStatusNotificationResponse with Eq::{not_equal, equal}
+
+///|
+pub extend DiagnosticsStatusNotificationResponse with @debug.Debug::{to_repr}
+
+///|
+pub extend FirmwareStatus with Eq::{not_equal, equal}
+
+///|
+pub extend FirmwareStatus with @debug.Debug::{to_repr}
+
+///|
+pub extend FirmwareStatusNotificationRequest with Eq::{not_equal, equal}
+
+///|
+pub extend FirmwareStatusNotificationRequest with @debug.Debug::{to_repr}
+
+///|
+pub extend FirmwareStatusNotificationResponse with Eq::{not_equal, equal}
+
+///|
+pub extend FirmwareStatusNotificationResponse with @debug.Debug::{to_repr}
+
+///|
+pub extend CancelReservationStatus with Eq::{not_equal, equal}
+
+///|
+pub extend CancelReservationStatus with @debug.Debug::{to_repr}
+
+///|
+pub extend CancelReservationRequest with Eq::{not_equal, equal}
+
+///|
+pub extend CancelReservationRequest with @debug.Debug::{to_repr}
+
+///|
+pub extend CancelReservationResponse with Eq::{not_equal, equal}
+
+///|
+pub extend CancelReservationResponse with @debug.Debug::{to_repr}
+
+///|
+pub extend ClearCacheRequest with Eq::{not_equal, equal}
+
+///|
+pub extend ClearCacheRequest with @debug.Debug::{to_repr}
+
+///|
+pub extend ClearCacheStatus with Eq::{not_equal, equal}
+
+///|
+pub extend ClearCacheStatus with @debug.Debug::{to_repr}
+
+///|
+pub extend ClearCacheResponse with Eq::{not_equal, equal}
+
+///|
+pub extend ClearCacheResponse with @debug.Debug::{to_repr}
+
+///|
+pub extend UnlockConnectorRequest with Eq::{not_equal, equal}
+
+///|
+pub extend UnlockConnectorRequest with @debug.Debug::{to_repr}
+
+///|
+pub extend UnlockStatus with Eq::{not_equal, equal}
+
+///|
+pub extend UnlockStatus with @debug.Debug::{to_repr}
+
+///|
+pub extend UnlockConnectorResponse with Eq::{not_equal, equal}
+
+///|
+pub extend UnlockConnectorResponse with @debug.Debug::{to_repr}

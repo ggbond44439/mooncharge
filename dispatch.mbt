@@ -3,7 +3,12 @@
 pub(all) enum TypedCall {
   Authorize(AuthorizeRequest)
   BootNotification(BootNotificationRequest)
+  CancelReservation(CancelReservationRequest)
+  ClearCache(ClearCacheRequest)
   DataTransfer(DataTransferRequest)
+  DiagnosticsStatusNotification(DiagnosticsStatusNotificationRequest)
+  FirmwareStatusNotification(FirmwareStatusNotificationRequest)
+  Heartbeat(HeartbeatRequest)
   StatusNotification(StatusNotificationRequest)
   StartTransaction(StartTransactionRequest)
   StopTransaction(StopTransactionRequest)
@@ -16,6 +21,7 @@ pub(all) enum TypedCall {
   GetConfiguration(GetConfigurationRequest)
   SetChargingProfile(SetChargingProfileRequest)
   ClearChargingProfile(ClearChargingProfileRequest)
+  UnlockConnector(UnlockConnectorRequest)
   UnsupportedAction(String, Json)
 }
 
@@ -24,7 +30,12 @@ pub fn TypedCall::action_name(self : TypedCall) -> String {
   match self {
     Authorize(_) => "Authorize"
     BootNotification(_) => "BootNotification"
+    CancelReservation(_) => "CancelReservation"
+    ClearCache(_) => "ClearCache"
     DataTransfer(_) => "DataTransfer"
+    DiagnosticsStatusNotification(_) => "DiagnosticsStatusNotification"
+    FirmwareStatusNotification(_) => "FirmwareStatusNotification"
+    Heartbeat(_) => "Heartbeat"
     StatusNotification(_) => "StatusNotification"
     StartTransaction(_) => "StartTransaction"
     StopTransaction(_) => "StopTransaction"
@@ -37,6 +48,7 @@ pub fn TypedCall::action_name(self : TypedCall) -> String {
     GetConfiguration(_) => "GetConfiguration"
     SetChargingProfile(_) => "SetChargingProfile"
     ClearChargingProfile(_) => "ClearChargingProfile"
+    UnlockConnector(_) => "UnlockConnector"
     UnsupportedAction(action, _) => action
   }
 }
@@ -60,7 +72,16 @@ fn parse_typed_call(
     "Authorize" => Authorize(parse_authorize_request(payload))
     "BootNotification" =>
       BootNotification(parse_boot_notification_request(payload))
+    "CancelReservation" => CancelReservation(parse_cancel_reservation(payload))
+    "ClearCache" => ClearCache(parse_clear_cache_request(payload))
     "DataTransfer" => DataTransfer(parse_data_transfer(payload))
+    "DiagnosticsStatusNotification" =>
+      DiagnosticsStatusNotification(
+        parse_diagnostics_status_notification(payload),
+      )
+    "FirmwareStatusNotification" =>
+      FirmwareStatusNotification(parse_firmware_status_notification(payload))
+    "Heartbeat" => Heartbeat(parse_heartbeat_request(payload))
     "StatusNotification" =>
       StatusNotification(parse_status_notification_request(payload))
     "StartTransaction" =>
@@ -81,6 +102,7 @@ fn parse_typed_call(
       SetChargingProfile(parse_set_charging_profile(payload))
     "ClearChargingProfile" =>
       ClearChargingProfile(parse_clear_charging_profile(payload))
+    "UnlockConnector" => UnlockConnector(parse_unlock_connector(payload))
     other => UnsupportedAction(other, payload)
   }
 }

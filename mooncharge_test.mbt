@@ -501,10 +501,10 @@ test "OCPP 1.6J catalog covers every registered action" {
 test "conformance summary reflects the current typed coverage" {
   assert_eq(@mooncharge.conformance_summary(), {
     total_actions: 39,
-    typed_requests: 15,
-    typed_responses: 13,
-    catalog_only_requests: 24,
-    catalog_only_responses: 26,
+    typed_requests: 21,
+    typed_responses: 21,
+    catalog_only_requests: 18,
+    catalog_only_responses: 18,
   })
 }
 
@@ -621,7 +621,7 @@ test "CLI exposes conformance summary action and audit" {
   assert_eq(summary.exit_code, 0)
   assert_eq(
     summary.stdout,
-    "actions=39 typed_requests=15 typed_responses=13 catalog_only_requests=24 catalog_only_responses=26",
+    "actions=39 typed_requests=21 typed_responses=21 catalog_only_requests=18 catalog_only_responses=18",
   )
   let action = @mooncharge.run_cli(["conformance", "action", "StartTransaction"])
   assert_eq(action.exit_code, 0)
@@ -791,4 +791,108 @@ test "CLI exposes supported versions and version-bound parsing" {
   ])
   assert_eq(unsupported.exit_code, 2)
   assert_true(unsupported.stderr.contains("unsupported OCPP version 2.0.1"))
+}
+
+///|
+test "core request payloads are typed and dispatched" {
+  let heartbeat = parsed_frame("[2,\"hb\",\"Heartbeat\",{}]")
+  match
+    @mooncharge.dispatch_call(
+      heartbeat,
+      @mooncharge.MessageDirection::ChargePointToCentralSystem,
+    ) {
+    Ok(@mooncharge.TypedCall::Heartbeat(_)) => ()
+    _ => fail("expected typed Heartbeat")
+  }
+  let diagnostics = parsed_frame(
+    "[2,\"diag\",\"DiagnosticsStatusNotification\",{\"status\":\"Uploading\"}]",
+  )
+  match
+    @mooncharge.dispatch_call(
+      diagnostics,
+      @mooncharge.MessageDirection::ChargePointToCentralSystem,
+    ) {
+    Ok(@mooncharge.TypedCall::DiagnosticsStatusNotification(request)) =>
+      assert_eq(request.status, @mooncharge.DiagnosticsStatus::Uploading)
+    _ => fail("expected typed DiagnosticsStatusNotification")
+  }
+  let firmware = parsed_frame(
+    "[2,\"fw\",\"FirmwareStatusNotification\",{\"status\":\"Installed\"}]",
+  )
+  match
+    @mooncharge.dispatch_call(
+      firmware,
+      @mooncharge.MessageDirection::ChargePointToCentralSystem,
+    ) {
+    Ok(@mooncharge.TypedCall::FirmwareStatusNotification(request)) =>
+      assert_eq(request.status, @mooncharge.FirmwareStatus::Installed)
+    _ => fail("expected typed FirmwareStatusNotification")
+  }
+  let cancel = parsed_frame(
+    "[2,\"cancel\",\"CancelReservation\",{\"reservationId\":12}]",
+  )
+  match
+    @mooncharge.dispatch_call(
+      cancel,
+      @mooncharge.MessageDirection::CentralSystemToChargePoint,
+    ) {
+    Ok(@mooncharge.TypedCall::CancelReservation(request)) =>
+      assert_eq(request.reservation_id, 12)
+    _ => fail("expected typed CancelReservation")
+  }
+  let clear = parsed_frame("[2,\"cache\",\"ClearCache\",{}]")
+  match
+    @mooncharge.dispatch_call(
+      clear,
+      @mooncharge.MessageDirection::CentralSystemToChargePoint,
+    ) {
+    Ok(@mooncharge.TypedCall::ClearCache(_)) => ()
+    _ => fail("expected typed ClearCache")
+  }
+  let unlock = parsed_frame(
+    "[2,\"unlock\",\"UnlockConnector\",{\"connectorId\":2}]",
+  )
+  match
+    @mooncharge.dispatch_call(
+      unlock,
+      @mooncharge.MessageDirection::CentralSystemToChargePoint,
+    ) {
+    Ok(@mooncharge.TypedCall::UnlockConnector(request)) =>
+      assert_eq(request.connector_id, 2)
+    _ => fail("expected typed UnlockConnector")
+  }
+}
+
+///|
+test "empty and optional core confirmations remain strict" {
+  let meter_payload = match parsed_frame("[3,\"meter\",{}]") {
+    @mooncharge.CallResult(_, payload) => payload
+    _ => fail("expected CALLRESULT")
+  }
+  assert_eq(
+    @mooncharge.MeterValuesResponse::from_json(meter_payload),
+    Ok(@mooncharge.MeterValuesResponse::new()),
+  )
+  let stop_payload = match
+    parsed_frame("[3,\"stop\",{\"idTagInfo\":{\"status\":\"Accepted\"}}]") {
+    @mooncharge.CallResult(_, payload) => payload
+    _ => fail("expected CALLRESULT")
+  }
+  let stop = match
+    @mooncharge.StopTransactionResponse::from_json(stop_payload) {
+    Ok(value) => value
+    Err(error) => fail(error.message())
+  }
+  assert_eq(
+    stop.id_tag_info,
+    Some({
+      status: @mooncharge.AuthorizationStatus::Accepted,
+      expiry_date: None,
+      parent_id_tag: None,
+    }),
+  )
+  assert_eq(
+    @mooncharge.ClearCacheStatus::Accepted,
+    @mooncharge.ClearCacheStatus::Accepted,
+  )
 }

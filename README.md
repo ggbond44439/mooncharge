@@ -34,7 +34,9 @@ MoonCharge 把这些容易出错的边界集中到一个无 I/O 的协议层中�
 - 帧级一致性审计：检查未知动作、方向错误、非对象 payload 和缺失必填字段。
 - 核心载荷的类型化解析和序列化：
   `BootNotification`、`Heartbeat`、`Authorize`、`StatusNotification`、
-  `StartTransaction`、`StopTransaction`、`MeterValues`。
+  `StartTransaction`、`StopTransaction`、`MeterValues`、
+  `DiagnosticsStatusNotification`、`FirmwareStatusNotification`、
+  `CancelReservation`、`ClearCache` 和 `UnlockConnector`。
 - OCPP 注释中常见的状态、错误、停止原因和认证状态枚举。
 - 单连接器交易状态机，不依赖隐式全局状态。
 - `ChargingProfile`、`ChargingSchedule` 和周期校验。
@@ -150,7 +152,7 @@ moon run cmd/main -- dispatch cp '[2,"auth-1","Authorize",{"idTag":"RFID-1"}]'
 # typed=Authorize direction=charge-point-to-central-system
 
 moon run cmd/main -- conformance summary
-# actions=39 typed_requests=15 typed_responses=13 ...
+# actions=39 typed_requests=21 typed_responses=21 ...
 
 moon run cmd/main -- conformance action StartTransaction
 # action=StartTransaction direction=charge-point-to-central-system ...
