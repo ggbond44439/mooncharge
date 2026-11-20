@@ -31,6 +31,25 @@ pub(all) enum OcppAction {
   Reset
   SetChargingProfile
   UnlockConnector
+  CertificateSigned
+  ClearChargingProfile
+  DeleteCertificate
+  ExtendedTriggerMessage
+  GetCompositeSchedule
+  GetDiagnostics
+  GetInstalledCertificateIds
+  GetLocalListVersion
+  GetLog
+  InstallCertificate
+  LogStatusNotification
+  ReserveNow
+  SecurityEventNotification
+  SendLocalList
+  SignCertificate
+  SignedFirmwareStatusNotification
+  SignedUpdateFirmware
+  TriggerMessage
+  UpdateFirmware
 }
 
 ///|
@@ -56,6 +75,25 @@ pub fn OcppAction::parse(value : String) -> OcppAction? {
     "Reset" => Some(Reset)
     "SetChargingProfile" => Some(SetChargingProfile)
     "UnlockConnector" => Some(UnlockConnector)
+    "CertificateSigned" => Some(CertificateSigned)
+    "ClearChargingProfile" => Some(ClearChargingProfile)
+    "DeleteCertificate" => Some(DeleteCertificate)
+    "ExtendedTriggerMessage" => Some(ExtendedTriggerMessage)
+    "GetCompositeSchedule" => Some(GetCompositeSchedule)
+    "GetDiagnostics" => Some(GetDiagnostics)
+    "GetInstalledCertificateIds" => Some(GetInstalledCertificateIds)
+    "GetLocalListVersion" => Some(GetLocalListVersion)
+    "GetLog" => Some(GetLog)
+    "InstallCertificate" => Some(InstallCertificate)
+    "LogStatusNotification" => Some(LogStatusNotification)
+    "ReserveNow" => Some(ReserveNow)
+    "SecurityEventNotification" => Some(SecurityEventNotification)
+    "SendLocalList" => Some(SendLocalList)
+    "SignCertificate" => Some(SignCertificate)
+    "SignedFirmwareStatusNotification" => Some(SignedFirmwareStatusNotification)
+    "SignedUpdateFirmware" => Some(SignedUpdateFirmware)
+    "TriggerMessage" => Some(TriggerMessage)
+    "UpdateFirmware" => Some(UpdateFirmware)
     _ => None
   }
 }
@@ -83,6 +121,25 @@ pub fn OcppAction::name(self : OcppAction) -> String {
     Reset => "Reset"
     SetChargingProfile => "SetChargingProfile"
     UnlockConnector => "UnlockConnector"
+    CertificateSigned => "CertificateSigned"
+    ClearChargingProfile => "ClearChargingProfile"
+    DeleteCertificate => "DeleteCertificate"
+    ExtendedTriggerMessage => "ExtendedTriggerMessage"
+    GetCompositeSchedule => "GetCompositeSchedule"
+    GetDiagnostics => "GetDiagnostics"
+    GetInstalledCertificateIds => "GetInstalledCertificateIds"
+    GetLocalListVersion => "GetLocalListVersion"
+    GetLog => "GetLog"
+    InstallCertificate => "InstallCertificate"
+    LogStatusNotification => "LogStatusNotification"
+    ReserveNow => "ReserveNow"
+    SecurityEventNotification => "SecurityEventNotification"
+    SendLocalList => "SendLocalList"
+    SignCertificate => "SignCertificate"
+    SignedFirmwareStatusNotification => "SignedFirmwareStatusNotification"
+    SignedUpdateFirmware => "SignedUpdateFirmware"
+    TriggerMessage => "TriggerMessage"
+    UpdateFirmware => "UpdateFirmware"
   }
 }
 
@@ -90,17 +147,77 @@ pub fn OcppAction::name(self : OcppAction) -> String {
 pub fn OcppAction::request_direction(self : OcppAction) -> MessageDirection {
   match self {
     CancelReservation
+    | CertificateSigned
     | ChangeAvailability
     | ChangeConfiguration
     | ClearCache
+    | ClearChargingProfile
+    | DeleteCertificate
+    | ExtendedTriggerMessage
+    | GetCompositeSchedule
     | GetConfiguration
+    | GetDiagnostics
+    | GetInstalledCertificateIds
+    | GetLocalListVersion
+    | GetLog
+    | InstallCertificate
     | RemoteStartTransaction
     | RemoteStopTransaction
+    | ReserveNow
     | Reset
+    | SendLocalList
     | SetChargingProfile
-    | UnlockConnector => CentralSystemToChargePoint
+    | SignedUpdateFirmware
+    | TriggerMessage
+    | UnlockConnector
+    | UpdateFirmware => CentralSystemToChargePoint
     _ => ChargePointToCentralSystem
   }
+}
+
+///|
+pub fn OcppAction::all() -> Array[OcppAction] {
+  [
+    Authorize,
+    BootNotification,
+    CancelReservation,
+    CertificateSigned,
+    ChangeAvailability,
+    ChangeConfiguration,
+    ClearCache,
+    ClearChargingProfile,
+    DataTransfer,
+    DeleteCertificate,
+    DiagnosticsStatusNotification,
+    ExtendedTriggerMessage,
+    FirmwareStatusNotification,
+    GetCompositeSchedule,
+    GetConfiguration,
+    GetDiagnostics,
+    GetInstalledCertificateIds,
+    GetLocalListVersion,
+    GetLog,
+    Heartbeat,
+    InstallCertificate,
+    LogStatusNotification,
+    MeterValues,
+    RemoteStartTransaction,
+    RemoteStopTransaction,
+    ReserveNow,
+    Reset,
+    SecurityEventNotification,
+    SendLocalList,
+    SetChargingProfile,
+    SignCertificate,
+    SignedFirmwareStatusNotification,
+    SignedUpdateFirmware,
+    StartTransaction,
+    StatusNotification,
+    StopTransaction,
+    TriggerMessage,
+    UnlockConnector,
+    UpdateFirmware,
+  ]
 }
 
 ///|

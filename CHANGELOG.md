@@ -1,5 +1,22 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+- Complete 39-action OCPP 1.6 conformance catalog with request direction,
+  required fields and typed-coverage metadata.
+- Payload and CALL audit APIs for unknown actions, wrong directions, invalid
+  payload shape and missing required fields.
+- `conformance summary`, `action` and `audit` CLI commands.
+- Conformance audit example and executable baseline documentation.
+
+### Fixed
+
+- `BootNotificationResponse` now uses the standard `interval` field.
+- Added missing OCPP 1.6 actions, including `ClearChargingProfile`,
+  certificate, local-authorization, reservation and trigger messages.
+
 ## 0.1.0 - 2026-11-18
 
 ### Added

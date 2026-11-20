@@ -384,3 +384,39 @@ pub extend DataTransferResponse with Eq::{not_equal, equal}
 
 ///|
 pub extend DataTransferResponse with @debug.Debug::{to_repr}
+
+///|
+pub extend PayloadCoverage with Eq::{not_equal, equal}
+
+///|
+pub extend PayloadCoverage with @debug.Debug::{to_repr}
+
+///|
+pub extend PayloadPhase with Eq::{not_equal, equal}
+
+///|
+pub extend PayloadPhase with @debug.Debug::{to_repr}
+
+///|
+pub extend ActionSpec with Eq::{not_equal, equal}
+
+///|
+pub extend ActionSpec with @debug.Debug::{to_repr}
+
+///|
+pub extend ConformanceSummary with Eq::{not_equal, equal}
+
+///|
+pub extend ConformanceSummary with @debug.Debug::{to_repr}
+
+///|
+pub extend ConformanceIssue with Eq::{not_equal, equal}
+
+///|
+pub extend ConformanceIssue with @debug.Debug::{to_repr}
+
+///|
+pub extend ConformanceReport with Eq::{not_equal, equal}
+
+///|
+pub extend ConformanceReport with @debug.Debug::{to_repr}

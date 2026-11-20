@@ -480,3 +480,158 @@ test "CLI dispatches typed calls with explicit direction" {
     "typed=Authorize direction=charge-point-to-central-system",
   )
 }
+
+///|
+test "OCPP 1.6J catalog covers every registered action" {
+  let actions = @mooncharge.OcppAction::all()
+  let specs = @mooncharge.action_specs()
+  assert_eq(actions.length(), 39)
+  assert_eq(specs.length(), actions.length())
+  for action in actions {
+    let spec = match @mooncharge.find_action_spec(action.name()) {
+      Some(spec) => spec
+      None => fail("missing action specification")
+    }
+    assert_eq(spec.request_direction, action.request_direction())
+    assert_eq(@mooncharge.OcppAction::parse(spec.action), Some(action))
+  }
+}
+
+///|
+test "conformance summary reflects the current typed coverage" {
+  assert_eq(@mooncharge.conformance_summary(), {
+    total_actions: 39,
+    typed_requests: 15,
+    typed_responses: 13,
+    catalog_only_requests: 24,
+    catalog_only_responses: 26,
+  })
+}
+
+///|
+test "payload audit checks direction and required fields" {
+  let frame = parsed_frame(
+    "[2,\"start-1\",\"StartTransaction\",{\"connectorId\":1,\"idTag\":\"RFID-1\",\"meterStart\":0,\"timestamp\":\"2026-11-20T00:00:00Z\"}]",
+  )
+  let report = @mooncharge.audit_frame(
+    frame,
+    @mooncharge.MessageDirection::ChargePointToCentralSystem,
+  )
+  assert_true(report.passed())
+  assert_eq(
+    @mooncharge.audit_payload(
+      "StartTransaction",
+      @mooncharge.PayloadPhase::Request,
+      @mooncharge.MessageDirection::CentralSystemToChargePoint,
+      match frame {
+        @mooncharge.Call(_, _, payload) => payload
+        _ => fail("expected CALL")
+      },
+    ),
+    {
+      action: "StartTransaction",
+      phase: @mooncharge.PayloadPhase::Request,
+      issues: [
+        @mooncharge.ConformanceIssue::WrongDirection(
+          @mooncharge.MessageDirection::ChargePointToCentralSystem,
+          @mooncharge.MessageDirection::CentralSystemToChargePoint,
+        ),
+      ],
+    },
+  )
+}
+
+///|
+test "payload audit reports missing required schema fields" {
+  let frame = parsed_frame(
+    "[2,\"start-2\",\"StartTransaction\",{\"connectorId\":1,\"idTag\":\"RFID-1\"}]",
+  )
+  let report = @mooncharge.audit_frame(
+    frame,
+    @mooncharge.MessageDirection::ChargePointToCentralSystem,
+  )
+  assert_false(report.passed())
+  assert_eq(report.issues, [
+    @mooncharge.ConformanceIssue::MissingRequiredField(
+      @mooncharge.PayloadPhase::Request,
+      "meterStart",
+    ),
+    @mooncharge.ConformanceIssue::MissingRequiredField(
+      @mooncharge.PayloadPhase::Request,
+      "timestamp",
+    ),
+  ])
+}
+
+///|
+test "BootNotification confirmation uses the standard interval field" {
+  let payload = match
+    parsed_frame(
+      "[3,\"boot-1\",{\"status\":\"Accepted\",\"currentTime\":\"2026-11-20T00:00:00Z\",\"interval\":300}]",
+    ) {
+    @mooncharge.CallResult(_, payload) => payload
+    _ => fail("expected CALLRESULT")
+  }
+  let report = @mooncharge.audit_payload(
+    "BootNotification",
+    @mooncharge.PayloadPhase::Confirmation,
+    @mooncharge.MessageDirection::CentralSystemToChargePoint,
+    payload,
+  )
+  assert_true(report.passed())
+  let response = match
+    @mooncharge.BootNotificationResponse::from_json(payload) {
+    Ok(response) => response
+    Err(error) => fail(error.message())
+  }
+  assert_eq(response.interval, 300)
+}
+
+///|
+test "unknown actions and non-CALL frames fail the baseline audit" {
+  let frame = parsed_frame("[2,\"x\",\"UnknownAction\",{}]")
+  assert_eq(
+    @mooncharge.audit_frame(
+      frame,
+      @mooncharge.MessageDirection::ChargePointToCentralSystem,
+    ),
+    {
+      action: "UnknownAction",
+      phase: @mooncharge.PayloadPhase::Request,
+      issues: [@mooncharge.ConformanceIssue::UnknownAction("UnknownAction")],
+    },
+  )
+  let result = parsed_frame("[3,\"x\",{}]")
+  assert_eq(
+    @mooncharge.audit_frame(
+      result,
+      @mooncharge.MessageDirection::CentralSystemToChargePoint,
+    ),
+    {
+      action: "",
+      phase: @mooncharge.PayloadPhase::Request,
+      issues: [@mooncharge.ConformanceIssue::NotACall],
+    },
+  )
+}
+
+///|
+test "CLI exposes conformance summary action and audit" {
+  let summary = @mooncharge.run_cli(["conformance", "summary"])
+  assert_eq(summary.exit_code, 0)
+  assert_eq(
+    summary.stdout,
+    "actions=39 typed_requests=15 typed_responses=13 catalog_only_requests=24 catalog_only_responses=26",
+  )
+  let action = @mooncharge.run_cli(["conformance", "action", "StartTransaction"])
+  assert_eq(action.exit_code, 0)
+  assert_eq(
+    action.stdout,
+    "action=StartTransaction direction=charge-point-to-central-system request=typed response=typed request_required=[connectorId,idTag,meterStart,timestamp] response_required=[idTagInfo,transactionId]",
+  )
+  let invalid = @mooncharge.run_cli([
+    "conformance", "audit", "cp", "[2,\"bad\",\"StartTransaction\",{\"connectorId\":1}]",
+  ])
+  assert_eq(invalid.exit_code, 1)
+  assert_true(invalid.stdout.contains("missing-field:request:idTag"))
+}

@@ -9,9 +9,19 @@ import {
 // Values
 pub fn action_direction(String, Bool) -> Result[MessageDirection, ProtocolError]
 
+pub fn action_specs() -> Array[ActionSpec]
+
+pub fn audit_frame(Frame, MessageDirection) -> ConformanceReport
+
+pub fn audit_payload(String, PayloadPhase, MessageDirection, @json.Json) -> ConformanceReport
+
+pub fn conformance_summary() -> ConformanceSummary
+
 pub fn dispatch_call(Frame, MessageDirection) -> Result[TypedCall, DispatchError]
 
 pub fn evaluate_charging_profiles(Array[ChargingProfile], Int32?, Int32) -> Result[ChargingDecision, ChargingProfileError]
+
+pub fn find_action_spec(String) -> ActionSpec?
 
 pub fn parse_frame(String) -> Result[Frame, ProtocolError]
 
@@ -23,6 +33,19 @@ pub(all) suberror ProtocolFailure {
 }
 
 // Types and methods
+#derive(Eq, @debug.Debug)
+pub(all) struct ActionSpec {
+  action : String
+  request_direction : MessageDirection
+  request_coverage : PayloadCoverage
+  response_coverage : PayloadCoverage
+  request_required : Array[String]
+  response_required : Array[String]
+}
+pub fn ActionSpec::equal(Self, Self) -> Bool
+pub fn ActionSpec::not_equal(Self, Self) -> Bool
+pub fn ActionSpec::to_repr(Self) -> @debug.Repr
+
 #derive(Eq, @debug.Debug)
 pub(all) enum AuthorizationStatus {
   Accepted
@@ -85,7 +108,7 @@ pub fn BootNotificationRequest::to_repr(Self) -> @debug.Repr
 pub(all) struct BootNotificationResponse {
   status : RegistrationStatus
   current_time : String
-  heartbeat_interval : Int32
+  interval : Int32
 }
 pub fn BootNotificationResponse::equal(Self, Self) -> Bool
 pub fn BootNotificationResponse::from_json(@json.Json) -> Result[Self, ProtocolError]
@@ -355,6 +378,41 @@ pub fn ConfigurationStatus::not_equal(Self, Self) -> Bool
 pub fn ConfigurationStatus::to_repr(Self) -> @debug.Repr
 
 #derive(Eq, @debug.Debug)
+pub(all) enum ConformanceIssue {
+  NotACall
+  UnknownAction(String)
+  WrongDirection(MessageDirection, MessageDirection)
+  PayloadNotObject(PayloadPhase)
+  MissingRequiredField(PayloadPhase, String)
+}
+pub fn ConformanceIssue::equal(Self, Self) -> Bool
+pub fn ConformanceIssue::not_equal(Self, Self) -> Bool
+pub fn ConformanceIssue::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) struct ConformanceReport {
+  action : String
+  phase : PayloadPhase
+  issues : Array[ConformanceIssue]
+}
+pub fn ConformanceReport::equal(Self, Self) -> Bool
+pub fn ConformanceReport::not_equal(Self, Self) -> Bool
+pub fn ConformanceReport::passed(Self) -> Bool
+pub fn ConformanceReport::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) struct ConformanceSummary {
+  total_actions : Int32
+  typed_requests : Int32
+  typed_responses : Int32
+  catalog_only_requests : Int32
+  catalog_only_responses : Int32
+}
+pub fn ConformanceSummary::equal(Self, Self) -> Bool
+pub fn ConformanceSummary::not_equal(Self, Self) -> Bool
+pub fn ConformanceSummary::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
 pub(all) struct ConnectorSession {
   connector_id : Int32
   status : ChargePointStatus
@@ -536,13 +594,51 @@ pub(all) enum OcppAction {
   Reset
   SetChargingProfile
   UnlockConnector
+  CertificateSigned
+  ClearChargingProfile
+  DeleteCertificate
+  ExtendedTriggerMessage
+  GetCompositeSchedule
+  GetDiagnostics
+  GetInstalledCertificateIds
+  GetLocalListVersion
+  GetLog
+  InstallCertificate
+  LogStatusNotification
+  ReserveNow
+  SecurityEventNotification
+  SendLocalList
+  SignCertificate
+  SignedFirmwareStatusNotification
+  SignedUpdateFirmware
+  TriggerMessage
+  UpdateFirmware
 }
+pub fn OcppAction::all() -> Array[Self]
 pub fn OcppAction::equal(Self, Self) -> Bool
 pub fn OcppAction::name(Self) -> String
 pub fn OcppAction::not_equal(Self, Self) -> Bool
 pub fn OcppAction::parse(String) -> Self?
 pub fn OcppAction::request_direction(Self) -> MessageDirection
 pub fn OcppAction::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) enum PayloadCoverage {
+  Typed
+  CatalogOnly
+}
+pub fn PayloadCoverage::equal(Self, Self) -> Bool
+pub fn PayloadCoverage::not_equal(Self, Self) -> Bool
+pub fn PayloadCoverage::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) enum PayloadPhase {
+  Request
+  Confirmation
+}
+pub fn PayloadPhase::equal(Self, Self) -> Bool
+pub fn PayloadPhase::not_equal(Self, Self) -> Bool
+pub fn PayloadPhase::to_repr(Self) -> @debug.Repr
 
 #derive(Eq, @debug.Debug)
 pub(all) enum ProtocolError {

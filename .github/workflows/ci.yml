@@ -43,11 +43,14 @@ jobs:
           moon run examples/frame_roundtrip
           moon run examples/session_walkthrough
           moon run examples/profile_eval
+          moon run examples/conformance_audit
 
       - name: CLI smoke test
         run: |
           moon run cmd/main -- frame '[2,"ci-1","Heartbeat",{}]'
           moon run cmd/main -- dispatch cp '[2,"ci-2","Authorize",{"idTag":"RFID-CI"}]'
+          moon run cmd/main -- conformance summary
+          moon run cmd/main -- conformance audit cp '[2,"ci-3","StartTransaction",{"connectorId":1,"idTag":"RFID-CI","meterStart":0,"timestamp":"2026-11-20T00:00:00Z"}]'
           moon run cmd/main -- action SetChargingProfile request
 
       - name: Package and inspect contents

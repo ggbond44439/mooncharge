@@ -11,6 +11,9 @@ fn usage() -> String {
     #|mooncharge frame <ocpp-json-frame>
     #|mooncharge action <ActionName> <request|confirmation>
     #|mooncharge dispatch <cp|cs> <ocpp-json-frame>
+    #|mooncharge conformance summary
+    #|mooncharge conformance action <ActionName>
+    #|mooncharge conformance audit <cp|cs> <ocpp-json-call>
     #|mooncharge profile <profile-json|profile-array-json> <elapsed-seconds> [transaction-id]
   )
 }
@@ -51,6 +54,47 @@ fn direction_name(direction : MessageDirection) -> String {
     ChargePointToCentralSystem => "charge-point-to-central-system"
     CentralSystemToChargePoint => "central-system-to-charge-point"
   }
+}
+
+///|
+fn coverage_name(coverage : PayloadCoverage) -> String {
+  match coverage {
+    Typed => "typed"
+    CatalogOnly => "catalog-only"
+  }
+}
+
+///|
+fn phase_name(phase : PayloadPhase) -> String {
+  match phase {
+    Request => "request"
+    Confirmation => "confirmation"
+  }
+}
+
+///|
+fn issue_name(issue : ConformanceIssue) -> String {
+  match issue {
+    NotACall => "not-a-call"
+    UnknownAction(action) => "unknown-action:\{action}"
+    WrongDirection(expected, actual) =>
+      "wrong-direction:\{direction_name(expected)}:\{direction_name(actual)}"
+    PayloadNotObject(phase) => "payload-not-object:\{phase_name(phase)}"
+    MissingRequiredField(phase, field) =>
+      "missing-field:\{phase_name(phase)}:\{field}"
+  }
+}
+
+///|
+fn join_strings(values : Array[String]) -> String {
+  let out = StringBuilder()
+  for index, value in values {
+    if index > 0 {
+      out.write_string(",")
+    }
+    out.write_string(value)
+  }
+  out.to_string()
 }
 
 ///|
@@ -105,9 +149,55 @@ pub fn run_cli(args : Array[String]) -> CliOutput {
           Err(error) => cli_error(error.message())
         }
       }
+    "conformance" => run_conformance_cli(args)
     "profile" => run_profile_cli(args)
     other => cli_error("unknown command '\{other}'\n\{usage()}")
   }
+}
+
+///|
+fn run_conformance_cli(args : Array[String]) -> CliOutput {
+  if args.length() == 2 && args[1] == "summary" {
+    let summary = conformance_summary()
+    return cli_ok(
+      "actions=\{summary.total_actions} typed_requests=\{summary.typed_requests} typed_responses=\{summary.typed_responses} catalog_only_requests=\{summary.catalog_only_requests} catalog_only_responses=\{summary.catalog_only_responses}",
+    )
+  }
+  if args.length() == 3 && args[1] == "action" {
+    let spec = match find_action_spec(args[2]) {
+      Some(spec) => spec
+      None => return cli_error("unknown action '\{args[2]}'")
+    }
+    return cli_ok(
+      "action=\{spec.action} direction=\{direction_name(spec.request_direction)} request=\{coverage_name(spec.request_coverage)} response=\{coverage_name(spec.response_coverage)} request_required=[\{join_strings(spec.request_required)}] response_required=[\{join_strings(spec.response_required)}]",
+    )
+  }
+  if args.length() == 4 &&
+    args[1] == "audit" &&
+    (args[2] == "cp" || args[2] == "cs") {
+    let direction = if args[2] == "cp" {
+      ChargePointToCentralSystem
+    } else {
+      CentralSystemToChargePoint
+    }
+    let frame = match parse_frame(args[3]) {
+      Ok(frame) => frame
+      Err(error) => return cli_error(error.message())
+    }
+    let report = audit_frame(frame, direction)
+    if report.passed() {
+      return cli_ok("passed=true action=\{report.action}")
+    }
+    let issues = report.issues.map(fn(issue) { issue_name(issue) })
+    return {
+      stdout: "passed=false action=\{report.action} issues=[\{join_strings(issues)}]",
+      stderr: "",
+      exit_code: 1,
+    }
+  }
+  cli_error(
+    "conformance expects summary, action <ActionName>, or audit <cp|cs> <call>",
+  )
 }
 
 ///|

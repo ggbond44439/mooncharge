@@ -453,7 +453,7 @@ pub fn BootNotificationRequest::to_json(self : BootNotificationRequest) -> Json 
 pub(all) struct BootNotificationResponse {
   status : RegistrationStatus
   current_time : String
-  heartbeat_interval : Int32
+  interval : Int32
 }
 
 ///|
@@ -463,7 +463,7 @@ fn parse_boot_notification_response(
   {
     status: registration_status(required_string(value, "status")),
     current_time: required_string(value, "currentTime"),
-    heartbeat_interval: required_nonnegative_int(value, "heartbeatInterval"),
+    interval: required_nonnegative_int(value, "interval"),
   }
 }
 
@@ -481,7 +481,7 @@ pub fn BootNotificationResponse::to_json(
   Json::object({
     "status": Json::string(registration_status_name(self.status)),
     "currentTime": Json::string(self.current_time),
-    "heartbeatInterval": int_json(self.heartbeat_interval),
+    "interval": int_json(self.interval),
   })
 }
 

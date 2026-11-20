@@ -27,7 +27,8 @@ MoonCharge 把这些容易出错的边界集中到一个无 I/O 的协议层中�
 
 - 严格 OCPP 1.6J JSON-RPC framing：`CALL`、`CALLRESULT`、`CALLERROR`。
 - 字符串、数字和 `null` 消息 id；数字 id 保留原始文本。
-- OCPP 动作名称解析与请求/确认方向查询，未知动作在帧层保持可检查。
+- 完整 39 动作 OCPP 1.6 目录，包含方向、请求/确认必填字段和类型覆盖状态。
+- 帧级一致性审计：检查未知动作、方向错误、非对象 payload 和缺失必填字段。
 - 核心载荷的类型化解析和序列化：
   `BootNotification`、`Heartbeat`、`Authorize`、`StatusNotification`、
   `StartTransaction`、`StopTransaction`、`MeterValues`。
@@ -36,8 +37,8 @@ MoonCharge 把这些容易出错的边界集中到一个无 I/O 的协议层中�
 - `ChargingProfile`、`ChargingSchedule` 和周期校验。
 - 按 `TxProfile > TxDefaultProfile` 和最高 stack level 选择活动档位，
   再应用 `ChargePointMaxProfile` 上限。
-- 无网络 CLI，用于帧检查、动作方向与充电档位求值。
-- 3 个可运行示例和跨后端 CI。
+- 无网络 CLI，用于帧检查、一致性审计、动作方向与充电档位求值。
+- 4 个可运行示例和跨后端 CI。
 
 ## 安装
 
@@ -126,6 +127,15 @@ moon run cmd/main -- action SetChargingProfile request
 moon run cmd/main -- dispatch cp '[2,"auth-1","Authorize",{"idTag":"RFID-1"}]'
 # typed=Authorize direction=charge-point-to-central-system
 
+moon run cmd/main -- conformance summary
+# actions=39 typed_requests=15 typed_responses=13 ...
+
+moon run cmd/main -- conformance action StartTransaction
+# action=StartTransaction direction=charge-point-to-central-system ...
+
+moon run cmd/main -- conformance audit cp '[2,"start-1","StartTransaction",{"connectorId":1,"idTag":"RFID-1","meterStart":0,"timestamp":"2026-11-20T00:00:00Z"}]'
+# passed=true action=StartTransaction
+
 moon run cmd/main -- profile '<profile-json>' 120 42
 # limit=22000 unit=W profile=8 capped=false
 ```
@@ -136,6 +146,7 @@ moon run cmd/main -- profile '<profile-json>' 120 42
 moon run examples/frame_roundtrip
 moon run examples/session_walkthrough
 moon run examples/profile_eval
+moon run examples/conformance_audit
 ```
 
 ## 明确不做
@@ -159,6 +170,7 @@ moon build
 moon run examples/frame_roundtrip
 moon run examples/session_walkthrough
 moon run examples/profile_eval
+moon run examples/conformance_audit
 moon package --list
 ```
 
