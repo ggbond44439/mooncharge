@@ -896,3 +896,272 @@ test "empty and optional core confirmations remain strict" {
     @mooncharge.ClearCacheStatus::Accepted,
   )
 }
+
+///|
+test "pending calls correlate results by message id and action" {
+  let table = match
+    @mooncharge.PendingCallTable::new(@mooncharge.OcppVersion::V16J, 2) {
+    Ok(table) => table
+    Err(_) => fail("expected pending-call table")
+  }
+  assert_eq(
+    table.insert(
+      @mooncharge.MessageId::Text("start-1"),
+      "StartTransaction",
+      @mooncharge.MessageDirection::ChargePointToCentralSystem,
+      100,
+    ),
+    Ok(()),
+  )
+  let response = parsed_frame(
+    "[3,\"start-1\",{\"transactionId\":7,\"idTagInfo\":{\"status\":\"Accepted\"}}]",
+  )
+  let correlated = match
+    table.complete(
+      response,
+      @mooncharge.MessageDirection::CentralSystemToChargePoint,
+      50,
+    ) {
+    Ok(value) => value
+    Err(_) => fail("expected correlated response")
+  }
+  match correlated {
+    @mooncharge.CorrelatedResponse::Result(id, action, payload) => {
+      assert_eq(id, @mooncharge.MessageId::Text("start-1"))
+      assert_eq(action, "StartTransaction")
+      assert_true(payload.stringify().contains("\"transactionId\":7"))
+    }
+    _ => fail("expected successful result")
+  }
+  assert_eq(table.pending_count(), 0)
+}
+
+///|
+test "pending calls preserve CALLERROR as a correlated response" {
+  let table = match
+    @mooncharge.PendingCallTable::new(@mooncharge.OcppVersion::V16J, 2) {
+    Ok(table) => table
+    Err(_) => fail("expected pending-call table")
+  }
+  assert_eq(
+    table.insert(
+      @mooncharge.MessageId::Number("42"),
+      "Reset",
+      @mooncharge.MessageDirection::CentralSystemToChargePoint,
+      200,
+    ),
+    Ok(()),
+  )
+  let response = parsed_frame("[4,42,\"SecurityError\",\"rejected\",{}]")
+  match
+    table.complete(
+      response,
+      @mooncharge.MessageDirection::ChargePointToCentralSystem,
+      100,
+    ) {
+    Ok(@mooncharge.CorrelatedResponse::Error(id, action, error)) => {
+      assert_eq(id, @mooncharge.MessageId::Number("42"))
+      assert_eq(action, "Reset")
+      assert_eq(error.code, @mooncharge.RpcErrorCode::SecurityError)
+    }
+    _ => fail("expected correlated CALLERROR")
+  }
+}
+
+///|
+test "pending calls enforce direction capacity duplicate and null ids" {
+  let table = match
+    @mooncharge.PendingCallTable::new(@mooncharge.OcppVersion::V16J, 1) {
+    Ok(table) => table
+    Err(_) => fail("expected pending-call table")
+  }
+  assert_eq(
+    table.insert(
+      @mooncharge.MessageId::Null,
+      "Heartbeat",
+      @mooncharge.MessageDirection::ChargePointToCentralSystem,
+      100,
+    ),
+    Err(@mooncharge.CorrelationError::NullMessageId),
+  )
+  assert_eq(
+    table.insert(
+      @mooncharge.MessageId::Text("x"),
+      "Heartbeat",
+      @mooncharge.MessageDirection::CentralSystemToChargePoint,
+      100,
+    ),
+    Err(
+      @mooncharge.CorrelationError::WrongDirection(
+        @mooncharge.MessageDirection::ChargePointToCentralSystem,
+        @mooncharge.MessageDirection::CentralSystemToChargePoint,
+      ),
+    ),
+  )
+  assert_eq(
+    table.insert(
+      @mooncharge.MessageId::Text("x"),
+      "Heartbeat",
+      @mooncharge.MessageDirection::ChargePointToCentralSystem,
+      100,
+    ),
+    Ok(()),
+  )
+  assert_eq(
+    table.insert(
+      @mooncharge.MessageId::Text("x"),
+      "Heartbeat",
+      @mooncharge.MessageDirection::ChargePointToCentralSystem,
+      100,
+    ),
+    Err(
+      @mooncharge.CorrelationError::DuplicateMessageId(
+        @mooncharge.MessageId::Text("x"),
+      ),
+    ),
+  )
+  assert_eq(
+    table.insert(
+      @mooncharge.MessageId::Text("y"),
+      "Heartbeat",
+      @mooncharge.MessageDirection::ChargePointToCentralSystem,
+      100,
+    ),
+    Err(@mooncharge.CorrelationError::TableFull(1)),
+  )
+}
+
+///|
+test "pending calls reject wrong response direction and unknown ids" {
+  let table = match
+    @mooncharge.PendingCallTable::new(@mooncharge.OcppVersion::V16J, 2) {
+    Ok(table) => table
+    Err(_) => fail("expected pending-call table")
+  }
+  assert_eq(
+    table.insert(
+      @mooncharge.MessageId::Text("hb"),
+      "Heartbeat",
+      @mooncharge.MessageDirection::ChargePointToCentralSystem,
+      100,
+    ),
+    Ok(()),
+  )
+  let response = parsed_frame(
+    "[3,\"hb\",{\"currentTime\":\"2026-11-20T00:00:00Z\"}]",
+  )
+  assert_eq(
+    table.complete(
+      response,
+      @mooncharge.MessageDirection::ChargePointToCentralSystem,
+      50,
+    ),
+    Err(
+      @mooncharge.CorrelationError::WrongDirection(
+        @mooncharge.MessageDirection::CentralSystemToChargePoint,
+        @mooncharge.MessageDirection::ChargePointToCentralSystem,
+      ),
+    ),
+  )
+  assert_eq(table.pending_count(), 1)
+  assert_eq(
+    table.complete(
+      parsed_frame("[3,\"missing\",{}]"),
+      @mooncharge.MessageDirection::CentralSystemToChargePoint,
+      50,
+    ),
+    Err(
+      @mooncharge.CorrelationError::UnknownMessageId(
+        @mooncharge.MessageId::Text("missing"),
+      ),
+    ),
+  )
+}
+
+///|
+test "pending calls expire and enforce version matching" {
+  let table = match
+    @mooncharge.PendingCallTable::new(@mooncharge.OcppVersion::V16J, 2) {
+    Ok(table) => table
+    Err(_) => fail("expected pending-call table")
+  }
+  assert_eq(
+    table.insert(
+      @mooncharge.MessageId::Text("expired"),
+      "Heartbeat",
+      @mooncharge.MessageDirection::ChargePointToCentralSystem,
+      10,
+    ),
+    Ok(()),
+  )
+  let expired = table.expire(10)
+  assert_eq(expired.length(), 1)
+  assert_eq(table.pending_count(), 0)
+  let frame = parsed_frame("[2,\"v2\",\"Heartbeat\",{}]")
+  let unsupported : @mooncharge.VersionedFrame = {
+    version: @mooncharge.OcppVersion::V201,
+    frame,
+  }
+  assert_eq(
+    table.complete_versioned(
+      unsupported,
+      @mooncharge.MessageDirection::CentralSystemToChargePoint,
+      5,
+    ),
+    Err(
+      @mooncharge.CorrelationError::VersionMismatch(
+        @mooncharge.OcppVersion::V16J,
+        @mooncharge.OcppVersion::V201,
+      ),
+    ),
+  )
+}
+
+///|
+test "pending calls reject invalid construction and completion frames" {
+  assert_eq(
+    @mooncharge.PendingCallTable::new(@mooncharge.OcppVersion::V16J, 0),
+    Err(@mooncharge.CorrelationError::InvalidMaxPending(0)),
+  )
+  assert_eq(
+    @mooncharge.PendingCallTable::new(@mooncharge.OcppVersion::V201, 1),
+    Err(
+      @mooncharge.CorrelationError::UnsupportedVersion(
+        @mooncharge.OcppVersion::V201,
+      ),
+    ),
+  )
+  let table = match
+    @mooncharge.PendingCallTable::new(@mooncharge.OcppVersion::V16J, 1) {
+    Ok(table) => table
+    Err(_) => fail("expected pending-call table")
+  }
+  assert_eq(
+    table.complete(
+      parsed_frame("[2,\"not-response\",\"Heartbeat\",{}]"),
+      @mooncharge.MessageDirection::CentralSystemToChargePoint,
+      0,
+    ),
+    Err(@mooncharge.CorrelationError::NotAResponse),
+  )
+  assert_eq(
+    table.insert(
+      @mooncharge.MessageId::Text("late"),
+      "Heartbeat",
+      @mooncharge.MessageDirection::ChargePointToCentralSystem,
+      10,
+    ),
+    Ok(()),
+  )
+  assert_eq(
+    table.complete(
+      parsed_frame("[3,\"late\",{\"currentTime\":\"later\"}]"),
+      @mooncharge.MessageDirection::CentralSystemToChargePoint,
+      10,
+    ),
+    Err(
+      @mooncharge.CorrelationError::Expired(@mooncharge.MessageId::Text("late")),
+    ),
+  )
+  assert_eq(table.pending_count(), 0)
+}

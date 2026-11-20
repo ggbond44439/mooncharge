@@ -546,3 +546,27 @@ pub extend UnlockConnectorResponse with Eq::{not_equal, equal}
 
 ///|
 pub extend UnlockConnectorResponse with @debug.Debug::{to_repr}
+
+///|
+pub extend PendingCall with Eq::{not_equal, equal}
+
+///|
+pub extend PendingCall with @debug.Debug::{to_repr}
+
+///|
+pub extend CorrelatedResponse with Eq::{not_equal, equal}
+
+///|
+pub extend CorrelatedResponse with @debug.Debug::{to_repr}
+
+///|
+pub extend CorrelationError with Eq::{not_equal, equal}
+
+///|
+pub extend CorrelationError with @debug.Debug::{to_repr}
+
+///|
+pub extend PendingCallTable with Eq::{not_equal, equal}
+
+///|
+pub extend PendingCallTable with @debug.Debug::{to_repr}

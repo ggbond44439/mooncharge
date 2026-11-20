@@ -508,6 +508,33 @@ pub fn ConnectorSession::release_transaction(Self, Int32) -> Result[Self, Sessio
 pub fn ConnectorSession::to_repr(Self) -> @debug.Repr
 
 #derive(Eq, @debug.Debug)
+pub(all) enum CorrelatedResponse {
+  Result(MessageId, String, @json.Json)
+  Error(MessageId, String, RpcError)
+}
+pub fn CorrelatedResponse::equal(Self, Self) -> Bool
+pub fn CorrelatedResponse::not_equal(Self, Self) -> Bool
+pub fn CorrelatedResponse::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) enum CorrelationError {
+  InvalidMaxPending(Int32)
+  UnsupportedVersion(OcppVersion)
+  NullMessageId
+  UnknownAction
+  DuplicateMessageId(MessageId)
+  TableFull(Int32)
+  WrongDirection(MessageDirection, MessageDirection)
+  NotAResponse
+  UnknownMessageId(MessageId)
+  Expired(MessageId)
+  VersionMismatch(OcppVersion, OcppVersion)
+}
+pub fn CorrelationError::equal(Self, Self) -> Bool
+pub fn CorrelationError::not_equal(Self, Self) -> Bool
+pub fn CorrelationError::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
 pub(all) struct DataTransferRequest {
   vendor_id : String
   message_id : String?
@@ -831,6 +858,34 @@ pub(all) enum PayloadPhase {
 pub fn PayloadPhase::equal(Self, Self) -> Bool
 pub fn PayloadPhase::not_equal(Self, Self) -> Bool
 pub fn PayloadPhase::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) struct PendingCall {
+  id : MessageId
+  action : String
+  request_direction : MessageDirection
+  deadline : Int64
+  active : Bool
+}
+pub fn PendingCall::equal(Self, Self) -> Bool
+pub fn PendingCall::not_equal(Self, Self) -> Bool
+pub fn PendingCall::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) struct PendingCallTable {
+  version : OcppVersion
+  max_pending : Int32
+  calls : Array[PendingCall]
+}
+pub fn PendingCallTable::complete(Self, Frame, MessageDirection, Int64) -> Result[CorrelatedResponse, CorrelationError]
+pub fn PendingCallTable::complete_versioned(Self, VersionedFrame, MessageDirection, Int64) -> Result[CorrelatedResponse, CorrelationError]
+pub fn PendingCallTable::equal(Self, Self) -> Bool
+pub fn PendingCallTable::expire(Self, Int64) -> Array[PendingCall]
+pub fn PendingCallTable::insert(Self, MessageId, String, MessageDirection, Int64) -> Result[Unit, CorrelationError]
+pub fn PendingCallTable::new(OcppVersion, Int32) -> Result[Self, CorrelationError]
+pub fn PendingCallTable::not_equal(Self, Self) -> Bool
+pub fn PendingCallTable::pending_count(Self) -> Int32
+pub fn PendingCallTable::to_repr(Self) -> @debug.Repr
 
 #derive(Eq, @debug.Debug)
 pub(all) enum ProtocolError {

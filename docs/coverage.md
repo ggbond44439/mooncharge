@@ -108,6 +108,15 @@ available in `Frame::Call`.
 
 The session value contains no global state, timers, or hidden I/O.
 
+## Request correlation
+
+`PendingCallTable` stores outstanding CALL metadata by message id and explicit
+protocol version. `insert` rejects null ids, duplicate ids, wrong request
+directions, unknown actions and capacity overflow. `complete` accepts only
+CALLRESULT/CALLERROR, validates the response direction, removes successful
+entries, preserves CALLERROR as a correlated response and enforces caller-owned
+deadlines. `expire` separates timeout cleanup from wall-clock access.
+
 ## Charging profiles
 
 The evaluator checks:

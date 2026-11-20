@@ -30,6 +30,7 @@ MoonCharge 把这些容易出错的边界集中到一个无 I/O 的协议层中�
 - `FrameLimits` 资源边界：UTF-8 输入大小、嵌套深度、消息 ID、动作和 payload 字段数。
 - 默认拒绝重复 JSON key，同时允许调用方显式启用兼容模式。
 - 显式 `OcppVersion` 上下文；`VersionedFrame` 将帧、方向、类型分发和一致性审计绑定到协议版本。
+- 无 I/O 的 `PendingCallTable`，按消息 ID 关联 CALL 与 CALLRESULT/CALLERROR，并处理超时、容量、方向和重复 ID。
 - 完整 39 动作 OCPP 1.6 目录，包含方向、请求/确认必填字段和类型覆盖状态。
 - 帧级一致性审计：检查未知动作、方向错误、非对象 payload 和缺失必填字段。
 - 核心载荷的类型化解析和序列化：
@@ -171,6 +172,7 @@ moon run examples/frame_roundtrip
 moon run examples/session_walkthrough
 moon run examples/profile_eval
 moon run examples/conformance_audit
+moon run examples/request_correlation
 ```
 
 ## 明确不做
@@ -195,6 +197,7 @@ moon run examples/frame_roundtrip
 moon run examples/session_walkthrough
 moon run examples/profile_eval
 moon run examples/conformance_audit
+moon run examples/request_correlation
 moon package --list
 ```
 
