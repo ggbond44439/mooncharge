@@ -635,3 +635,75 @@ test "CLI exposes conformance summary action and audit" {
   assert_eq(invalid.exit_code, 1)
   assert_true(invalid.stdout.contains("missing-field:request:idTag"))
 }
+
+///|
+test "frame limits reject invalid configurations and oversized input" {
+  assert_eq(
+    @mooncharge.FrameLimits::new(max_input_bytes=0).validate(),
+    Err(@mooncharge.ProtocolError::InvalidLimits("max_input_bytes")),
+  )
+  let text = "[2,\"x\",\"Heartbeat\",{}]"
+  match
+    @mooncharge.parse_frame_with_limits(
+      text,
+      @mooncharge.FrameLimits::new(max_input_bytes=4),
+    ) {
+    Err(@mooncharge.ProtocolError::InputTooLong("frame", 4, actual)) =>
+      assert_true(actual > 4)
+    _ => fail("expected input size rejection")
+  }
+}
+
+///|
+test "frame limits count UTF-8 bytes for ids and actions" {
+  match
+    @mooncharge.parse_frame_with_limits(
+      "[2,\"😀\",\"Heartbeat\",{}]",
+      @mooncharge.FrameLimits::new(max_message_id_bytes=3),
+    ) {
+    Err(@mooncharge.ProtocolError::FieldTooLong("messageId", 3, 4)) => ()
+    _ => fail("expected UTF-8 id rejection")
+  }
+  assert_eq(
+    @mooncharge.parse_frame_with_limits(
+      "[2,\"x\",\"HeartbeatLong\",{}]",
+      @mooncharge.FrameLimits::new(max_action_bytes=8),
+    ),
+    Err(@mooncharge.ProtocolError::FieldTooLong("action", 8, 13)),
+  )
+}
+
+///|
+test "frame limits reject excessive payload fields and nesting" {
+  assert_eq(
+    @mooncharge.parse_frame_with_limits(
+      "[2,\"x\",\"Heartbeat\",{\"a\":1,\"b\":2}]",
+      @mooncharge.FrameLimits::new(max_payload_fields=1),
+    ),
+    Err(@mooncharge.ProtocolError::TooManyPayloadFields(1, 2)),
+  )
+  assert_eq(
+    @mooncharge.parse_frame_with_limits(
+      "[2,\"x\",\"Heartbeat\",{\"a\":[[[1]]]}]",
+      @mooncharge.FrameLimits::new(max_nesting_depth=2),
+    ),
+    Err(@mooncharge.ProtocolError::InvalidJson),
+  )
+}
+
+///|
+test "duplicate JSON keys are rejected by default" {
+  assert_eq(
+    @mooncharge.parse_frame("[2,\"x\",\"Heartbeat\",{\"a\":1,\"a\":2}]"),
+    Err(@mooncharge.ProtocolError::InvalidJson),
+  )
+  match
+    @mooncharge.parse_frame_with_limits(
+      "[2,\"x\",\"Heartbeat\",{\"a\":1,\"a\":2}]",
+      @mooncharge.FrameLimits::new(reject_duplicate_keys=false),
+    ) {
+    Ok(@mooncharge.Call(_, _, payload)) =>
+      assert_eq(payload.stringify(), "{\"a\":2}")
+    _ => fail("expected duplicate-key compatibility mode")
+  }
+}

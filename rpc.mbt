@@ -12,6 +12,10 @@ pub(all) enum ProtocolError {
   MissingField(String)
   InvalidField(String)
   UnsupportedValue(String, String)
+  InputTooLong(String, Int32, Int32)
+  InvalidLimits(String)
+  FieldTooLong(String, Int32, Int32)
+  TooManyPayloadFields(Int32, Int32)
 }
 
 ///|
@@ -28,7 +32,77 @@ pub fn ProtocolError::message(self : ProtocolError) -> String {
     InvalidField(name) => "invalid value for field '\{name}'"
     UnsupportedValue(field, value) =>
       "unsupported value '\{value}' for field '\{field}'"
+    InputTooLong(context, limit, actual) =>
+      "\{context} exceeds limit: \{actual} > \{limit} bytes"
+    InvalidLimits(name) => "invalid frame limit '\{name}'"
+    FieldTooLong(name, limit, actual) =>
+      "\{name} exceeds limit: \{actual} > \{limit} bytes"
+    TooManyPayloadFields(limit, actual) =>
+      "payload has too many fields: \{actual} > \{limit}"
   }
+}
+
+///|
+/// Resource limits applied before and during OCPP frame decoding.
+#derive(Eq, @debug.Debug)
+pub(all) struct FrameLimits {
+  max_input_bytes : Int32
+  max_nesting_depth : Int32
+  max_message_id_bytes : Int32
+  max_action_bytes : Int32
+  max_payload_fields : Int32
+  reject_duplicate_keys : Bool
+}
+
+///|
+pub fn FrameLimits::default() -> FrameLimits {
+  {
+    max_input_bytes: 1024 * 1024,
+    max_nesting_depth: 32,
+    max_message_id_bytes: 256,
+    max_action_bytes: 128,
+    max_payload_fields: 256,
+    reject_duplicate_keys: true,
+  }
+}
+
+///|
+pub fn FrameLimits::new(
+  max_input_bytes~ : Int32 = 1024 * 1024,
+  max_nesting_depth~ : Int32 = 32,
+  max_message_id_bytes~ : Int32 = 256,
+  max_action_bytes~ : Int32 = 128,
+  max_payload_fields~ : Int32 = 256,
+  reject_duplicate_keys~ : Bool = true,
+) -> FrameLimits {
+  {
+    max_input_bytes,
+    max_nesting_depth,
+    max_message_id_bytes,
+    max_action_bytes,
+    max_payload_fields,
+    reject_duplicate_keys,
+  }
+}
+
+///|
+pub fn FrameLimits::validate(self : FrameLimits) -> Result[Unit, ProtocolError] {
+  if self.max_input_bytes <= 0 {
+    return Err(InvalidLimits("max_input_bytes"))
+  }
+  if self.max_nesting_depth <= 0 {
+    return Err(InvalidLimits("max_nesting_depth"))
+  }
+  if self.max_message_id_bytes <= 0 {
+    return Err(InvalidLimits("max_message_id_bytes"))
+  }
+  if self.max_action_bytes <= 0 {
+    return Err(InvalidLimits("max_action_bytes"))
+  }
+  if self.max_payload_fields <= 0 {
+    return Err(InvalidLimits("max_payload_fields"))
+  }
+  Ok(())
 }
 
 ///|
@@ -164,12 +238,72 @@ fn json_object_or_error(value : Json) -> Result[Json, ProtocolError] {
 }
 
 ///|
-/// Parses one OCPP WebSocket text frame with strict structural validation.
+fn utf8_size(text : String) -> Int32 {
+  @utf8.encode(text).length()
+}
+
+///|
+fn check_message_id(
+  id : MessageId,
+  limits : FrameLimits,
+) -> Result[Unit, ProtocolError] {
+  let size = match id {
+    Text(value) | Number(value) => utf8_size(value)
+    Null => 4
+  }
+  if size > limits.max_message_id_bytes {
+    Err(FieldTooLong("messageId", limits.max_message_id_bytes, size))
+  } else {
+    Ok(())
+  }
+}
+
+///|
+fn check_payload(
+  payload : Json,
+  limits : FrameLimits,
+) -> Result[Unit, ProtocolError] {
+  let fields = match payload {
+    Json::Object(fields) => fields
+    _ => return Err(InvalidPayload)
+  }
+  if fields.length() > limits.max_payload_fields {
+    Err(TooManyPayloadFields(limits.max_payload_fields, fields.length()))
+  } else {
+    Ok(())
+  }
+}
+
+///|
+/// Parses one OCPP WebSocket text frame with strict structural validation and
+/// the default resource limits.
 pub fn parse_frame(text : String) -> Result[Frame, ProtocolError] {
+  parse_frame_with_limits(text, FrameLimits::default())
+}
+
+///|
+/// Parses one OCPP WebSocket text frame with caller-provided resource limits.
+pub fn parse_frame_with_limits(
+  text : String,
+  limits : FrameLimits,
+) -> Result[Frame, ProtocolError] {
+  match limits.validate() {
+    Ok(_) => ()
+    Err(error) => return Err(error)
+  }
   if text.is_empty() {
     return Err(InvalidJson)
   }
-  let root = @json.parse(text, max_nesting_depth=64, preserve_number_repr=true) catch {
+  let input_size = utf8_size(text)
+  if input_size > limits.max_input_bytes {
+    return Err(InputTooLong("frame", limits.max_input_bytes, input_size))
+  }
+  let root = @json.parse(
+    text,
+    max_nesting_depth=limits.max_nesting_depth,
+    reject_duplicate_keys=limits.reject_duplicate_keys,
+    preserve_number_repr=true,
+  ) catch {
     _ => return Err(InvalidJson)
   }
   let items = match root {
@@ -192,12 +326,24 @@ pub fn parse_frame(text : String) -> Result[Frame, ProtocolError] {
         Some(id) => id
         None => return Err(InvalidMessageId)
       }
+      match check_message_id(id, limits) {
+        Ok(_) => ()
+        Err(error) => return Err(error)
+      }
       let action = match items[2] {
         Json::String(action) if !action.is_empty() => action
         _ => return Err(InvalidAction)
       }
+      let action_size = utf8_size(action)
+      if action_size > limits.max_action_bytes {
+        return Err(FieldTooLong("action", limits.max_action_bytes, action_size))
+      }
       let payload = match json_object_or_error(items[3]) {
         Ok(payload) => payload
+        Err(error) => return Err(error)
+      }
+      match check_payload(payload, limits) {
+        Ok(_) => ()
         Err(error) => return Err(error)
       }
       Ok(Call(id, action, payload))
@@ -210,8 +356,16 @@ pub fn parse_frame(text : String) -> Result[Frame, ProtocolError] {
         Some(id) => id
         None => return Err(InvalidMessageId)
       }
+      match check_message_id(id, limits) {
+        Ok(_) => ()
+        Err(error) => return Err(error)
+      }
       let payload = match json_object_or_error(items[2]) {
         Ok(payload) => payload
+        Err(error) => return Err(error)
+      }
+      match check_payload(payload, limits) {
+        Ok(_) => ()
         Err(error) => return Err(error)
       }
       Ok(CallResult(id, payload))
@@ -224,6 +378,10 @@ pub fn parse_frame(text : String) -> Result[Frame, ProtocolError] {
         Some(id) => id
         None => return Err(InvalidMessageId)
       }
+      match check_message_id(id, limits) {
+        Ok(_) => ()
+        Err(error) => return Err(error)
+      }
       let code = match items[2] {
         Json::String(code) if !code.is_empty() => RpcErrorCode::parse(code)
         _ => return Err(InvalidField("errorCode"))
@@ -234,6 +392,10 @@ pub fn parse_frame(text : String) -> Result[Frame, ProtocolError] {
       }
       let details = match json_object_or_error(items[4]) {
         Ok(details) => details
+        Err(error) => return Err(error)
+      }
+      match check_payload(details, limits) {
+        Ok(_) => ()
         Err(error) => return Err(error)
       }
       Ok(CallError(id, { code, description, details, }))

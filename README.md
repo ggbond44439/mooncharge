@@ -27,6 +27,8 @@ MoonCharge 把这些容易出错的边界集中到一个无 I/O 的协议层中�
 
 - 严格 OCPP 1.6J JSON-RPC framing：`CALL`、`CALLRESULT`、`CALLERROR`。
 - 字符串、数字和 `null` 消息 id；数字 id 保留原始文本。
+- `FrameLimits` 资源边界：UTF-8 输入大小、嵌套深度、消息 ID、动作和 payload 字段数。
+- 默认拒绝重复 JSON key，同时允许调用方显式启用兼容模式。
 - 完整 39 动作 OCPP 1.6 目录，包含方向、请求/确认必填字段和类型覆盖状态。
 - 帧级一致性审计：检查未知动作、方向错误、非对象 payload 和缺失必填字段。
 - 核心载荷的类型化解析和序列化：

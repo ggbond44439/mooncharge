@@ -14,6 +14,12 @@ can be inspected even when its action has no typed payload yet.
 Unknown OCPP error-code strings are preserved as `RpcErrorCode::Unknown`.
 Unknown actions are preserved as `TypedCall::UnsupportedAction`.
 
+`parse_frame` applies `FrameLimits::default()`. Callers handling untrusted
+traffic can use `parse_frame_with_limits` to bound UTF-8 input bytes, nesting,
+message-id length, action length and top-level payload field count. Duplicate
+JSON keys are rejected by default to prevent ambiguous authorization or payload
+interpretation.
+
 ## Executable baseline
 
 The catalog contains 39 OCPP 1.6 actions and records their request direction,
