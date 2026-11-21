@@ -1689,3 +1689,104 @@ test "power conversion rejects phase mismatch and normalizes decisions" {
   assert_true(normalized.limit > 6_900.0)
   assert_eq(normalized.number_phases, Some(3))
 }
+
+///|
+test "charge point snapshots round-trip all persisted domains idempotently" {
+  let station = @mooncharge.ChargePointSession::new([1, 2]).unwrap()
+  station.connectors[0] = station.connectors[0]
+    .begin_transaction(100, "RFID-1", 5, "2026-11-21T00:00:00Z")
+    .unwrap()
+    .begin_charging()
+    .unwrap()
+  let reservations = @mooncharge.ReservationBook::new()
+  ignore(
+    reservations
+    .reserve(
+      {
+        connector_id: 2,
+        expiry_date: "2026-11-21T01:00:00Z",
+        id_tag: "RFID-2",
+        reservation_id: 200,
+        parent_id_tag: None,
+      },
+      2_000,
+    )
+    .unwrap(),
+  )
+  let local_auth = @mooncharge.LocalAuthorizationStore::new()
+  local_auth
+  .apply({
+    list_version: 1,
+    update_type: @mooncharge.LocalListUpdateType::Full,
+    local_authorization_list: [
+      {
+        id_tag: "RFID-1",
+        id_tag_info: {
+          status: @mooncharge.AuthorizationStatus::Accepted,
+          expiry_date: None,
+          parent_id_tag: None,
+        },
+      },
+    ],
+  })
+  .unwrap()
+  let validity = @mooncharge.EpochInterval::new(100, Some(2_000)).unwrap()
+  let timed = timed_profile(
+    profile(90, @mooncharge.ChargingProfilePurpose::TxDefaultProfile, 1, None, [
+      period(0, 16.0),
+    ]),
+    Some(validity),
+    100,
+    None,
+  )
+  let snapshot = @mooncharge.ChargePointSnapshot::new(
+    station,
+    reservations,
+    local_auth,
+    [timed],
+  ).unwrap()
+  let saved = @mooncharge.save_snapshot(snapshot).unwrap()
+  let restored = @mooncharge.load_snapshot(saved).unwrap()
+  assert_eq(restored, snapshot)
+  assert_eq(@mooncharge.save_snapshot(restored), Ok(saved))
+  assert_eq(restored.station.summary().active_transactions, 1)
+  assert_eq(restored.reservations.count(), 1)
+  assert_eq(restored.local_auth.list_version(), 1)
+  assert_eq(restored.timed_profiles.length(), 1)
+}
+
+///|
+test "legacy v1 snapshots migrate with ignored unknown fields" {
+  let restored = @mooncharge.load_snapshot(
+    "{\"version\":1,\"future\":true,\"connectors\":[{\"connectorId\":1,\"status\":\"Faulted\",\"future\":1},{\"connectorId\":2,\"status\":\"Available\"}]}",
+  ).unwrap()
+  assert_eq(restored.station.station_mode, @mooncharge.StationMode::Operative)
+  assert_eq(restored.station.connectors.length(), 2)
+  assert_eq(
+    restored.station.connectors[0].status,
+    @mooncharge.ChargePointStatus::Faulted,
+  )
+  assert_eq(restored.reservations.count(), 0)
+  assert_eq(restored.local_auth.list_version(), 0)
+  assert_eq(restored.timed_profiles.length(), 0)
+}
+
+///|
+test "snapshot loader rejects malformed duplicate and unsupported documents" {
+  assert_eq(
+    @mooncharge.load_snapshot("{"),
+    Err(@mooncharge.SnapshotError::InvalidJson),
+  )
+  assert_eq(
+    @mooncharge.load_snapshot(
+      "{\"schemaVersion\":2,\"station\":{\"mode\":\"Operative\",\"mode\":\"Inoperative\",\"connectors\":[]},\"reservations\":[],\"localAuth\":{\"version\":0,\"entries\":[]},\"timedProfiles\":[]}",
+    ),
+    Err(@mooncharge.SnapshotError::InvalidJson),
+  )
+  assert_eq(
+    @mooncharge.load_snapshot(
+      "{\"schemaVersion\":99,\"station\":{},\"reservations\":[],\"localAuth\":{},\"timedProfiles\":[]}",
+    ),
+    Err(@mooncharge.SnapshotError::UnsupportedSchemaVersion(99)),
+  )
+}

@@ -155,6 +155,14 @@ single-phase AC, three-phase line-to-line AC and three-phase line-to-neutral AC.
 Voltage, power factor and schedule phase count are validated before conversion;
 the evaluator never silently converts between A and W.
 
+## Persistence snapshots
+
+`ChargePointSnapshot` defines schema version 2 with station mode, connectors,
+transactions, reservations, local authorization lists and timed charging
+profiles. `save_snapshot` and `load_snapshot` validate consistency and duplicate
+identities. Version 1 connector-only documents are migrated automatically, and
+unknown JSON fields are ignored for forward-compatible reads.
+
 ## Deliberately out of scope
 
 - WebSocket and HTTP transport

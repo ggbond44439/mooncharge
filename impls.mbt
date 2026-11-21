@@ -738,3 +738,15 @@ pub extend ElectricalModel with Eq::{not_equal, equal}
 
 ///|
 pub extend ElectricalModel with @debug.Debug::{to_repr}
+
+///|
+pub extend SnapshotError with Eq::{not_equal, equal}
+
+///|
+pub extend SnapshotError with @debug.Debug::{to_repr}
+
+///|
+pub extend ChargePointSnapshot with Eq::{not_equal, equal}
+
+///|
+pub extend ChargePointSnapshot with @debug.Debug::{to_repr}

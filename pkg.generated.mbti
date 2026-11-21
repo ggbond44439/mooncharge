@@ -7,6 +7,8 @@ import {
 }
 
 // Values
+pub const SNAPSHOT_SCHEMA_VERSION : Int32 = 2
+
 pub fn action_direction(String, Bool) -> Result[MessageDirection, ProtocolError]
 
 pub fn action_specs() -> Array[ActionSpec]
@@ -39,6 +41,8 @@ pub fn find_action_spec(String) -> ActionSpec?
 
 pub fn find_action_spec_for(OcppVersion, String) -> Result[ActionSpec?, ProtocolError]
 
+pub fn load_snapshot(String) -> Result[ChargePointSnapshot, SnapshotError]
+
 pub fn normalize_charging_decision(ChargingDecision, ChargingRateUnit, ElectricalModel) -> Result[ChargingDecision, PowerConversionError]
 
 pub fn parse_frame(String) -> Result[Frame, ProtocolError]
@@ -50,6 +54,8 @@ pub fn parse_versioned_frame(OcppVersion, String) -> Result[VersionedFrame, Prot
 pub fn parse_versioned_frame_with_limits(OcppVersion, String, FrameLimits) -> Result[VersionedFrame, ProtocolError]
 
 pub fn run_cli(Array[String]) -> CliOutput
+
+pub fn save_snapshot(ChargePointSnapshot) -> Result[String, SnapshotError]
 
 pub fn versioned_action_direction(OcppVersion, String, Bool) -> Result[MessageDirection, ProtocolError]
 
@@ -256,6 +262,20 @@ pub fn ChargePointSession::not_equal(Self, Self) -> Bool
 pub fn ChargePointSession::remove_connector(Self, Int32) -> Result[Unit, StationError]
 pub fn ChargePointSession::summary(Self) -> StationSummary
 pub fn ChargePointSession::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) struct ChargePointSnapshot {
+  station : ChargePointSession
+  reservations : ReservationBook
+  local_auth : LocalAuthorizationStore
+  timed_profiles : Array[TimedChargingProfile]
+}
+pub fn ChargePointSnapshot::equal(Self, Self) -> Bool
+pub fn ChargePointSnapshot::new(ChargePointSession, ReservationBook, LocalAuthorizationStore, Array[TimedChargingProfile]) -> Result[Self, SnapshotError]
+pub fn ChargePointSnapshot::not_equal(Self, Self) -> Bool
+pub fn ChargePointSnapshot::to_json(Self) -> @json.Json
+pub fn ChargePointSnapshot::to_repr(Self) -> @debug.Repr
+pub fn ChargePointSnapshot::to_string(Self) -> String
 
 #derive(Eq, @debug.Debug)
 pub(all) enum ChargePointStatus {
@@ -1365,6 +1385,23 @@ pub fn SetChargingProfileResponse::from_json(@json.Json) -> Result[Self, Protoco
 pub fn SetChargingProfileResponse::not_equal(Self, Self) -> Bool
 pub fn SetChargingProfileResponse::to_json(Self) -> @json.Json
 pub fn SetChargingProfileResponse::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) enum SnapshotError {
+  InvalidJson
+  UnsupportedSchemaVersion(Int32)
+  MissingField(String)
+  InvalidField(String)
+  DuplicateConnectorId(Int32)
+  DuplicateTransactionId(Int32)
+  DuplicateReservationId(Int32)
+  ConnectorAlreadyReserved(Int32)
+  DuplicateLocalIdTag(String)
+  InconsistentStation(Array[StationConsistencyIssue])
+}
+pub fn SnapshotError::equal(Self, Self) -> Bool
+pub fn SnapshotError::not_equal(Self, Self) -> Bool
+pub fn SnapshotError::to_repr(Self) -> @debug.Repr
 
 #derive(Eq, @debug.Debug)
 pub(all) struct StartTransactionRequest {
