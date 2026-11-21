@@ -501,10 +501,10 @@ test "OCPP 1.6J catalog covers every registered action" {
 test "conformance summary reflects the current typed coverage" {
   assert_eq(@mooncharge.conformance_summary(), {
     total_actions: 39,
-    typed_requests: 21,
-    typed_responses: 21,
-    catalog_only_requests: 18,
-    catalog_only_responses: 18,
+    typed_requests: 24,
+    typed_responses: 24,
+    catalog_only_requests: 15,
+    catalog_only_responses: 15,
   })
 }
 
@@ -621,7 +621,7 @@ test "CLI exposes conformance summary action and audit" {
   assert_eq(summary.exit_code, 0)
   assert_eq(
     summary.stdout,
-    "actions=39 typed_requests=21 typed_responses=21 catalog_only_requests=18 catalog_only_responses=18",
+    "actions=39 typed_requests=24 typed_responses=24 catalog_only_requests=15 catalog_only_responses=15",
   )
   let action = @mooncharge.run_cli(["conformance", "action", "StartTransaction"])
   assert_eq(action.exit_code, 0)
@@ -1296,4 +1296,162 @@ test "station consistency diagnostics expose corrupted snapshots" {
     @mooncharge.StationConsistencyIssue::AvailableWithTransaction(2),
     @mooncharge.StationConsistencyIssue::InoperativeWithActiveTransaction(2),
   ])
+}
+
+///|
+test "reservation messages and lifecycle are typed" {
+  let payload = match
+    parsed_frame(
+      "[2,\"reserve\",\"ReserveNow\",{\"connectorId\":1,\"expiryDate\":\"2026-11-21T01:00:00Z\",\"idTag\":\"RFID-R\",\"reservationId\":22}]",
+    ) {
+    @mooncharge.Call(_, _, payload) => payload
+    _ => fail("expected CALL")
+  }
+  let request = match @mooncharge.ReserveNowRequest::from_json(payload) {
+    Ok(request) => request
+    Err(error) => fail(error.message())
+  }
+  assert_eq(request.connector_id, 1)
+  let book = @mooncharge.ReservationBook::new()
+  match book.reserve(request, 100) {
+    Ok(reservation) => assert_eq(reservation.reservation_id, 22)
+    Err(_) => fail("failed to reserve connector")
+  }
+  assert_eq(book.count(), 1)
+  assert_eq(
+    book.reserve(
+      {
+        connector_id: 2,
+        expiry_date: "later",
+        id_tag: "RFID-X",
+        reservation_id: 22,
+        parent_id_tag: None,
+      },
+      50,
+    ),
+    Err(@mooncharge.ReservationError::DuplicateReservationId(22)),
+  )
+  match book.claim(1, "RFID-R", Some(22), 50) {
+    Ok(reservation) => assert_eq(reservation.connector_id, 1)
+    Err(_) => fail("failed to claim reservation")
+  }
+  assert_eq(book.count(), 0)
+}
+
+///|
+test "reservation claim rejects mismatches and expiry" {
+  let book = @mooncharge.ReservationBook::new()
+  match
+    book.reserve(
+      {
+        connector_id: 3,
+        expiry_date: "soon",
+        id_tag: "RFID-3",
+        reservation_id: 30,
+        parent_id_tag: None,
+      },
+      10,
+    ) {
+    Ok(_) => ()
+    Err(_) => fail("failed to reserve")
+  }
+  assert_eq(
+    book.claim(3, "WRONG", Some(30), 5),
+    Err(@mooncharge.ReservationError::IdTagMismatch("RFID-3", "WRONG")),
+  )
+  assert_eq(
+    book.claim(2, "RFID-3", Some(30), 5),
+    Err(@mooncharge.ReservationError::ConnectorMismatch(3, 2)),
+  )
+  assert_eq(
+    book.claim(3, "RFID-3", Some(30), 10),
+    Err(@mooncharge.ReservationError::ExpiredReservation(30)),
+  )
+  assert_eq(book.count(), 0)
+}
+
+///|
+test "local authorization list supports full and differential updates" {
+  let payload = match
+    parsed_frame(
+      "[2,\"local\",\"SendLocalList\",{\"listVersion\":1,\"updateType\":\"Full\",\"localAuthorizationList\":[{\"idTag\":\"A\",\"idTagInfo\":{\"status\":\"Accepted\"}}]}]",
+    ) {
+    @mooncharge.Call(_, _, payload) => payload
+    _ => fail("expected CALL")
+  }
+  let request = match @mooncharge.SendLocalListRequest::from_json(payload) {
+    Ok(request) => request
+    Err(error) => fail(error.message())
+  }
+  let store = @mooncharge.LocalAuthorizationStore::new()
+  assert_eq(store.apply(request), Ok(()))
+  assert_eq(store.list_version(), 1)
+  let auth = match store.authorize("A") {
+    Some(info) => info
+    None => fail("missing local authorization")
+  }
+  assert_eq(auth.status, @mooncharge.AuthorizationStatus::Accepted)
+  let differential_payload = match
+    parsed_frame(
+      "[2,\"local2\",\"SendLocalList\",{\"listVersion\":2,\"updateType\":\"Differential\",\"localAuthorizationList\":[{\"idTag\":\"A\",\"idTagInfo\":{\"status\":\"Blocked\"}},{\"idTag\":\"B\",\"idTagInfo\":{\"status\":\"Accepted\"}}]}]",
+    ) {
+    @mooncharge.Call(_, _, payload) => payload
+    _ => fail("expected CALL")
+  }
+  let differential = match
+    @mooncharge.SendLocalListRequest::from_json(differential_payload) {
+    Ok(request) => request
+    Err(error) => fail(error.message())
+  }
+  assert_eq(store.apply(differential), Ok(()))
+  let blocked = match store.authorize("A") {
+    Some(info) => info
+    None => fail("missing updated authorization")
+  }
+  assert_eq(blocked.status, @mooncharge.AuthorizationStatus::Blocked)
+  assert_eq(
+    store.authorize("B").unwrap().status,
+    @mooncharge.AuthorizationStatus::Accepted,
+  )
+}
+
+///|
+test "local authorization updates reject stale versions and duplicate tags" {
+  let store = @mooncharge.LocalAuthorizationStore::new()
+  let duplicate : @mooncharge.SendLocalListRequest = {
+    list_version: 1,
+    update_type: @mooncharge.LocalListUpdateType::Full,
+    local_authorization_list: [
+      {
+        id_tag: "A",
+        id_tag_info: {
+          status: @mooncharge.AuthorizationStatus::Accepted,
+          expiry_date: None,
+          parent_id_tag: None,
+        },
+      },
+      {
+        id_tag: "A",
+        id_tag_info: {
+          status: @mooncharge.AuthorizationStatus::Blocked,
+          expiry_date: None,
+          parent_id_tag: None,
+        },
+      },
+    ],
+  }
+  assert_eq(
+    store.apply(duplicate),
+    Err(@mooncharge.LocalAuthorizationError::DuplicateIdTag("A")),
+  )
+  let version_one : @mooncharge.SendLocalListRequest = {
+    list_version: 1,
+    update_type: @mooncharge.LocalListUpdateType::Full,
+    local_authorization_list: [],
+  }
+  assert_eq(store.apply(version_one), Ok(()))
+  assert_eq(
+    store.apply(version_one),
+    Err(@mooncharge.LocalAuthorizationError::VersionMismatch(1, 1)),
+  )
 }

@@ -46,6 +46,7 @@ jobs:
           moon run examples/conformance_audit
           moon run examples/request_correlation
           moon run examples/station_session
+          moon run examples/reservation_auth
 
       - name: CLI smoke test
         run: |

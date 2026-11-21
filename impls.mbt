@@ -606,3 +606,93 @@ pub extend ChargePointSession with Eq::{not_equal, equal}
 
 ///|
 pub extend ChargePointSession with @debug.Debug::{to_repr}
+
+///|
+pub extend ReservationStatus with Eq::{not_equal, equal}
+
+///|
+pub extend ReservationStatus with @debug.Debug::{to_repr}
+
+///|
+pub extend ReserveNowRequest with Eq::{not_equal, equal}
+
+///|
+pub extend ReserveNowRequest with @debug.Debug::{to_repr}
+
+///|
+pub extend ReserveNowResponse with Eq::{not_equal, equal}
+
+///|
+pub extend ReserveNowResponse with @debug.Debug::{to_repr}
+
+///|
+pub extend Reservation with Eq::{not_equal, equal}
+
+///|
+pub extend Reservation with @debug.Debug::{to_repr}
+
+///|
+pub extend ReservationError with Eq::{not_equal, equal}
+
+///|
+pub extend ReservationError with @debug.Debug::{to_repr}
+
+///|
+pub extend ReservationBook with Eq::{not_equal, equal}
+
+///|
+pub extend ReservationBook with @debug.Debug::{to_repr}
+
+///|
+pub extend LocalListUpdateType with Eq::{not_equal, equal}
+
+///|
+pub extend LocalListUpdateType with @debug.Debug::{to_repr}
+
+///|
+pub extend LocalAuthorizationEntry with Eq::{not_equal, equal}
+
+///|
+pub extend LocalAuthorizationEntry with @debug.Debug::{to_repr}
+
+///|
+pub extend SendLocalListRequest with Eq::{not_equal, equal}
+
+///|
+pub extend SendLocalListRequest with @debug.Debug::{to_repr}
+
+///|
+pub extend LocalListUpdateStatus with Eq::{not_equal, equal}
+
+///|
+pub extend LocalListUpdateStatus with @debug.Debug::{to_repr}
+
+///|
+pub extend SendLocalListResponse with Eq::{not_equal, equal}
+
+///|
+pub extend SendLocalListResponse with @debug.Debug::{to_repr}
+
+///|
+pub extend GetLocalListVersionRequest with Eq::{not_equal, equal}
+
+///|
+pub extend GetLocalListVersionRequest with @debug.Debug::{to_repr}
+
+///|
+pub extend GetLocalListVersionResponse with Eq::{not_equal, equal}
+
+///|
+pub extend GetLocalListVersionResponse with @debug.Debug::{to_repr}
+
+///|
+pub extend LocalAuthorizationError with Eq::{not_equal, equal}
+
+///|
+pub extend LocalAuthorizationError with @debug.Debug::{to_repr}
+
+///|
+pub extend LocalAuthorizationStore with Eq::{not_equal, equal}
+
+///|
+pub extend LocalAuthorizationStore with @debug.Debug::{to_repr}

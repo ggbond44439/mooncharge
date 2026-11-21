@@ -8,6 +8,7 @@ pub(all) enum TypedCall {
   DataTransfer(DataTransferRequest)
   DiagnosticsStatusNotification(DiagnosticsStatusNotificationRequest)
   FirmwareStatusNotification(FirmwareStatusNotificationRequest)
+  GetLocalListVersion(GetLocalListVersionRequest)
   Heartbeat(HeartbeatRequest)
   StatusNotification(StatusNotificationRequest)
   StartTransaction(StartTransactionRequest)
@@ -15,12 +16,14 @@ pub(all) enum TypedCall {
   MeterValues(MeterValuesRequest)
   RemoteStartTransaction(RemoteStartTransactionRequest)
   RemoteStopTransaction(RemoteStopTransactionRequest)
+  ReserveNow(ReserveNowRequest)
   Reset(ResetRequest)
   ChangeAvailability(ChangeAvailabilityRequest)
   ChangeConfiguration(ChangeConfigurationRequest)
   GetConfiguration(GetConfigurationRequest)
   SetChargingProfile(SetChargingProfileRequest)
   ClearChargingProfile(ClearChargingProfileRequest)
+  SendLocalList(SendLocalListRequest)
   UnlockConnector(UnlockConnectorRequest)
   UnsupportedAction(String, Json)
 }
@@ -35,6 +38,7 @@ pub fn TypedCall::action_name(self : TypedCall) -> String {
     DataTransfer(_) => "DataTransfer"
     DiagnosticsStatusNotification(_) => "DiagnosticsStatusNotification"
     FirmwareStatusNotification(_) => "FirmwareStatusNotification"
+    GetLocalListVersion(_) => "GetLocalListVersion"
     Heartbeat(_) => "Heartbeat"
     StatusNotification(_) => "StatusNotification"
     StartTransaction(_) => "StartTransaction"
@@ -42,12 +46,14 @@ pub fn TypedCall::action_name(self : TypedCall) -> String {
     MeterValues(_) => "MeterValues"
     RemoteStartTransaction(_) => "RemoteStartTransaction"
     RemoteStopTransaction(_) => "RemoteStopTransaction"
+    ReserveNow(_) => "ReserveNow"
     Reset(_) => "Reset"
     ChangeAvailability(_) => "ChangeAvailability"
     ChangeConfiguration(_) => "ChangeConfiguration"
     GetConfiguration(_) => "GetConfiguration"
     SetChargingProfile(_) => "SetChargingProfile"
     ClearChargingProfile(_) => "ClearChargingProfile"
+    SendLocalList(_) => "SendLocalList"
     UnlockConnector(_) => "UnlockConnector"
     UnsupportedAction(action, _) => action
   }
@@ -81,6 +87,8 @@ fn parse_typed_call(
       )
     "FirmwareStatusNotification" =>
       FirmwareStatusNotification(parse_firmware_status_notification(payload))
+    "GetLocalListVersion" =>
+      GetLocalListVersion(parse_get_local_list_version(payload))
     "Heartbeat" => Heartbeat(parse_heartbeat_request(payload))
     "StatusNotification" =>
       StatusNotification(parse_status_notification_request(payload))
@@ -92,6 +100,7 @@ fn parse_typed_call(
     "RemoteStartTransaction" =>
       RemoteStartTransaction(parse_remote_start(payload))
     "RemoteStopTransaction" => RemoteStopTransaction(parse_remote_stop(payload))
+    "ReserveNow" => ReserveNow(parse_reserve_now(payload))
     "Reset" => Reset(parse_reset_request(payload))
     "ChangeAvailability" =>
       ChangeAvailability(parse_change_availability(payload))
@@ -102,6 +111,7 @@ fn parse_typed_call(
       SetChargingProfile(parse_set_charging_profile(payload))
     "ClearChargingProfile" =>
       ClearChargingProfile(parse_clear_charging_profile(payload))
+    "SendLocalList" => SendLocalList(parse_send_local_list(payload))
     "UnlockConnector" => UnlockConnector(parse_unlock_connector(payload))
     other => UnsupportedAction(other, payload)
   }

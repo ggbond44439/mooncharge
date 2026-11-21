@@ -114,7 +114,7 @@ pub fn action_specs() -> Array[ActionSpec] {
     spec(GetInstalledCertificateIds, false, false, ["certificateType"], [
       "status",
     ]),
-    spec(GetLocalListVersion, false, false, [], ["listVersion"]),
+    spec(GetLocalListVersion, true, true, [], ["listVersion"]),
     spec(GetLog, false, false, ["logType", "requestId", "log"], ["status"]),
     spec(Heartbeat, true, true, [], ["currentTime"]),
     spec(InstallCertificate, false, false, ["certificateType", "certificate"], [
@@ -126,14 +126,14 @@ pub fn action_specs() -> Array[ActionSpec] {
     spec(RemoteStopTransaction, true, true, ["transactionId"], ["status"]),
     spec(
       ReserveNow,
-      false,
-      false,
+      true,
+      true,
       ["connectorId", "expiryDate", "idTag", "reservationId"],
       ["status"],
     ),
     spec(Reset, true, true, ["type"], ["status"]),
     spec(SecurityEventNotification, false, false, ["type", "timestamp"], []),
-    spec(SendLocalList, false, false, ["listVersion", "updateType"], ["status"]),
+    spec(SendLocalList, true, true, ["listVersion", "updateType"], ["status"]),
     spec(
       SetChargingProfile,
       true,

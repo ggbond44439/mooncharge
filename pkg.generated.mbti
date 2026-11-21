@@ -723,6 +723,27 @@ pub fn GetConfigurationResponse::to_json(Self) -> @json.Json
 pub fn GetConfigurationResponse::to_repr(Self) -> @debug.Repr
 
 #derive(Eq, @debug.Debug)
+pub struct GetLocalListVersionRequest {
+  marker : Unit
+}
+pub fn GetLocalListVersionRequest::equal(Self, Self) -> Bool
+pub fn GetLocalListVersionRequest::from_json(@json.Json) -> Result[Self, ProtocolError]
+pub fn GetLocalListVersionRequest::new() -> Self
+pub fn GetLocalListVersionRequest::not_equal(Self, Self) -> Bool
+pub fn GetLocalListVersionRequest::to_json(Self) -> @json.Json
+pub fn GetLocalListVersionRequest::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) struct GetLocalListVersionResponse {
+  list_version : Int32
+}
+pub fn GetLocalListVersionResponse::equal(Self, Self) -> Bool
+pub fn GetLocalListVersionResponse::from_json(@json.Json) -> Result[Self, ProtocolError]
+pub fn GetLocalListVersionResponse::not_equal(Self, Self) -> Bool
+pub fn GetLocalListVersionResponse::to_json(Self) -> @json.Json
+pub fn GetLocalListVersionResponse::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
 pub struct HeartbeatRequest {
   marker : Unit
 }
@@ -754,6 +775,61 @@ pub fn IdTagInfo::from_json(@json.Json) -> Result[Self, ProtocolError]
 pub fn IdTagInfo::not_equal(Self, Self) -> Bool
 pub fn IdTagInfo::to_json(Self) -> @json.Json
 pub fn IdTagInfo::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) struct LocalAuthorizationEntry {
+  id_tag : String
+  id_tag_info : IdTagInfo
+}
+pub fn LocalAuthorizationEntry::equal(Self, Self) -> Bool
+pub fn LocalAuthorizationEntry::from_json(@json.Json) -> Result[Self, ProtocolError]
+pub fn LocalAuthorizationEntry::not_equal(Self, Self) -> Bool
+pub fn LocalAuthorizationEntry::to_json(Self) -> @json.Json
+pub fn LocalAuthorizationEntry::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) enum LocalAuthorizationError {
+  VersionMismatch(Int32, Int32)
+  DuplicateIdTag(String)
+}
+pub fn LocalAuthorizationError::equal(Self, Self) -> Bool
+pub fn LocalAuthorizationError::not_equal(Self, Self) -> Bool
+pub fn LocalAuthorizationError::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) struct LocalAuthorizationStore {
+  mut version : Int32
+  mut entries : Array[LocalAuthorizationEntry]
+}
+pub fn LocalAuthorizationStore::apply(Self, SendLocalListRequest) -> Result[Unit, LocalAuthorizationError]
+pub fn LocalAuthorizationStore::authorize(Self, String) -> IdTagInfo?
+pub fn LocalAuthorizationStore::equal(Self, Self) -> Bool
+pub fn LocalAuthorizationStore::list_version(Self) -> Int32
+pub fn LocalAuthorizationStore::lookup(Self, String) -> IdTagInfo?
+pub fn LocalAuthorizationStore::new() -> Self
+pub fn LocalAuthorizationStore::not_equal(Self, Self) -> Bool
+pub fn LocalAuthorizationStore::remove(Self, String) -> Bool
+pub fn LocalAuthorizationStore::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) enum LocalListUpdateStatus {
+  Accepted
+  Failed
+  NotSupported
+  VersionMismatch
+}
+pub fn LocalListUpdateStatus::equal(Self, Self) -> Bool
+pub fn LocalListUpdateStatus::not_equal(Self, Self) -> Bool
+pub fn LocalListUpdateStatus::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) enum LocalListUpdateType {
+  Differential
+  Full
+}
+pub fn LocalListUpdateType::equal(Self, Self) -> Bool
+pub fn LocalListUpdateType::not_equal(Self, Self) -> Bool
+pub fn LocalListUpdateType::to_repr(Self) -> @debug.Repr
 
 #derive(Eq, @debug.Debug)
 pub(all) enum MessageDirection {
@@ -1004,6 +1080,82 @@ pub fn RemoteStopTransactionResponse::to_json(Self) -> @json.Json
 pub fn RemoteStopTransactionResponse::to_repr(Self) -> @debug.Repr
 
 #derive(Eq, @debug.Debug)
+pub(all) struct Reservation {
+  reservation_id : Int32
+  connector_id : Int32
+  id_tag : String
+  expires_at : Int64
+  parent_id_tag : String?
+}
+pub fn Reservation::equal(Self, Self) -> Bool
+pub fn Reservation::not_equal(Self, Self) -> Bool
+pub fn Reservation::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) struct ReservationBook {
+  mut reservations : Array[Reservation]
+}
+pub fn ReservationBook::cancel(Self, Int32) -> Result[Reservation, ReservationError]
+pub fn ReservationBook::claim(Self, Int32, String, Int32?, Int64) -> Result[Reservation, ReservationError]
+pub fn ReservationBook::count(Self) -> Int32
+pub fn ReservationBook::equal(Self, Self) -> Bool
+pub fn ReservationBook::expire(Self, Int64) -> Array[Reservation]
+pub fn ReservationBook::new() -> Self
+pub fn ReservationBook::not_equal(Self, Self) -> Bool
+pub fn ReservationBook::reserve(Self, ReserveNowRequest, Int64) -> Result[Reservation, ReservationError]
+pub fn ReservationBook::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) enum ReservationError {
+  InvalidExpiry(Int64)
+  DuplicateReservationId(Int32)
+  ConnectorAlreadyReserved(Int32)
+  ReservationNotFound(Int32)
+  ConnectorMismatch(Int32, Int32)
+  IdTagMismatch(String, String)
+  ExpiredReservation(Int32)
+}
+pub fn ReservationError::equal(Self, Self) -> Bool
+pub fn ReservationError::not_equal(Self, Self) -> Bool
+pub fn ReservationError::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) enum ReservationStatus {
+  Accepted
+  Faulted
+  Occupied
+  Rejected
+  Unavailable
+}
+pub fn ReservationStatus::equal(Self, Self) -> Bool
+pub fn ReservationStatus::not_equal(Self, Self) -> Bool
+pub fn ReservationStatus::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) struct ReserveNowRequest {
+  connector_id : Int32
+  expiry_date : String
+  id_tag : String
+  reservation_id : Int32
+  parent_id_tag : String?
+}
+pub fn ReserveNowRequest::equal(Self, Self) -> Bool
+pub fn ReserveNowRequest::from_json(@json.Json) -> Result[Self, ProtocolError]
+pub fn ReserveNowRequest::not_equal(Self, Self) -> Bool
+pub fn ReserveNowRequest::to_json(Self) -> @json.Json
+pub fn ReserveNowRequest::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) struct ReserveNowResponse {
+  status : ReservationStatus
+}
+pub fn ReserveNowResponse::equal(Self, Self) -> Bool
+pub fn ReserveNowResponse::from_json(@json.Json) -> Result[Self, ProtocolError]
+pub fn ReserveNowResponse::not_equal(Self, Self) -> Bool
+pub fn ReserveNowResponse::to_json(Self) -> @json.Json
+pub fn ReserveNowResponse::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
 pub(all) struct ResetRequest {
   kind : ResetType
 }
@@ -1077,6 +1229,28 @@ pub fn SampledValue::from_json(@json.Json) -> Result[Self, ProtocolError]
 pub fn SampledValue::not_equal(Self, Self) -> Bool
 pub fn SampledValue::to_json(Self) -> @json.Json
 pub fn SampledValue::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) struct SendLocalListRequest {
+  list_version : Int32
+  update_type : LocalListUpdateType
+  local_authorization_list : Array[LocalAuthorizationEntry]
+}
+pub fn SendLocalListRequest::equal(Self, Self) -> Bool
+pub fn SendLocalListRequest::from_json(@json.Json) -> Result[Self, ProtocolError]
+pub fn SendLocalListRequest::not_equal(Self, Self) -> Bool
+pub fn SendLocalListRequest::to_json(Self) -> @json.Json
+pub fn SendLocalListRequest::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) struct SendLocalListResponse {
+  status : LocalListUpdateStatus
+}
+pub fn SendLocalListResponse::equal(Self, Self) -> Bool
+pub fn SendLocalListResponse::from_json(@json.Json) -> Result[Self, ProtocolError]
+pub fn SendLocalListResponse::not_equal(Self, Self) -> Bool
+pub fn SendLocalListResponse::to_json(Self) -> @json.Json
+pub fn SendLocalListResponse::to_repr(Self) -> @debug.Repr
 
 #derive(Eq, @debug.Debug)
 pub(all) enum SessionError {
@@ -1265,6 +1439,7 @@ pub(all) enum TypedCall {
   DataTransfer(DataTransferRequest)
   DiagnosticsStatusNotification(DiagnosticsStatusNotificationRequest)
   FirmwareStatusNotification(FirmwareStatusNotificationRequest)
+  GetLocalListVersion(GetLocalListVersionRequest)
   Heartbeat(HeartbeatRequest)
   StatusNotification(StatusNotificationRequest)
   StartTransaction(StartTransactionRequest)
@@ -1272,12 +1447,14 @@ pub(all) enum TypedCall {
   MeterValues(MeterValuesRequest)
   RemoteStartTransaction(RemoteStartTransactionRequest)
   RemoteStopTransaction(RemoteStopTransactionRequest)
+  ReserveNow(ReserveNowRequest)
   Reset(ResetRequest)
   ChangeAvailability(ChangeAvailabilityRequest)
   ChangeConfiguration(ChangeConfigurationRequest)
   GetConfiguration(GetConfigurationRequest)
   SetChargingProfile(SetChargingProfileRequest)
   ClearChargingProfile(ClearChargingProfileRequest)
+  SendLocalList(SendLocalListRequest)
   UnlockConnector(UnlockConnectorRequest)
   UnsupportedAction(String, @json.Json)
 }

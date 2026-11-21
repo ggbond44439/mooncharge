@@ -32,10 +32,10 @@ The catalog contains 39 OCPP 1.6 actions and records their request direction,
 required request fields, required confirmation fields and current payload
 coverage. The initial baseline has:
 
-- 21 typed requests;
-- 21 typed confirmations;
-- 18 catalog-only requests;
-- 18 catalog-only confirmations.
+- 24 typed requests;
+- 24 typed confirmations;
+- 15 catalog-only requests;
+- 15 catalog-only confirmations.
 
 The required-field inventory was checked against the public
 `mobilityhouse/ocpp` OCPP 1.6 JSON Schemas. The catalog is available through:
@@ -67,7 +67,7 @@ The required-field inventory was checked against the public
 | `GetConfiguration` | Typed | Typed |
 | `GetDiagnostics` | Catalog only | Catalog only |
 | `GetInstalledCertificateIds` | Catalog only | Catalog only |
-| `GetLocalListVersion` | Catalog only | Catalog only |
+| `GetLocalListVersion` | Typed | Typed |
 | `GetLog` | Catalog only | Catalog only |
 | `Heartbeat` | Typed | Typed |
 | `InstallCertificate` | Catalog only | Catalog only |
@@ -75,10 +75,10 @@ The required-field inventory was checked against the public
 | `MeterValues` | Typed | Typed |
 | `RemoteStartTransaction` | Typed | Typed |
 | `RemoteStopTransaction` | Typed | Typed |
-| `ReserveNow` | Catalog only | Catalog only |
+| `ReserveNow` | Typed | Typed |
 | `Reset` | Typed | Typed |
 | `SecurityEventNotification` | Catalog only | Catalog only |
-| `SendLocalList` | Catalog only | Catalog only |
+| `SendLocalList` | Typed | Typed |
 | `SetChargingProfile` | Typed | Typed |
 | `SignCertificate` | Catalog only | Catalog only |
 | `SignedFirmwareStatusNotification` | Catalog only | Catalog only |
