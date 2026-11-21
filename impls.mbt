@@ -570,3 +570,39 @@ pub extend PendingCallTable with Eq::{not_equal, equal}
 
 ///|
 pub extend PendingCallTable with @debug.Debug::{to_repr}
+
+///|
+pub extend StationMode with Eq::{not_equal, equal}
+
+///|
+pub extend StationMode with @debug.Debug::{to_repr}
+
+///|
+pub extend ConnectorStatusUpdate with Eq::{not_equal, equal}
+
+///|
+pub extend ConnectorStatusUpdate with @debug.Debug::{to_repr}
+
+///|
+pub extend StationError with Eq::{not_equal, equal}
+
+///|
+pub extend StationError with @debug.Debug::{to_repr}
+
+///|
+pub extend StationConsistencyIssue with Eq::{not_equal, equal}
+
+///|
+pub extend StationConsistencyIssue with @debug.Debug::{to_repr}
+
+///|
+pub extend StationSummary with Eq::{not_equal, equal}
+
+///|
+pub extend StationSummary with @debug.Debug::{to_repr}
+
+///|
+pub extend ChargePointSession with Eq::{not_equal, equal}
+
+///|
+pub extend ChargePointSession with @debug.Debug::{to_repr}

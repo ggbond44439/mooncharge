@@ -15,6 +15,8 @@
   including strict empty-confirmation codecs.
 - Sans-I/O pending-call correlation with message-id matching, deadline expiry,
   response-direction checks, bounded capacity and CALLERROR preservation.
+- Station-level multi-connector state with atomic status batches, station-wide
+  availability, fault recovery, aggregate summaries and consistency diagnostics.
 - Complete 39-action OCPP 1.6 conformance catalog with request direction,
   required fields and typed-coverage metadata.
 - Payload and CALL audit APIs for unknown actions, wrong directions, invalid

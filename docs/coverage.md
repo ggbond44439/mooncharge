@@ -108,6 +108,14 @@ available in `Frame::Call`.
 
 The session value contains no global state, timers, or hidden I/O.
 
+## Station state
+
+`ChargePointSession` aggregates multiple `ConnectorSession` values. It supports
+connector add/remove, connector 0 station-wide availability, atomic batch status
+updates, fault recovery that preserves active transaction phase, aggregate
+counts and consistency diagnostics for invalid, duplicate, charging-without-
+transaction or inoperative-with-active-transaction snapshots.
+
 ## Request correlation
 
 `PendingCallTable` stores outstanding CALL metadata by message id and explicit

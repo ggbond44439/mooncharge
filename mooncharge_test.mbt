@@ -1165,3 +1165,135 @@ test "pending calls reject invalid construction and completion frames" {
   )
   assert_eq(table.pending_count(), 0)
 }
+
+///|
+test "station session manages multiple connectors and summaries" {
+  let station = match @mooncharge.ChargePointSession::new([1, 2, 3]) {
+    Ok(station) => station
+    Err(_) => fail("failed to create station")
+  }
+  assert_eq(station.connectors.length(), 3)
+  assert_eq(
+    station.add_connector(2),
+    Err(@mooncharge.StationError::DuplicateConnectorId(2)),
+  )
+  assert_eq(station.add_connector(4), Ok(()))
+  assert_eq(station.remove_connector(4), Ok(()))
+  assert_eq(station.summary(), {
+    total_connectors: 3,
+    available: 3,
+    unavailable: 0,
+    faulted: 0,
+    charging: 0,
+    active_transactions: 0,
+    station_mode: @mooncharge.StationMode::Operative,
+  })
+  assert_true(station.is_consistent())
+}
+
+///|
+test "station batch status updates are atomic" {
+  let station = match @mooncharge.ChargePointSession::new([1, 2]) {
+    Ok(station) => station
+    Err(_) => fail("failed to create station")
+  }
+  assert_eq(
+    station.apply_status_batch([
+      { connector_id: 1, status: @mooncharge.ChargePointStatus::Preparing, },
+      { connector_id: 9, status: @mooncharge.ChargePointStatus::Faulted, },
+    ]),
+    Err(@mooncharge.StationError::ConnectorNotFound(9)),
+  )
+  assert_eq(
+    station.connector(1).unwrap().status,
+    @mooncharge.ChargePointStatus::Available,
+  )
+  assert_eq(
+    station.apply_status_batch([
+      { connector_id: 1, status: @mooncharge.ChargePointStatus::Preparing, },
+      { connector_id: 2, status: @mooncharge.ChargePointStatus::Unavailable, },
+    ]),
+    Ok(()),
+  )
+  assert_eq(station.summary().unavailable, 1)
+}
+
+///|
+test "station availability is blocked by active transactions" {
+  let station = match @mooncharge.ChargePointSession::new([1, 2]) {
+    Ok(station) => station
+    Err(_) => fail("failed to create station")
+  }
+  station.connectors[0] = station.connectors[0]
+    .begin_transaction(7, "RFID-1", 10, "2026-11-21T00:00:00Z")
+    .unwrap()
+  assert_eq(
+    station.change_availability(0, @mooncharge.AvailabilityType::Inoperative),
+    Err(@mooncharge.StationError::ActiveTransactionPreventsAvailability(0)),
+  )
+  assert_eq(station.station_mode, @mooncharge.StationMode::Operative)
+  assert_eq(
+    station.connector(2).unwrap().status,
+    @mooncharge.ChargePointStatus::Available,
+  )
+}
+
+///|
+test "station-wide availability and fault recovery preserve transaction state" {
+  let station = match @mooncharge.ChargePointSession::new([1, 2]) {
+    Ok(station) => station
+    Err(_) => fail("failed to create station")
+  }
+  assert_eq(
+    station.change_availability(0, @mooncharge.AvailabilityType::Inoperative),
+    Ok(()),
+  )
+  assert_eq(station.station_mode, @mooncharge.StationMode::Inoperative)
+  assert_eq(station.summary().unavailable, 2)
+  assert_eq(
+    station.change_availability(0, @mooncharge.AvailabilityType::Operative),
+    Ok(()),
+  )
+  assert_eq(station.summary().available, 2)
+  station.connectors[0] = station.connectors[0]
+    .begin_transaction(9, "RFID-2", 0, "2026-11-21T00:00:00Z")
+    .unwrap()
+    .apply_status(@mooncharge.ChargePointStatus::Faulted)
+  assert_eq(station.clear_connector_fault(1), Ok(()))
+  assert_eq(
+    station.connector(1).unwrap().status,
+    @mooncharge.ChargePointStatus::Charging,
+  )
+}
+
+///|
+test "station consistency diagnostics expose corrupted snapshots" {
+  let corrupted : @mooncharge.ChargePointSession = {
+    station_mode: @mooncharge.StationMode::Inoperative,
+    connectors: [
+      {
+        connector_id: 1,
+        status: @mooncharge.ChargePointStatus::Charging,
+        transaction: None,
+      },
+      {
+        connector_id: 2,
+        status: @mooncharge.ChargePointStatus::Available,
+        transaction: Some({
+          transaction_id: 3,
+          id_tag: "RFID",
+          meter_start: 0,
+          start_timestamp: "start",
+          meter_stop: None,
+          stop_timestamp: None,
+          stop_reason: None,
+        }),
+      },
+    ],
+  }
+  assert_eq(corrupted.consistency_issues(), [
+    @mooncharge.StationConsistencyIssue::ChargingWithoutTransaction(1),
+    @mooncharge.StationConsistencyIssue::AvailableWithTransaction(2),
+    @mooncharge.StationConsistencyIssue::InoperativeWithActiveTransaction(2),
+  ])
+}

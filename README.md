@@ -31,6 +31,7 @@ MoonCharge 把这些容易出错的边界集中到一个无 I/O 的协议层中�
 - 默认拒绝重复 JSON key，同时允许调用方显式启用兼容模式。
 - 显式 `OcppVersion` 上下文；`VersionedFrame` 将帧、方向、类型分发和一致性审计绑定到协议版本。
 - 无 I/O 的 `PendingCallTable`，按消息 ID 关联 CALL 与 CALLRESULT/CALLERROR，并处理超时、容量、方向和重复 ID。
+- `ChargePointSession` 站点级多连接器状态：增删连接器、原子批量状态更新、整车可用性、故障恢复和一致性诊断。
 - 完整 39 动作 OCPP 1.6 目录，包含方向、请求/确认必填字段和类型覆盖状态。
 - 帧级一致性审计：检查未知动作、方向错误、非对象 payload 和缺失必填字段。
 - 核心载荷的类型化解析和序列化：
@@ -173,6 +174,7 @@ moon run examples/session_walkthrough
 moon run examples/profile_eval
 moon run examples/conformance_audit
 moon run examples/request_correlation
+moon run examples/station_session
 ```
 
 ## 明确不做
@@ -198,6 +200,7 @@ moon run examples/session_walkthrough
 moon run examples/profile_eval
 moon run examples/conformance_audit
 moon run examples/request_correlation
+moon run examples/station_session
 moon package --list
 ```
 

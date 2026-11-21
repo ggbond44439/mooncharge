@@ -228,6 +228,26 @@ pub fn ChargePointErrorCode::not_equal(Self, Self) -> Bool
 pub fn ChargePointErrorCode::to_repr(Self) -> @debug.Repr
 
 #derive(Eq, @debug.Debug)
+pub(all) struct ChargePointSession {
+  mut station_mode : StationMode
+  connectors : Array[ConnectorSession]
+}
+pub fn ChargePointSession::add_connector(Self, Int32) -> Result[Unit, StationError]
+pub fn ChargePointSession::apply_connector_status(Self, Int32, ChargePointStatus) -> Result[Unit, StationError]
+pub fn ChargePointSession::apply_status_batch(Self, Array[ConnectorStatusUpdate]) -> Result[Unit, StationError]
+pub fn ChargePointSession::change_availability(Self, Int32, AvailabilityType) -> Result[Unit, StationError]
+pub fn ChargePointSession::clear_connector_fault(Self, Int32) -> Result[Unit, StationError]
+pub fn ChargePointSession::connector(Self, Int32) -> ConnectorSession?
+pub fn ChargePointSession::consistency_issues(Self) -> Array[StationConsistencyIssue]
+pub fn ChargePointSession::equal(Self, Self) -> Bool
+pub fn ChargePointSession::is_consistent(Self) -> Bool
+pub fn ChargePointSession::new(Array[Int32]) -> Result[Self, StationError]
+pub fn ChargePointSession::not_equal(Self, Self) -> Bool
+pub fn ChargePointSession::remove_connector(Self, Int32) -> Result[Unit, StationError]
+pub fn ChargePointSession::summary(Self) -> StationSummary
+pub fn ChargePointSession::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
 pub(all) enum ChargePointStatus {
   Available
   Preparing
@@ -506,6 +526,15 @@ pub fn ConnectorSession::new(Int32) -> Result[Self, SessionError]
 pub fn ConnectorSession::not_equal(Self, Self) -> Bool
 pub fn ConnectorSession::release_transaction(Self, Int32) -> Result[Self, SessionError]
 pub fn ConnectorSession::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) struct ConnectorStatusUpdate {
+  connector_id : Int32
+  status : ChargePointStatus
+}
+pub fn ConnectorStatusUpdate::equal(Self, Self) -> Bool
+pub fn ConnectorStatusUpdate::not_equal(Self, Self) -> Bool
+pub fn ConnectorStatusUpdate::to_repr(Self) -> @debug.Repr
 
 #derive(Eq, @debug.Debug)
 pub(all) enum CorrelatedResponse {
@@ -1108,6 +1137,55 @@ pub fn StartTransactionResponse::from_json(@json.Json) -> Result[Self, ProtocolE
 pub fn StartTransactionResponse::not_equal(Self, Self) -> Bool
 pub fn StartTransactionResponse::to_json(Self) -> @json.Json
 pub fn StartTransactionResponse::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) enum StationConsistencyIssue {
+  InvalidConnectorId(Int32)
+  DuplicateConnectorId(Int32)
+  ChargingWithoutTransaction(Int32)
+  AvailableWithTransaction(Int32)
+  InoperativeWithActiveTransaction(Int32)
+}
+pub fn StationConsistencyIssue::equal(Self, Self) -> Bool
+pub fn StationConsistencyIssue::not_equal(Self, Self) -> Bool
+pub fn StationConsistencyIssue::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) enum StationError {
+  InvalidConnectorId(Int32)
+  DuplicateConnectorId(Int32)
+  ConnectorNotFound(Int32)
+  ActiveTransactionPreventsRemoval(Int32)
+  ActiveTransactionPreventsAvailability(Int32)
+  DuplicateStatusUpdate(Int32)
+  ConnectorNotFaulted(Int32)
+}
+pub fn StationError::equal(Self, Self) -> Bool
+pub fn StationError::not_equal(Self, Self) -> Bool
+pub fn StationError::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) enum StationMode {
+  Operative
+  Inoperative
+}
+pub fn StationMode::equal(Self, Self) -> Bool
+pub fn StationMode::not_equal(Self, Self) -> Bool
+pub fn StationMode::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) struct StationSummary {
+  total_connectors : Int32
+  available : Int32
+  unavailable : Int32
+  faulted : Int32
+  charging : Int32
+  active_transactions : Int32
+  station_mode : StationMode
+}
+pub fn StationSummary::equal(Self, Self) -> Bool
+pub fn StationSummary::not_equal(Self, Self) -> Bool
+pub fn StationSummary::to_repr(Self) -> @debug.Repr
 
 #derive(Eq, @debug.Debug)
 pub(all) struct StatusNotificationRequest {

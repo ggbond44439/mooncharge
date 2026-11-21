@@ -45,6 +45,7 @@ jobs:
           moon run examples/profile_eval
           moon run examples/conformance_audit
           moon run examples/request_correlation
+          moon run examples/station_session
 
       - name: CLI smoke test
         run: |
