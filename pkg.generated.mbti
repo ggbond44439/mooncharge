@@ -13,6 +13,8 @@ pub fn action_specs() -> Array[ActionSpec]
 
 pub fn action_specs_for(OcppVersion) -> Result[Array[ActionSpec], ProtocolError]
 
+pub fn amps_to_watts(Double, ElectricalModel, number_phases? : Int32?) -> Result[Double, PowerConversionError]
+
 pub fn audit_frame(Frame, MessageDirection) -> ConformanceReport
 
 pub fn audit_payload(String, PayloadPhase, MessageDirection, @json.Json) -> ConformanceReport
@@ -22,6 +24,8 @@ pub fn audit_versioned_frame(VersionedFrame, MessageDirection) -> ConformanceRep
 pub fn conformance_summary() -> ConformanceSummary
 
 pub fn conformance_summary_for(OcppVersion) -> Result[ConformanceSummary, ProtocolError]
+
+pub fn convert_power_limit(Double, ChargingRateUnit, ChargingRateUnit, ElectricalModel, number_phases? : Int32?) -> Result[Double, PowerConversionError]
 
 pub fn dispatch_call(Frame, MessageDirection) -> Result[TypedCall, DispatchError]
 
@@ -35,6 +39,8 @@ pub fn find_action_spec(String) -> ActionSpec?
 
 pub fn find_action_spec_for(OcppVersion, String) -> Result[ActionSpec?, ProtocolError]
 
+pub fn normalize_charging_decision(ChargingDecision, ChargingRateUnit, ElectricalModel) -> Result[ChargingDecision, PowerConversionError]
+
 pub fn parse_frame(String) -> Result[Frame, ProtocolError]
 
 pub fn parse_frame_with_limits(String, FrameLimits) -> Result[Frame, ProtocolError]
@@ -46,6 +52,8 @@ pub fn parse_versioned_frame_with_limits(OcppVersion, String, FrameLimits) -> Re
 pub fn run_cli(Array[String]) -> CliOutput
 
 pub fn versioned_action_direction(OcppVersion, String, Bool) -> Result[MessageDirection, ProtocolError]
+
+pub fn watts_to_amps(Double, ElectricalModel, number_phases? : Int32?) -> Result[Double, PowerConversionError]
 
 // Errors
 pub(all) suberror ProtocolFailure {
@@ -273,10 +281,20 @@ pub(all) struct ChargingDecision {
   unit : ChargingRateUnit
   profile_id : Int32
   capped_by_charge_point_max : Bool
+  number_phases : Int32?
 }
 pub fn ChargingDecision::equal(Self, Self) -> Bool
 pub fn ChargingDecision::not_equal(Self, Self) -> Bool
 pub fn ChargingDecision::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) struct ChargingLimit {
+  limit : Double
+  number_phases : Int32?
+}
+pub fn ChargingLimit::equal(Self, Self) -> Bool
+pub fn ChargingLimit::not_equal(Self, Self) -> Bool
+pub fn ChargingLimit::to_repr(Self) -> @debug.Repr
 
 #derive(Eq, @debug.Debug)
 pub(all) struct ChargingProfile {
@@ -649,6 +667,30 @@ pub fn DispatchError::not_equal(Self, Self) -> Bool
 pub fn DispatchError::to_repr(Self) -> @debug.Repr
 
 #derive(Eq, @debug.Debug)
+pub(all) struct ElectricalModel {
+  system : ElectricalSystem
+  voltage : Double
+  power_factor : Double
+}
+pub fn ElectricalModel::equal(Self, Self) -> Bool
+pub fn ElectricalModel::new(ElectricalSystem, Double, power_factor? : Double) -> Result[Self, PowerConversionError]
+pub fn ElectricalModel::not_equal(Self, Self) -> Bool
+pub fn ElectricalModel::phase_count(Self) -> Int32
+pub fn ElectricalModel::to_repr(Self) -> @debug.Repr
+pub fn ElectricalModel::watts_per_amp(Self, Int32?) -> Result[Double, PowerConversionError]
+
+#derive(Eq, @debug.Debug)
+pub(all) enum ElectricalSystem {
+  DirectCurrent
+  SinglePhaseAc
+  ThreePhaseLineToLineAc
+  ThreePhaseLineToNeutralAc
+}
+pub fn ElectricalSystem::equal(Self, Self) -> Bool
+pub fn ElectricalSystem::not_equal(Self, Self) -> Bool
+pub fn ElectricalSystem::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
 pub(all) struct EpochInterval {
   start : Int64
   end : Int64?
@@ -1008,6 +1050,17 @@ pub fn PendingCallTable::new(OcppVersion, Int32) -> Result[Self, CorrelationErro
 pub fn PendingCallTable::not_equal(Self, Self) -> Bool
 pub fn PendingCallTable::pending_count(Self) -> Int32
 pub fn PendingCallTable::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) enum PowerConversionError {
+  InvalidVoltage(Double)
+  InvalidPowerFactor(Double)
+  PhaseCountMismatch(Int32, Int32)
+  NegativeLimit(Double)
+}
+pub fn PowerConversionError::equal(Self, Self) -> Bool
+pub fn PowerConversionError::not_equal(Self, Self) -> Bool
+pub fn PowerConversionError::to_repr(Self) -> @debug.Repr
 
 #derive(Eq, @debug.Debug)
 pub(all) enum ProtocolError {

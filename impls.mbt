@@ -714,3 +714,27 @@ pub extend TimedChargingProfile with Eq::{not_equal, equal}
 
 ///|
 pub extend TimedChargingProfile with @debug.Debug::{to_repr}
+
+///|
+pub extend ChargingLimit with Eq::{not_equal, equal}
+
+///|
+pub extend ChargingLimit with @debug.Debug::{to_repr}
+
+///|
+pub extend ElectricalSystem with Eq::{not_equal, equal}
+
+///|
+pub extend ElectricalSystem with @debug.Debug::{to_repr}
+
+///|
+pub extend PowerConversionError with Eq::{not_equal, equal}
+
+///|
+pub extend PowerConversionError with @debug.Debug::{to_repr}
+
+///|
+pub extend ElectricalModel with Eq::{not_equal, equal}
+
+///|
+pub extend ElectricalModel with @debug.Debug::{to_repr}

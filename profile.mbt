@@ -330,19 +330,33 @@ pub(all) struct ChargingDecision {
   unit : ChargingRateUnit
   profile_id : Int32
   capped_by_charge_point_max : Bool
+  number_phases : Int32?
 }
 
 ///|
-fn active_limit(profile : ChargingProfile, elapsed_seconds : Int32) -> Double? {
+#derive(Eq, @debug.Debug)
+pub(all) struct ChargingLimit {
+  limit : Double
+  number_phases : Int32?
+}
+
+///|
+fn active_limit(
+  profile : ChargingProfile,
+  elapsed_seconds : Int32,
+) -> ChargingLimit? {
   let schedule = profile.charging_schedule
   let duration = schedule.duration
   if duration is Some(duration) && elapsed_seconds >= duration {
     return None
   }
-  let mut selected : Double? = None
+  let mut selected : ChargingLimit? = None
   for period in schedule.periods {
     if period.start_period <= elapsed_seconds {
-      selected = Some(period.limit)
+      selected = Some({
+        limit: period.limit,
+        number_phases: period.number_phases,
+      })
     } else {
       break
     }
@@ -432,28 +446,31 @@ pub fn evaluate_charging_profiles(
         Some(limit) => limit
         None => return Err(NoActiveProfile)
       }
-      if maximum_limit < base_limit {
+      if maximum_limit.limit < base_limit.limit {
         Ok({
-          limit: maximum_limit,
+          limit: maximum_limit.limit,
           unit,
           profile_id: base.charging_profile_id,
           capped_by_charge_point_max: true,
+          number_phases: base_limit.number_phases,
         })
       } else {
         Ok({
-          limit: base_limit,
+          limit: base_limit.limit,
           unit,
           profile_id: base.charging_profile_id,
           capped_by_charge_point_max: false,
+          number_phases: base_limit.number_phases,
         })
       }
     }
     None =>
       Ok({
-        limit: base_limit,
+        limit: base_limit.limit,
         unit,
         profile_id: base.charging_profile_id,
         capped_by_charge_point_max: false,
+        number_phases: base_limit.number_phases,
       })
   }
 }
@@ -512,7 +529,7 @@ fn timed_schedule_start(
 fn timed_active_limit(
   value : TimedChargingProfile,
   now : Int64,
-) -> Result[Double?, ChargingProfileError] {
+) -> Result[ChargingLimit?, ChargingProfileError] {
   let profile = value.profile
   match profile.valid_from {
     Some(_) =>
@@ -574,10 +591,13 @@ fn timed_active_limit(
     Some(duration) => if elapsed >= duration.to_int64() { return Ok(None) }
     None => ()
   }
-  let mut selected : Double? = None
+  let mut selected : ChargingLimit? = None
   for period in profile.charging_schedule.periods {
     if period.start_period.to_int64() <= elapsed {
-      selected = Some(period.limit)
+      selected = Some({
+        limit: period.limit,
+        number_phases: period.number_phases,
+      })
     } else {
       break
     }
@@ -679,22 +699,24 @@ pub fn evaluate_timed_charging_profiles(
         Err(error) => return Err(error)
       }
       Ok({
-        limit: if maximum_limit < base_limit {
-          maximum_limit
+        limit: if maximum_limit.limit < base_limit.limit {
+          maximum_limit.limit
         } else {
-          base_limit
+          base_limit.limit
         },
         unit,
         profile_id: base.profile.charging_profile_id,
-        capped_by_charge_point_max: maximum_limit < base_limit,
+        capped_by_charge_point_max: maximum_limit.limit < base_limit.limit,
+        number_phases: base_limit.number_phases,
       })
     }
     None =>
       Ok({
-        limit: base_limit,
+        limit: base_limit.limit,
         unit,
         profile_id: base.profile.charging_profile_id,
         capped_by_charge_point_max: false,
+        number_phases: base_limit.number_phases,
       })
   }
 }

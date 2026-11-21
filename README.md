@@ -34,6 +34,7 @@ MoonCharge 把这些容易出错的边界集中到一个无 I/O 的协议层中�
 - `ChargePointSession` 站点级多连接器状态：增删连接器、原子批量状态更新、整车可用性、故障恢复和一致性诊断。
 - 预约和本地鉴权域模型：预约创建/取消/过期/占用，Full/Differential 本地列表、版本检查和授权查询。
 - `TimedChargingProfile` 时间语义：显式 epoch 有效期、Absolute/Relative、Daily/Weekly Recurring 和同 stack 替换。
+- 显式 `ElectricalModel` A/W 换算：区分 DC、单相、三相线电压和三相相电压，并校验相数与功率因数。
 - 完整 39 动作 OCPP 1.6 目录，包含方向、请求/确认必填字段和类型覆盖状态。
 - 帧级一致性审计：检查未知动作、方向错误、非对象 payload 和缺失必填字段。
 - 核心载荷的类型化解析和序列化：
@@ -179,6 +180,7 @@ moon run examples/request_correlation
 moon run examples/station_session
 moon run examples/reservation_auth
 moon run examples/timed_profile_eval
+moon run examples/power_conversion
 ```
 
 ## 明确不做
@@ -207,6 +209,7 @@ moon run examples/request_correlation
 moon run examples/station_session
 moon run examples/reservation_auth
 moon run examples/timed_profile_eval
+moon run examples/power_conversion
 moon package --list
 ```
 

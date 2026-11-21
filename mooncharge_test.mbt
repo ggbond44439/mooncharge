@@ -168,6 +168,7 @@ test "transaction profile beats default profile" {
       unit: @mooncharge.ChargingRateUnit::Amps,
       profile_id: 20,
       capped_by_charge_point_max: false,
+      number_phases: None,
     }),
   )
 }
@@ -212,6 +213,7 @@ test "higher stack level and schedule expiry are honored" {
       unit: @mooncharge.ChargingRateUnit::Amps,
       profile_id: 2,
       capped_by_charge_point_max: false,
+      number_phases: None,
     }),
   )
   assert_eq(
@@ -1609,4 +1611,81 @@ test "timed profiles reject unmapped wire validity and missing recurrency" {
     ),
     Err(@mooncharge.ChargingProfileError::RecurringProfileRequiresRecurrency),
   )
+}
+
+///|
+test "DC power conversion uses explicit voltage" {
+  let model = @mooncharge.ElectricalModel::new(
+    @mooncharge.ElectricalSystem::DirectCurrent,
+    400.0,
+  ).unwrap()
+  assert_eq(@mooncharge.amps_to_watts(10.0, model).unwrap(), 4_000.0)
+  assert_eq(@mooncharge.watts_to_amps(8_000.0, model).unwrap(), 20.0)
+}
+
+///|
+test "single-phase conversion applies power factor" {
+  let model = @mooncharge.ElectricalModel::new(
+    @mooncharge.ElectricalSystem::SinglePhaseAc,
+    230.0,
+    power_factor=0.5,
+  ).unwrap()
+  assert_eq(@mooncharge.amps_to_watts(1.0, model).unwrap(), 115.0)
+  assert_eq(@mooncharge.watts_to_amps(230.0, model).unwrap(), 2.0)
+}
+
+///|
+test "three-phase conversion distinguishes line-to-line and line-to-neutral" {
+  let line_to_line = @mooncharge.ElectricalModel::new(
+    @mooncharge.ElectricalSystem::ThreePhaseLineToLineAc,
+    400.0,
+    power_factor=0.95,
+  ).unwrap()
+  let watts = @mooncharge.amps_to_watts(
+    16.0,
+    line_to_line,
+    number_phases=Some(3),
+  ).unwrap()
+  let expected = 16.0 * 400.0 * 3.0.sqrt() * 0.95
+  let difference = if watts > expected {
+    watts - expected
+  } else {
+    expected - watts
+  }
+  assert_true(difference < 0.000001)
+  let line_to_neutral = @mooncharge.ElectricalModel::new(
+    @mooncharge.ElectricalSystem::ThreePhaseLineToNeutralAc,
+    230.0,
+  ).unwrap()
+  assert_eq(
+    @mooncharge.amps_to_watts(10.0, line_to_neutral, number_phases=Some(3)).unwrap(),
+    6_900.0,
+  )
+}
+
+///|
+test "power conversion rejects phase mismatch and normalizes decisions" {
+  let model = @mooncharge.ElectricalModel::new(
+    @mooncharge.ElectricalSystem::ThreePhaseLineToLineAc,
+    400.0,
+  ).unwrap()
+  assert_eq(
+    @mooncharge.amps_to_watts(10.0, model, number_phases=Some(1)),
+    Err(@mooncharge.PowerConversionError::PhaseCountMismatch(3, 1)),
+  )
+  let decision : @mooncharge.ChargingDecision = {
+    limit: 10.0,
+    unit: @mooncharge.ChargingRateUnit::Amps,
+    profile_id: 70,
+    capped_by_charge_point_max: false,
+    number_phases: Some(3),
+  }
+  let normalized = @mooncharge.normalize_charging_decision(
+    decision,
+    @mooncharge.ChargingRateUnit::Watts,
+    model,
+  ).unwrap()
+  assert_eq(normalized.unit, @mooncharge.ChargingRateUnit::Watts)
+  assert_true(normalized.limit > 6_900.0)
+  assert_eq(normalized.number_phases, Some(3))
 }

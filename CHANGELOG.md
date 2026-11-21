@@ -21,6 +21,8 @@
   Differential updates, version checks, expiry and typed wire messages.
 - Timed charging-profile evaluation with caller-mapped validity intervals,
   Absolute/Relative schedules, Daily/Weekly recurrence and stack replacement.
+- Explicit DC and AC electrical models for validated ampere/watt conversion,
+  phase-count checks and normalized charging decisions.
 - Complete 39-action OCPP 1.6 conformance catalog with request direction,
   required fields and typed-coverage metadata.
 - Payload and CALL audit APIs for unknown actions, wrong directions, invalid

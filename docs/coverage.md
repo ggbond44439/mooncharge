@@ -148,6 +148,13 @@ an exclusive-end `EpochInterval`, Relative schedules anchored to a transaction
 start, and Daily or Weekly recurrence. Equal-purpose equal-stack profiles use
 the later entry, matching OCPP replacement semantics.
 
+## Electrical conversion
+
+`ElectricalModel` makes ampere/watt conversion explicit. It supports DC,
+single-phase AC, three-phase line-to-line AC and three-phase line-to-neutral AC.
+Voltage, power factor and schedule phase count are validated before conversion;
+the evaluator never silently converts between A and W.
+
 ## Deliberately out of scope
 
 - WebSocket and HTTP transport
