@@ -143,6 +143,11 @@ Schedule selection uses caller-supplied elapsed seconds. Calendar parsing,
 time-zone conversion, recurring window expansion, and hardware voltage/phase
 conversion remain application concerns.
 
+`TimedChargingProfile` adds caller-mapped epoch evaluation. Profiles can carry
+an exclusive-end `EpochInterval`, Relative schedules anchored to a transaction
+start, and Daily or Weekly recurrence. Equal-purpose equal-stack profiles use
+the later entry, matching OCPP replacement semantics.
+
 ## Deliberately out of scope
 
 - WebSocket and HTTP transport

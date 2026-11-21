@@ -276,5 +276,14 @@ fn run_profile_cli(args : Array[String]) -> CliOutput {
     Err(RateUnitMismatch) =>
       cli_error("charge-point and transaction profiles use different units")
     Err(InvalidElapsedTime) => cli_error("invalid elapsed time")
+    Err(
+      InvalidValidityWindow(_, _)
+      | UnmappedValidityFrom(_)
+      | UnmappedValidityTo(_),
+    ) => cli_error("invalid mapped profile validity")
+    Err(RelativeProfileRequiresTransactionStart) =>
+      cli_error("relative profile requires transaction start")
+    Err(RecurringProfileRequiresRecurrency) =>
+      cli_error("recurring profile requires Daily or Weekly recurrence")
   }
 }

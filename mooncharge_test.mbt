@@ -1455,3 +1455,158 @@ test "local authorization updates reject stale versions and duplicate tags" {
     Err(@mooncharge.LocalAuthorizationError::VersionMismatch(1, 1)),
   )
 }
+
+///|
+fn timed_profile(
+  profile : @mooncharge.ChargingProfile,
+  validity : @mooncharge.EpochInterval?,
+  schedule_start_epoch : Int64,
+  transaction_start_epoch : Int64?,
+) -> @mooncharge.TimedChargingProfile {
+  { profile, validity, schedule_start_epoch, transaction_start_epoch, }
+}
+
+///|
+test "timed profiles honor caller-mapped validity windows" {
+  let profile = profile(
+    10,
+    @mooncharge.ChargingProfilePurpose::TxDefaultProfile,
+    1,
+    None,
+    [period(0, 16.0)],
+  )
+  let validity = @mooncharge.EpochInterval::new(900, Some(2_000)).unwrap()
+  let timed = timed_profile(profile, Some(validity), 1_000, None)
+  assert_eq(
+    @mooncharge.evaluate_timed_charging_profiles([timed], None, 899),
+    Err(@mooncharge.ChargingProfileError::NoActiveProfile),
+  )
+  assert_eq(
+    @mooncharge.evaluate_timed_charging_profiles([timed], None, 1_500).unwrap().limit,
+    16.0,
+  )
+  assert_eq(
+    @mooncharge.evaluate_timed_charging_profiles([timed], None, 2_000),
+    Err(@mooncharge.ChargingProfileError::NoActiveProfile),
+  )
+}
+
+///|
+test "daily recurring profiles restart their schedule every day" {
+  let base = profile(
+    11,
+    @mooncharge.ChargingProfilePurpose::TxDefaultProfile,
+    1,
+    None,
+    [period(0, 12.0), period(600, 8.0)],
+  )
+  let recurring = {
+    ..base,
+    charging_profile_kind: @mooncharge.ChargingProfileKind::Recurring,
+    recurrency_kind: Some(@mooncharge.RecurrencyKind::Daily),
+  }
+  let timed = timed_profile(recurring, None, 1_000, None)
+  let decision = @mooncharge.evaluate_timed_charging_profiles(
+    [timed],
+    None,
+    1_000 + 86_400 + 700,
+  ).unwrap()
+  assert_eq(decision.limit, 8.0)
+}
+
+///|
+test "relative profiles use the transaction start and reject missing time" {
+  let base = profile(
+    12,
+    @mooncharge.ChargingProfilePurpose::TxProfile,
+    2,
+    Some(50),
+    [period(0, 20.0)],
+  )
+  let relative = {
+    ..base,
+    charging_profile_kind: @mooncharge.ChargingProfileKind::Relative,
+  }
+  let timed = timed_profile(relative, None, 0, Some(1_000))
+  assert_eq(
+    @mooncharge.evaluate_timed_charging_profiles([timed], Some(50), 1_200).unwrap().limit,
+    20.0,
+  )
+  assert_eq(
+    @mooncharge.evaluate_timed_charging_profiles(
+      [timed_profile(relative, None, 0, None)],
+      Some(50),
+      1_200,
+    ),
+    Err(
+      @mooncharge.ChargingProfileError::RelativeProfileRequiresTransactionStart,
+    ),
+  )
+}
+
+///|
+test "timed profile selection replaces equal stack levels with the later profile" {
+  let first = timed_profile(
+    profile(20, @mooncharge.ChargingProfilePurpose::TxDefaultProfile, 1, None, [
+      period(0, 10.0),
+    ]),
+    None,
+    1_000,
+    None,
+  )
+  let second = timed_profile(
+    profile(21, @mooncharge.ChargingProfilePurpose::TxDefaultProfile, 1, None, [
+      period(0, 25.0),
+    ]),
+    None,
+    1_000,
+    None,
+  )
+  let decision = @mooncharge.evaluate_timed_charging_profiles(
+    [first, second],
+    None,
+    1_100,
+  ).unwrap()
+  assert_eq(decision.profile_id, 21)
+  assert_eq(decision.limit, 25.0)
+}
+
+///|
+test "timed profiles reject unmapped wire validity and missing recurrency" {
+  let mapped_required = {
+    ..profile(
+      30,
+      @mooncharge.ChargingProfilePurpose::TxDefaultProfile,
+      1,
+      None,
+      [period(0, 10.0)],
+    ),
+    valid_from: Some("2026-11-21T00:00:00Z"),
+  }
+  assert_eq(
+    @mooncharge.evaluate_timed_charging_profiles(
+      [timed_profile(mapped_required, None, 1_000, None)],
+      None,
+      1_100,
+    ),
+    Err(@mooncharge.ChargingProfileError::UnmappedValidityFrom(30)),
+  )
+  let recurring_without_kind = {
+    ..profile(
+      31,
+      @mooncharge.ChargingProfilePurpose::TxDefaultProfile,
+      1,
+      None,
+      [period(0, 10.0)],
+    ),
+    charging_profile_kind: @mooncharge.ChargingProfileKind::Recurring,
+  }
+  assert_eq(
+    @mooncharge.evaluate_timed_charging_profiles(
+      [timed_profile(recurring_without_kind, None, 1_000, None)],
+      None,
+      1_100,
+    ),
+    Err(@mooncharge.ChargingProfileError::RecurringProfileRequiresRecurrency),
+  )
+}

@@ -696,3 +696,21 @@ pub extend LocalAuthorizationStore with Eq::{not_equal, equal}
 
 ///|
 pub extend LocalAuthorizationStore with @debug.Debug::{to_repr}
+
+///|
+pub extend RecurrencyKind with Eq::{not_equal, equal}
+
+///|
+pub extend RecurrencyKind with @debug.Debug::{to_repr}
+
+///|
+pub extend EpochInterval with Eq::{not_equal, equal}
+
+///|
+pub extend EpochInterval with @debug.Debug::{to_repr}
+
+///|
+pub extend TimedChargingProfile with Eq::{not_equal, equal}
+
+///|
+pub extend TimedChargingProfile with @debug.Debug::{to_repr}

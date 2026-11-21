@@ -16,6 +16,32 @@ pub(all) enum ChargingProfileKind {
 
 ///|
 #derive(Eq, @debug.Debug)
+pub(all) enum RecurrencyKind {
+  Daily
+  Weekly
+}
+
+///|
+fn parse_recurrency_kind(
+  value : String,
+) -> RecurrencyKind raise ProtocolFailure {
+  match value {
+    "Daily" => Daily
+    "Weekly" => Weekly
+    _ => refuse(UnsupportedValue("recurrencyKind", value))
+  }
+}
+
+///|
+fn recurrency_kind_name(value : RecurrencyKind) -> String {
+  match value {
+    Daily => "Daily"
+    Weekly => "Weekly"
+  }
+}
+
+///|
+#derive(Eq, @debug.Debug)
 pub(all) enum ChargingRateUnit {
   Amps
   Watts
@@ -203,7 +229,7 @@ pub(all) struct ChargingProfile {
   stack_level : Int32
   charging_profile_purpose : ChargingProfilePurpose
   charging_profile_kind : ChargingProfileKind
-  recurrency_kind : String?
+  recurrency_kind : RecurrencyKind?
   valid_from : String?
   valid_to : String?
   charging_schedule : ChargingSchedule
@@ -223,7 +249,10 @@ fn parse_charging_profile(
     charging_profile_kind: parse_profile_kind(
       required_string(value, "chargingProfileKind"),
     ),
-    recurrency_kind: optional_string(value, "recurrencyKind"),
+    recurrency_kind: match optional_string(value, "recurrencyKind") {
+      Some(value) => Some(parse_recurrency_kind(value))
+      None => None
+    },
     valid_from: optional_string(value, "validFrom"),
     valid_to: optional_string(value, "validTo"),
     charging_schedule: parse_charging_schedule(
@@ -271,7 +300,11 @@ pub fn ChargingProfile::to_json(self : ChargingProfile) -> Json {
     Some(value) => fields.set("transactionId", int_json(value))
     None => ()
   }
-  set_optional_string(fields, "recurrencyKind", self.recurrency_kind)
+  match self.recurrency_kind {
+    Some(value) =>
+      fields.set("recurrencyKind", Json::string(recurrency_kind_name(value)))
+    None => ()
+  }
   set_optional_string(fields, "validFrom", self.valid_from)
   set_optional_string(fields, "validTo", self.valid_to)
   Json::object(fields)
@@ -283,6 +316,11 @@ pub(all) enum ChargingProfileError {
   NoActiveProfile
   RateUnitMismatch
   InvalidElapsedTime
+  InvalidValidityWindow(Int64, Int64)
+  UnmappedValidityFrom(Int32)
+  UnmappedValidityTo(Int32)
+  RelativeProfileRequiresTransactionStart
+  RecurringProfileRequiresRecurrency
 }
 
 ///|
@@ -415,6 +453,247 @@ pub fn evaluate_charging_profiles(
         limit: base_limit,
         unit,
         profile_id: base.charging_profile_id,
+        capped_by_charge_point_max: false,
+      })
+  }
+}
+
+///|
+/// Caller-supplied epoch interval. The start is inclusive and the end, when
+/// present, is exclusive.
+#derive(Eq, @debug.Debug)
+pub(all) struct EpochInterval {
+  start : Int64
+  end : Int64?
+}
+
+///|
+pub fn EpochInterval::new(
+  start : Int64,
+  end : Int64?,
+) -> Result[EpochInterval, ChargingProfileError] {
+  match end {
+    Some(end) =>
+      if end <= start {
+        Err(InvalidValidityWindow(start, end))
+      } else {
+        Ok({ start, end: Some(end), })
+      }
+    None => Ok({ start, end: None, })
+  }
+}
+
+///|
+/// A charging profile with caller-mapped wall-clock coordinates. This keeps
+/// ISO timestamp parsing and time-zone resolution outside the protocol engine.
+#derive(Eq, @debug.Debug)
+pub(all) struct TimedChargingProfile {
+  profile : ChargingProfile
+  validity : EpochInterval?
+  schedule_start_epoch : Int64
+  transaction_start_epoch : Int64?
+}
+
+///|
+fn timed_schedule_start(
+  value : TimedChargingProfile,
+) -> Result[Int64, ChargingProfileError] {
+  match value.profile.charging_profile_kind {
+    Relative =>
+      match value.transaction_start_epoch {
+        Some(start) => Ok(start)
+        None => Err(RelativeProfileRequiresTransactionStart)
+      }
+    Absolute | Recurring => Ok(value.schedule_start_epoch)
+  }
+}
+
+///|
+fn timed_active_limit(
+  value : TimedChargingProfile,
+  now : Int64,
+) -> Result[Double?, ChargingProfileError] {
+  let profile = value.profile
+  match profile.valid_from {
+    Some(_) =>
+      if value.validity is None {
+        return Err(UnmappedValidityFrom(profile.charging_profile_id))
+      }
+    None => ()
+  }
+  match profile.valid_to {
+    Some(_) => {
+      let missing_mapped_end = match value.validity {
+        Some(interval) => interval.end is None
+        None => true
+      }
+      if missing_mapped_end {
+        return Err(UnmappedValidityTo(profile.charging_profile_id))
+      }
+    }
+    None => ()
+  }
+  match value.validity {
+    Some(interval) => {
+      match interval.end {
+        Some(end) =>
+          if end <= interval.start {
+            return Err(InvalidValidityWindow(interval.start, end))
+          }
+        None => ()
+      }
+      if now < interval.start {
+        return Ok(None)
+      }
+      if interval.end is Some(end) && now >= end {
+        return Ok(None)
+      }
+    }
+    None => ()
+  }
+  let schedule_start = match timed_schedule_start(value) {
+    Ok(start) => start
+    Err(error) => return Err(error)
+  }
+  if now < schedule_start {
+    return Ok(None)
+  }
+  let mut elapsed = now - schedule_start
+  match profile.charging_profile_kind {
+    Recurring => {
+      let period : Int64 = match profile.recurrency_kind {
+        Some(Daily) => 86_400
+        Some(Weekly) => 604_800
+        None => return Err(RecurringProfileRequiresRecurrency)
+      }
+      elapsed = elapsed % period
+    }
+    Absolute | Relative => ()
+  }
+  match profile.charging_schedule.duration {
+    Some(duration) => if elapsed >= duration.to_int64() { return Ok(None) }
+    None => ()
+  }
+  let mut selected : Double? = None
+  for period in profile.charging_schedule.periods {
+    if period.start_period.to_int64() <= elapsed {
+      selected = Some(period.limit)
+    } else {
+      break
+    }
+  }
+  Ok(selected)
+}
+
+///|
+fn choose_highest_timed_stack(
+  profiles : Array[TimedChargingProfile],
+  purpose : ChargingProfilePurpose,
+  transaction_id : Int32?,
+  now : Int64,
+) -> Result[TimedChargingProfile?, ChargingProfileError] {
+  let mut selected : TimedChargingProfile? = None
+  for candidate in profiles {
+    let profile = candidate.profile
+    let wrong_purpose = profile.charging_profile_purpose != purpose
+    let wrong_transaction = purpose == TxProfile &&
+      profile.transaction_id != transaction_id
+    let max_profile_has_transaction = purpose == ChargePointMaxProfile &&
+      profile.transaction_id is Some(_)
+    if wrong_purpose || wrong_transaction || max_profile_has_transaction {
+      continue
+    }
+    match timed_active_limit(candidate, now) {
+      Err(error) => return Err(error)
+      Ok(None) => continue
+      Ok(Some(_)) => ()
+    }
+    selected = Some(
+      match selected {
+        Some(current) if current.profile.stack_level > profile.stack_level =>
+          current
+        _ => candidate
+      },
+    )
+  }
+  Ok(selected)
+}
+
+///|
+/// Evaluates profiles using caller-mapped epoch coordinates. Later profiles at
+/// the same purpose and stack level replace earlier profiles, matching OCPP
+/// SetChargingProfile replacement semantics.
+pub fn evaluate_timed_charging_profiles(
+  profiles : Array[TimedChargingProfile],
+  transaction_id : Int32?,
+  now : Int64,
+) -> Result[ChargingDecision, ChargingProfileError] {
+  let transaction_profile = match
+    choose_highest_timed_stack(profiles, TxProfile, transaction_id, now) {
+    Err(error) => return Err(error)
+    Ok(Some(profile)) => Some(profile)
+    Ok(None) =>
+      match
+        choose_highest_timed_stack(
+          profiles,
+          TxDefaultProfile,
+          transaction_id,
+          now,
+        ) {
+        Err(error) => return Err(error)
+        Ok(profile) => profile
+      }
+  }
+  let maximum = match
+    choose_highest_timed_stack(
+      profiles,
+      ChargePointMaxProfile,
+      transaction_id,
+      now,
+    ) {
+    Ok(value) => value
+    Err(error) => return Err(error)
+  }
+  let base = match transaction_profile {
+    Some(profile) => profile
+    None =>
+      match maximum {
+        Some(profile) => profile
+        None => return Err(NoActiveProfile)
+      }
+  }
+  let base_limit = match timed_active_limit(base, now) {
+    Ok(Some(limit)) => limit
+    Ok(None) => return Err(NoActiveProfile)
+    Err(error) => return Err(error)
+  }
+  let unit = base.profile.charging_schedule.charging_rate_unit
+  match maximum {
+    Some(maximum_profile) => {
+      if maximum_profile.profile.charging_schedule.charging_rate_unit != unit {
+        return Err(RateUnitMismatch)
+      }
+      let maximum_limit = match timed_active_limit(maximum_profile, now) {
+        Ok(Some(limit)) => limit
+        Ok(None) => return Err(NoActiveProfile)
+        Err(error) => return Err(error)
+      }
+      Ok({
+        limit: if maximum_limit < base_limit {
+          maximum_limit
+        } else {
+          base_limit
+        },
+        unit,
+        profile_id: base.profile.charging_profile_id,
+        capped_by_charge_point_max: maximum_limit < base_limit,
+      })
+    }
+    None =>
+      Ok({
+        limit: base_limit,
+        unit,
+        profile_id: base.profile.charging_profile_id,
         capped_by_charge_point_max: false,
       })
   }

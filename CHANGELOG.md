@@ -19,6 +19,8 @@
   availability, fault recovery, aggregate summaries and consistency diagnostics.
 - Reservation lifecycle management and local authorization stores with Full and
   Differential updates, version checks, expiry and typed wire messages.
+- Timed charging-profile evaluation with caller-mapped validity intervals,
+  Absolute/Relative schedules, Daily/Weekly recurrence and stack replacement.
 - Complete 39-action OCPP 1.6 conformance catalog with request direction,
   required fields and typed-coverage metadata.
 - Payload and CALL audit APIs for unknown actions, wrong directions, invalid

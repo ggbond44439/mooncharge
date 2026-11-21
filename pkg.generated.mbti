@@ -29,6 +29,8 @@ pub fn dispatch_versioned_call(VersionedFrame, MessageDirection) -> Result[Typed
 
 pub fn evaluate_charging_profiles(Array[ChargingProfile], Int32?, Int32) -> Result[ChargingDecision, ChargingProfileError]
 
+pub fn evaluate_timed_charging_profiles(Array[TimedChargingProfile], Int32?, Int64) -> Result[ChargingDecision, ChargingProfileError]
+
 pub fn find_action_spec(String) -> ActionSpec?
 
 pub fn find_action_spec_for(OcppVersion, String) -> Result[ActionSpec?, ProtocolError]
@@ -283,7 +285,7 @@ pub(all) struct ChargingProfile {
   stack_level : Int32
   charging_profile_purpose : ChargingProfilePurpose
   charging_profile_kind : ChargingProfileKind
-  recurrency_kind : String?
+  recurrency_kind : RecurrencyKind?
   valid_from : String?
   valid_to : String?
   charging_schedule : ChargingSchedule
@@ -299,6 +301,11 @@ pub(all) enum ChargingProfileError {
   NoActiveProfile
   RateUnitMismatch
   InvalidElapsedTime
+  InvalidValidityWindow(Int64, Int64)
+  UnmappedValidityFrom(Int32)
+  UnmappedValidityTo(Int32)
+  RelativeProfileRequiresTransactionStart
+  RecurringProfileRequiresRecurrency
 }
 pub fn ChargingProfileError::equal(Self, Self) -> Bool
 pub fn ChargingProfileError::not_equal(Self, Self) -> Bool
@@ -640,6 +647,16 @@ pub(all) enum DispatchError {
 pub fn DispatchError::equal(Self, Self) -> Bool
 pub fn DispatchError::not_equal(Self, Self) -> Bool
 pub fn DispatchError::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) struct EpochInterval {
+  start : Int64
+  end : Int64?
+}
+pub fn EpochInterval::equal(Self, Self) -> Bool
+pub fn EpochInterval::new(Int64, Int64?) -> Result[Self, ChargingProfileError]
+pub fn EpochInterval::not_equal(Self, Self) -> Bool
+pub fn EpochInterval::to_repr(Self) -> @debug.Repr
 
 #derive(Eq, @debug.Debug)
 pub(all) enum FirmwareStatus {
@@ -1017,6 +1034,15 @@ pub fn ProtocolError::output(Self, &Logger) -> Unit
 pub fn ProtocolError::to_repr(Self) -> @debug.Repr
 pub fn ProtocolError::to_string(Self) -> String
 pub impl Show for ProtocolError
+
+#derive(Eq, @debug.Debug)
+pub(all) enum RecurrencyKind {
+  Daily
+  Weekly
+}
+pub fn RecurrencyKind::equal(Self, Self) -> Bool
+pub fn RecurrencyKind::not_equal(Self, Self) -> Bool
+pub fn RecurrencyKind::to_repr(Self) -> @debug.Repr
 
 #derive(Eq, @debug.Debug)
 pub(all) enum RegistrationStatus {
@@ -1429,6 +1455,17 @@ pub fn StopTransactionResponse::from_json(@json.Json) -> Result[Self, ProtocolEr
 pub fn StopTransactionResponse::not_equal(Self, Self) -> Bool
 pub fn StopTransactionResponse::to_json(Self) -> @json.Json
 pub fn StopTransactionResponse::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) struct TimedChargingProfile {
+  profile : ChargingProfile
+  validity : EpochInterval?
+  schedule_start_epoch : Int64
+  transaction_start_epoch : Int64?
+}
+pub fn TimedChargingProfile::equal(Self, Self) -> Bool
+pub fn TimedChargingProfile::not_equal(Self, Self) -> Bool
+pub fn TimedChargingProfile::to_repr(Self) -> @debug.Repr
 
 #derive(Eq, @debug.Debug)
 pub(all) enum TypedCall {
