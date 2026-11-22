@@ -1365,6 +1365,20 @@ pub fn OcppAction::request_direction(Self) -> MessageDirection
 pub fn OcppAction::to_repr(Self) -> @debug.Repr
 
 #derive(Eq, @debug.Debug)
+pub(all) struct OcppRequestRouter {
+  version : OcppVersion
+  max_seen_ids : Int32
+  mut seen_ids : Array[String]
+}
+pub fn OcppRequestRouter::clear_seen(Self) -> Unit
+pub fn OcppRequestRouter::equal(Self, Self) -> Bool
+pub fn OcppRequestRouter::handle(Self, Frame, MessageDirection, (TypedCall) -> Result[@json.Json, RpcError]) -> Result[Frame, RouterError]
+pub fn OcppRequestRouter::new(OcppVersion, Int32) -> Result[Self, RouterError]
+pub fn OcppRequestRouter::not_equal(Self, Self) -> Bool
+pub fn OcppRequestRouter::seen_count(Self) -> Int32
+pub fn OcppRequestRouter::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
 pub(all) struct OcppTransport {
   version : OcppVersion
   mut state : TransportState
@@ -1668,6 +1682,18 @@ pub(all) enum ResetType {
 pub fn ResetType::equal(Self, Self) -> Bool
 pub fn ResetType::not_equal(Self, Self) -> Bool
 pub fn ResetType::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) enum RouterError {
+  NotACall
+  InvalidMaxSeen(Int32)
+  UnsupportedVersion(OcppVersion)
+  DuplicateRequest(MessageId)
+  InvalidHandlerPayload
+}
+pub fn RouterError::equal(Self, Self) -> Bool
+pub fn RouterError::not_equal(Self, Self) -> Bool
+pub fn RouterError::to_repr(Self) -> @debug.Repr
 
 #derive(Eq, @debug.Debug)
 pub(all) struct RpcError {

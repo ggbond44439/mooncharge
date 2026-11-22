@@ -41,6 +41,7 @@ MoonCharge 把这些容易出错的边界集中到一个无 I/O 的协议层中�
 - `TriggerMessage`、`ExtendedTriggerMessage` 与 `GetCompositeSchedule`：标准/扩展触发目标、可选连接器、复合计划状态和完整 `ChargingSchedule`。
 - 安全与日志扩展：类型化 `GetLog`、`LogStatusNotification`、`SecurityEventNotification`、签名固件状态与签名固件更新。
 - OCPP 1.6 全部 39 个动作均具备类型化请求与确认，覆盖证书安装、删除、查询、签名和签名链下发。
+- 带重复请求防护的 `OcppRequestRouter`：类型化 handler、自动 `CALLRESULT`/`CALLERROR` 封装、原始消息 ID 保留和有序容量淘汰。
 - 完整 39 动作 OCPP 1.6 目录，包含方向、请求/确认必填字段和类型覆盖状态。
 - 帧级一致性审计：检查未知动作、方向错误、非对象 payload 和缺失必填字段。
 - 核心载荷的类型化解析和序列化：
@@ -54,7 +55,7 @@ MoonCharge 把这些容易出错的边界集中到一个无 I/O 的协议层中�
 - 按 `TxProfile > TxDefaultProfile` 和最高 stack level 选择活动档位，
   再应用 `ChargePointMaxProfile` 上限。
 - 无网络 CLI，用于帧检查、一致性审计、动作方向与充电档位求值。
-- 15 个可运行示例和跨后端 CI。
+- 16 个可运行示例和跨后端 CI。
 
 ## 安装
 
@@ -207,6 +208,7 @@ moon run examples/firmware_diagnostics
 moon run examples/trigger_schedule
 moon run examples/security_logging
 moon run examples/certificate_workflow
+moon run examples/runtime_router
 ```
 
 ## 明确不做
@@ -243,6 +245,7 @@ moon run examples/firmware_diagnostics
 moon run examples/trigger_schedule
 moon run examples/security_logging
 moon run examples/certificate_workflow
+moon run examples/runtime_router
 moon package --list
 ```
 

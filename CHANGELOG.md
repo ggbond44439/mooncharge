@@ -38,6 +38,8 @@
   filters, upload states, firmware verification states and signature material.
 - Typed certificate installation, deletion, discovery, CSR signing and signed
   certificate-chain actions, completing all 39 OCPP 1.6 action payloads.
+- Runtime request routing with typed handlers, automatic result/error framing,
+  bounded duplicate-message protection and explicit replay resets.
 - Complete 39-action OCPP 1.6 conformance catalog with request direction,
   required fields and typed-coverage metadata.
 - Payload and CALL audit APIs for unknown actions, wrong directions, invalid

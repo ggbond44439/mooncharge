@@ -842,6 +842,18 @@ pub extend SignCertificateResponse with Eq::{not_equal, equal}
 pub extend SignCertificateResponse with @debug.Debug::{to_repr}
 
 ///|
+pub extend RouterError with Eq::{not_equal, equal}
+
+///|
+pub extend RouterError with @debug.Debug::{to_repr}
+
+///|
+pub extend OcppRequestRouter with Eq::{not_equal, equal}
+
+///|
+pub extend OcppRequestRouter with @debug.Debug::{to_repr}
+
+///|
 pub extend PendingCall with Eq::{not_equal, equal}
 
 ///|

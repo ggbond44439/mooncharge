@@ -183,6 +183,16 @@ The transport owns generation IDs, reconnect accounting and a bounded outbound
 queue. Malformed text reports `ProtocolFailure` without implicitly dropping a
 healthy connection, and local or exhausted closure clears pending output.
 
+## Runtime request routing
+
+`OcppRequestRouter` connects strict CALL decoding to application handlers. The
+handler receives a `TypedCall` and returns either an object payload or an
+`RpcError`. Successful results become `CALLRESULT` frames; handler and payload
+failures become `CALLERROR` frames with the original message id. A bounded,
+ordered seen-id window rejects duplicate inbound calls while allowing old ids to
+be evicted after capacity is reached. `clear_seen` supports an explicit replay
+session.
+
 ## Deliberately out of scope
 
 - concrete WebSocket/socket, timer and HTTP implementations
