@@ -802,6 +802,30 @@ pub fn GetConfigurationResponse::to_json(Self) -> @json.Json
 pub fn GetConfigurationResponse::to_repr(Self) -> @debug.Repr
 
 #derive(Eq, @debug.Debug)
+pub(all) struct GetDiagnosticsRequest {
+  location : String
+  retries : Int32?
+  retry_interval : Int32?
+  start_time : String?
+  stop_time : String?
+}
+pub fn GetDiagnosticsRequest::equal(Self, Self) -> Bool
+pub fn GetDiagnosticsRequest::from_json(@json.Json) -> Result[Self, ProtocolError]
+pub fn GetDiagnosticsRequest::not_equal(Self, Self) -> Bool
+pub fn GetDiagnosticsRequest::to_json(Self) -> @json.Json
+pub fn GetDiagnosticsRequest::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) struct GetDiagnosticsResponse {
+  file_name : String?
+}
+pub fn GetDiagnosticsResponse::equal(Self, Self) -> Bool
+pub fn GetDiagnosticsResponse::from_json(@json.Json) -> Result[Self, ProtocolError]
+pub fn GetDiagnosticsResponse::not_equal(Self, Self) -> Bool
+pub fn GetDiagnosticsResponse::to_json(Self) -> @json.Json
+pub fn GetDiagnosticsResponse::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
 pub struct GetLocalListVersionRequest {
   marker : Unit
 }
@@ -1655,6 +1679,7 @@ pub(all) enum TypedCall {
   DataTransfer(DataTransferRequest)
   DiagnosticsStatusNotification(DiagnosticsStatusNotificationRequest)
   FirmwareStatusNotification(FirmwareStatusNotificationRequest)
+  GetDiagnostics(GetDiagnosticsRequest)
   GetLocalListVersion(GetLocalListVersionRequest)
   Heartbeat(HeartbeatRequest)
   StatusNotification(StatusNotificationRequest)
@@ -1672,6 +1697,7 @@ pub(all) enum TypedCall {
   ClearChargingProfile(ClearChargingProfileRequest)
   SendLocalList(SendLocalListRequest)
   UnlockConnector(UnlockConnectorRequest)
+  UpdateFirmware(UpdateFirmwareRequest)
   UnsupportedAction(String, @json.Json)
 }
 pub fn TypedCall::action_name(Self) -> String
@@ -1708,6 +1734,30 @@ pub(all) enum UnlockStatus {
 pub fn UnlockStatus::equal(Self, Self) -> Bool
 pub fn UnlockStatus::not_equal(Self, Self) -> Bool
 pub fn UnlockStatus::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) struct UpdateFirmwareRequest {
+  location : String
+  retrieve_date : String
+  retries : Int32?
+  retry_interval : Int32?
+}
+pub fn UpdateFirmwareRequest::equal(Self, Self) -> Bool
+pub fn UpdateFirmwareRequest::from_json(@json.Json) -> Result[Self, ProtocolError]
+pub fn UpdateFirmwareRequest::not_equal(Self, Self) -> Bool
+pub fn UpdateFirmwareRequest::to_json(Self) -> @json.Json
+pub fn UpdateFirmwareRequest::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub struct UpdateFirmwareResponse {
+  marker : Unit
+}
+pub fn UpdateFirmwareResponse::equal(Self, Self) -> Bool
+pub fn UpdateFirmwareResponse::from_json(@json.Json) -> Result[Self, ProtocolError]
+pub fn UpdateFirmwareResponse::new() -> Self
+pub fn UpdateFirmwareResponse::not_equal(Self, Self) -> Bool
+pub fn UpdateFirmwareResponse::to_json(Self) -> @json.Json
+pub fn UpdateFirmwareResponse::to_repr(Self) -> @debug.Repr
 
 #derive(Eq, @debug.Debug)
 pub(all) struct VersionedFrame {

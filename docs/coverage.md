@@ -32,10 +32,10 @@ The catalog contains 39 OCPP 1.6 actions and records their request direction,
 required request fields, required confirmation fields and current payload
 coverage. The initial baseline has:
 
-- 24 typed requests;
-- 24 typed confirmations;
-- 15 catalog-only requests;
-- 15 catalog-only confirmations.
+- 26 typed requests;
+- 26 typed confirmations;
+- 13 catalog-only requests;
+- 13 catalog-only confirmations.
 
 The required-field inventory was checked against the public
 `mobilityhouse/ocpp` OCPP 1.6 JSON Schemas. The catalog is available through:
@@ -65,7 +65,7 @@ The required-field inventory was checked against the public
 | `FirmwareStatusNotification` | Typed | Typed |
 | `GetCompositeSchedule` | Catalog only | Catalog only |
 | `GetConfiguration` | Typed | Typed |
-| `GetDiagnostics` | Catalog only | Catalog only |
+| `GetDiagnostics` | Typed | Typed |
 | `GetInstalledCertificateIds` | Catalog only | Catalog only |
 | `GetLocalListVersion` | Typed | Typed |
 | `GetLog` | Catalog only | Catalog only |
@@ -88,7 +88,7 @@ The required-field inventory was checked against the public
 | `StopTransaction` | Typed | Typed |
 | `TriggerMessage` | Catalog only | Catalog only |
 | `UnlockConnector` | Typed | Typed |
-| `UpdateFirmware` | Catalog only | Catalog only |
+| `UpdateFirmware` | Typed | Typed |
 
 “Catalog only” means MoonCharge exposes schema metadata and validates required
 fields, but does not yet provide a dedicated typed payload for that direction.

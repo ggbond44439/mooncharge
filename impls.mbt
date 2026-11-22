@@ -548,6 +548,30 @@ pub extend UnlockConnectorResponse with Eq::{not_equal, equal}
 pub extend UnlockConnectorResponse with @debug.Debug::{to_repr}
 
 ///|
+pub extend GetDiagnosticsRequest with Eq::{not_equal, equal}
+
+///|
+pub extend GetDiagnosticsRequest with @debug.Debug::{to_repr}
+
+///|
+pub extend GetDiagnosticsResponse with Eq::{not_equal, equal}
+
+///|
+pub extend GetDiagnosticsResponse with @debug.Debug::{to_repr}
+
+///|
+pub extend UpdateFirmwareRequest with Eq::{not_equal, equal}
+
+///|
+pub extend UpdateFirmwareRequest with @debug.Debug::{to_repr}
+
+///|
+pub extend UpdateFirmwareResponse with Eq::{not_equal, equal}
+
+///|
+pub extend UpdateFirmwareResponse with @debug.Debug::{to_repr}
+
+///|
 pub extend PendingCall with Eq::{not_equal, equal}
 
 ///|

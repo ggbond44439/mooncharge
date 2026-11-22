@@ -8,6 +8,7 @@ pub(all) enum TypedCall {
   DataTransfer(DataTransferRequest)
   DiagnosticsStatusNotification(DiagnosticsStatusNotificationRequest)
   FirmwareStatusNotification(FirmwareStatusNotificationRequest)
+  GetDiagnostics(GetDiagnosticsRequest)
   GetLocalListVersion(GetLocalListVersionRequest)
   Heartbeat(HeartbeatRequest)
   StatusNotification(StatusNotificationRequest)
@@ -25,6 +26,7 @@ pub(all) enum TypedCall {
   ClearChargingProfile(ClearChargingProfileRequest)
   SendLocalList(SendLocalListRequest)
   UnlockConnector(UnlockConnectorRequest)
+  UpdateFirmware(UpdateFirmwareRequest)
   UnsupportedAction(String, Json)
 }
 
@@ -38,6 +40,7 @@ pub fn TypedCall::action_name(self : TypedCall) -> String {
     DataTransfer(_) => "DataTransfer"
     DiagnosticsStatusNotification(_) => "DiagnosticsStatusNotification"
     FirmwareStatusNotification(_) => "FirmwareStatusNotification"
+    GetDiagnostics(_) => "GetDiagnostics"
     GetLocalListVersion(_) => "GetLocalListVersion"
     Heartbeat(_) => "Heartbeat"
     StatusNotification(_) => "StatusNotification"
@@ -55,6 +58,7 @@ pub fn TypedCall::action_name(self : TypedCall) -> String {
     ClearChargingProfile(_) => "ClearChargingProfile"
     SendLocalList(_) => "SendLocalList"
     UnlockConnector(_) => "UnlockConnector"
+    UpdateFirmware(_) => "UpdateFirmware"
     UnsupportedAction(action, _) => action
   }
 }
@@ -87,6 +91,7 @@ fn parse_typed_call(
       )
     "FirmwareStatusNotification" =>
       FirmwareStatusNotification(parse_firmware_status_notification(payload))
+    "GetDiagnostics" => GetDiagnostics(parse_get_diagnostics_request(payload))
     "GetLocalListVersion" =>
       GetLocalListVersion(parse_get_local_list_version(payload))
     "Heartbeat" => Heartbeat(parse_heartbeat_request(payload))
@@ -113,6 +118,7 @@ fn parse_typed_call(
       ClearChargingProfile(parse_clear_charging_profile(payload))
     "SendLocalList" => SendLocalList(parse_send_local_list(payload))
     "UnlockConnector" => UnlockConnector(parse_unlock_connector(payload))
+    "UpdateFirmware" => UpdateFirmware(parse_update_firmware_request(payload))
     other => UnsupportedAction(other, payload)
   }
 }

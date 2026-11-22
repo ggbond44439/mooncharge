@@ -110,7 +110,7 @@ pub fn action_specs() -> Array[ActionSpec] {
       "status",
     ]),
     spec(GetConfiguration, true, true, [], []),
-    spec(GetDiagnostics, false, false, ["location"], []),
+    spec(GetDiagnostics, true, true, ["location"], []),
     spec(GetInstalledCertificateIds, false, false, ["certificateType"], [
       "status",
     ]),
@@ -169,7 +169,7 @@ pub fn action_specs() -> Array[ActionSpec] {
     ),
     spec(TriggerMessage, false, false, ["requestedMessage"], ["status"]),
     spec(UnlockConnector, true, true, ["connectorId"], ["status"]),
-    spec(UpdateFirmware, false, false, ["location", "retrieveDate"], []),
+    spec(UpdateFirmware, true, true, ["location", "retrieveDate"], []),
   ]
 }
 

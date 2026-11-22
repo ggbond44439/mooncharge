@@ -37,6 +37,7 @@ MoonCharge 把这些容易出错的边界集中到一个无 I/O 的协议层中�
 - 显式 `ElectricalModel` A/W 换算：区分 DC、单相、三相线电压和三相相电压，并校验相数与功率因数。
 - 稳定 `ChargePointSnapshot`：站点、交易、预约、本地鉴权和计时档位的 JSON 保存/恢复，含 v1 迁移和一致性校验。
 - 无 I/O 的 `OcppTransport` 生命周期：连接代次、断线重连、指数退避、重试上限、出站队列与协议错误隔离。
+- `GetDiagnostics` 与 `UpdateFirmware` 类型化消息：下载位置、重试策略、诊断文件名、检索时间和严格空确认。
 - 完整 39 动作 OCPP 1.6 目录，包含方向、请求/确认必填字段和类型覆盖状态。
 - 帧级一致性审计：检查未知动作、方向错误、非对象 payload 和缺失必填字段。
 - 核心载荷的类型化解析和序列化：
@@ -50,7 +51,7 @@ MoonCharge 把这些容易出错的边界集中到一个无 I/O 的协议层中�
 - 按 `TxProfile > TxDefaultProfile` 和最高 stack level 选择活动档位，
   再应用 `ChargePointMaxProfile` 上限。
 - 无网络 CLI，用于帧检查、一致性审计、动作方向与充电档位求值。
-- 11 个可运行示例和跨后端 CI。
+- 12 个可运行示例和跨后端 CI。
 
 ## 安装
 
@@ -173,7 +174,7 @@ moon run cmd/main -- dispatch cp '[2,"auth-1","Authorize",{"idTag":"RFID-1"}]'
 # typed=Authorize direction=charge-point-to-central-system
 
 moon run cmd/main -- conformance summary
-# actions=39 typed_requests=21 typed_responses=21 ...
+# actions=39 typed_requests=26 typed_responses=26 ...
 
 moon run cmd/main -- conformance action StartTransaction
 # action=StartTransaction direction=charge-point-to-central-system ...
@@ -199,6 +200,7 @@ moon run examples/timed_profile_eval
 moon run examples/power_conversion
 moon run examples/snapshot_roundtrip
 moon run examples/transport_reconnect
+moon run examples/firmware_diagnostics
 ```
 
 ## 明确不做
@@ -231,6 +233,7 @@ moon run examples/timed_profile_eval
 moon run examples/power_conversion
 moon run examples/snapshot_roundtrip
 moon run examples/transport_reconnect
+moon run examples/firmware_diagnostics
 moon package --list
 ```
 
