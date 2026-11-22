@@ -32,10 +32,10 @@ The catalog contains 39 OCPP 1.6 actions and records their request direction,
 required request fields, required confirmation fields and current payload
 coverage. The initial baseline has:
 
-- 34 typed requests;
-- 34 typed confirmations;
-- 5 catalog-only requests;
-- 5 catalog-only confirmations.
+- 39 typed requests;
+- 39 typed confirmations;
+- 0 catalog-only requests;
+- 0 catalog-only confirmations.
 
 The required-field inventory was checked against the public
 `mobilityhouse/ocpp` OCPP 1.6 JSON Schemas. The catalog is available through:
@@ -53,24 +53,24 @@ The required-field inventory was checked against the public
 | `Authorize` | Typed | Typed |
 | `BootNotification` | Typed | Typed |
 | `CancelReservation` | Typed | Typed |
-| `CertificateSigned` | Catalog only | Catalog only |
+| `CertificateSigned` | Typed | Typed |
 | `ChangeAvailability` | Typed | Typed |
 | `ChangeConfiguration` | Typed | Typed |
 | `ClearCache` | Typed | Typed |
 | `ClearChargingProfile` | Typed | Typed |
 | `DataTransfer` | Typed | Typed |
-| `DeleteCertificate` | Catalog only | Catalog only |
+| `DeleteCertificate` | Typed | Typed |
 | `DiagnosticsStatusNotification` | Typed | Typed |
 | `ExtendedTriggerMessage` | Typed | Typed |
 | `FirmwareStatusNotification` | Typed | Typed |
 | `GetCompositeSchedule` | Typed | Typed |
 | `GetConfiguration` | Typed | Typed |
 | `GetDiagnostics` | Typed | Typed |
-| `GetInstalledCertificateIds` | Catalog only | Catalog only |
+| `GetInstalledCertificateIds` | Typed | Typed |
 | `GetLocalListVersion` | Typed | Typed |
 | `GetLog` | Typed | Typed |
 | `Heartbeat` | Typed | Typed |
-| `InstallCertificate` | Catalog only | Catalog only |
+| `InstallCertificate` | Typed | Typed |
 | `LogStatusNotification` | Typed | Typed |
 | `MeterValues` | Typed | Typed |
 | `RemoteStartTransaction` | Typed | Typed |
@@ -80,7 +80,7 @@ The required-field inventory was checked against the public
 | `SecurityEventNotification` | Typed | Typed |
 | `SendLocalList` | Typed | Typed |
 | `SetChargingProfile` | Typed | Typed |
-| `SignCertificate` | Catalog only | Catalog only |
+| `SignCertificate` | Typed | Typed |
 | `SignedFirmwareStatusNotification` | Typed | Typed |
 | `SignedUpdateFirmware` | Typed | Typed |
 | `StartTransaction` | Typed | Typed |
@@ -90,10 +90,9 @@ The required-field inventory was checked against the public
 | `UnlockConnector` | Typed | Typed |
 | `UpdateFirmware` | Typed | Typed |
 
-“Catalog only” means MoonCharge exposes schema metadata and validates required
-fields, but does not yet provide a dedicated typed payload for that direction.
-The action name and direction are still checked, and the original JSON remains
-available in `Frame::Call`.
+All 39 OCPP 1.6 actions now expose typed requests and confirmations. Unknown
+vendor actions remain available through `TypedCall::UnsupportedAction`, and the
+original JSON remains available in `Frame::Call`.
 
 ## Trading invariants
 

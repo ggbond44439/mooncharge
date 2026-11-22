@@ -54,6 +54,7 @@ jobs:
           moon run examples/firmware_diagnostics
           moon run examples/trigger_schedule
           moon run examples/security_logging
+          moon run examples/certificate_workflow
 
       - name: CLI smoke test
         run: |

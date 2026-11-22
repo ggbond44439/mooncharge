@@ -734,6 +734,114 @@ pub extend SignedUpdateFirmwareResponse with Eq::{not_equal, equal}
 pub extend SignedUpdateFirmwareResponse with @debug.Debug::{to_repr}
 
 ///|
+pub extend CertificateHashAlgorithm with Eq::{not_equal, equal}
+
+///|
+pub extend CertificateHashAlgorithm with @debug.Debug::{to_repr}
+
+///|
+pub extend CertificateHashData with Eq::{not_equal, equal}
+
+///|
+pub extend CertificateHashData with @debug.Debug::{to_repr}
+
+///|
+pub extend CertificateSignedRequest with Eq::{not_equal, equal}
+
+///|
+pub extend CertificateSignedRequest with @debug.Debug::{to_repr}
+
+///|
+pub extend CertificateSignedStatus with Eq::{not_equal, equal}
+
+///|
+pub extend CertificateSignedStatus with @debug.Debug::{to_repr}
+
+///|
+pub extend CertificateSignedResponse with Eq::{not_equal, equal}
+
+///|
+pub extend CertificateSignedResponse with @debug.Debug::{to_repr}
+
+///|
+pub extend DeleteCertificateRequest with Eq::{not_equal, equal}
+
+///|
+pub extend DeleteCertificateRequest with @debug.Debug::{to_repr}
+
+///|
+pub extend DeleteCertificateStatus with Eq::{not_equal, equal}
+
+///|
+pub extend DeleteCertificateStatus with @debug.Debug::{to_repr}
+
+///|
+pub extend DeleteCertificateResponse with Eq::{not_equal, equal}
+
+///|
+pub extend DeleteCertificateResponse with @debug.Debug::{to_repr}
+
+///|
+pub extend CertificateUse with Eq::{not_equal, equal}
+
+///|
+pub extend CertificateUse with @debug.Debug::{to_repr}
+
+///|
+pub extend GetInstalledCertificateIdsRequest with Eq::{not_equal, equal}
+
+///|
+pub extend GetInstalledCertificateIdsRequest with @debug.Debug::{to_repr}
+
+///|
+pub extend GetInstalledCertificateStatus with Eq::{not_equal, equal}
+
+///|
+pub extend GetInstalledCertificateStatus with @debug.Debug::{to_repr}
+
+///|
+pub extend GetInstalledCertificateIdsResponse with Eq::{not_equal, equal}
+
+///|
+pub extend GetInstalledCertificateIdsResponse with @debug.Debug::{to_repr}
+
+///|
+pub extend InstallCertificateRequest with Eq::{not_equal, equal}
+
+///|
+pub extend InstallCertificateRequest with @debug.Debug::{to_repr}
+
+///|
+pub extend InstallCertificateStatus with Eq::{not_equal, equal}
+
+///|
+pub extend InstallCertificateStatus with @debug.Debug::{to_repr}
+
+///|
+pub extend InstallCertificateResponse with Eq::{not_equal, equal}
+
+///|
+pub extend InstallCertificateResponse with @debug.Debug::{to_repr}
+
+///|
+pub extend SignCertificateRequest with Eq::{not_equal, equal}
+
+///|
+pub extend SignCertificateRequest with @debug.Debug::{to_repr}
+
+///|
+pub extend SignCertificateStatus with Eq::{not_equal, equal}
+
+///|
+pub extend SignCertificateStatus with @debug.Debug::{to_repr}
+
+///|
+pub extend SignCertificateResponse with Eq::{not_equal, equal}
+
+///|
+pub extend SignCertificateResponse with @debug.Debug::{to_repr}
+
+///|
 pub extend PendingCall with Eq::{not_equal, equal}
 
 ///|

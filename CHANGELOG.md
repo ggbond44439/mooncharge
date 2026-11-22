@@ -36,6 +36,8 @@
   including trigger targets, connector scope and full charging schedules.
 - Typed log upload, security-event and signed-firmware workflows, including log
   filters, upload states, firmware verification states and signature material.
+- Typed certificate installation, deletion, discovery, CSR signing and signed
+  certificate-chain actions, completing all 39 OCPP 1.6 action payloads.
 - Complete 39-action OCPP 1.6 conformance catalog with request direction,
   required fields and typed-coverage metadata.
 - Payload and CALL audit APIs for unknown actions, wrong directions, invalid

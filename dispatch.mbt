@@ -4,16 +4,20 @@ pub(all) enum TypedCall {
   Authorize(AuthorizeRequest)
   BootNotification(BootNotificationRequest)
   CancelReservation(CancelReservationRequest)
+  CertificateSigned(CertificateSignedRequest)
   ClearCache(ClearCacheRequest)
   DataTransfer(DataTransferRequest)
+  DeleteCertificate(DeleteCertificateRequest)
   DiagnosticsStatusNotification(DiagnosticsStatusNotificationRequest)
   ExtendedTriggerMessage(ExtendedTriggerMessageRequest)
   FirmwareStatusNotification(FirmwareStatusNotificationRequest)
   GetCompositeSchedule(GetCompositeScheduleRequest)
   GetDiagnostics(GetDiagnosticsRequest)
+  GetInstalledCertificateIds(GetInstalledCertificateIdsRequest)
   GetLog(GetLogRequest)
   GetLocalListVersion(GetLocalListVersionRequest)
   Heartbeat(HeartbeatRequest)
+  InstallCertificate(InstallCertificateRequest)
   LogStatusNotification(LogStatusNotificationRequest)
   StatusNotification(StatusNotificationRequest)
   StartTransaction(StartTransactionRequest)
@@ -25,6 +29,7 @@ pub(all) enum TypedCall {
   ReserveNow(ReserveNowRequest)
   Reset(ResetRequest)
   SecurityEventNotification(SecurityEventNotificationRequest)
+  SignCertificate(SignCertificateRequest)
   SignedFirmwareStatusNotification(SignedFirmwareStatusNotificationRequest)
   SignedUpdateFirmware(SignedUpdateFirmwareRequest)
   ChangeAvailability(ChangeAvailabilityRequest)
@@ -44,16 +49,20 @@ pub fn TypedCall::action_name(self : TypedCall) -> String {
     Authorize(_) => "Authorize"
     BootNotification(_) => "BootNotification"
     CancelReservation(_) => "CancelReservation"
+    CertificateSigned(_) => "CertificateSigned"
     ClearCache(_) => "ClearCache"
     DataTransfer(_) => "DataTransfer"
+    DeleteCertificate(_) => "DeleteCertificate"
     DiagnosticsStatusNotification(_) => "DiagnosticsStatusNotification"
     ExtendedTriggerMessage(_) => "ExtendedTriggerMessage"
     FirmwareStatusNotification(_) => "FirmwareStatusNotification"
     GetCompositeSchedule(_) => "GetCompositeSchedule"
     GetDiagnostics(_) => "GetDiagnostics"
+    GetInstalledCertificateIds(_) => "GetInstalledCertificateIds"
     GetLog(_) => "GetLog"
     GetLocalListVersion(_) => "GetLocalListVersion"
     Heartbeat(_) => "Heartbeat"
+    InstallCertificate(_) => "InstallCertificate"
     LogStatusNotification(_) => "LogStatusNotification"
     StatusNotification(_) => "StatusNotification"
     StartTransaction(_) => "StartTransaction"
@@ -65,6 +74,7 @@ pub fn TypedCall::action_name(self : TypedCall) -> String {
     ReserveNow(_) => "ReserveNow"
     Reset(_) => "Reset"
     SecurityEventNotification(_) => "SecurityEventNotification"
+    SignCertificate(_) => "SignCertificate"
     SignedFirmwareStatusNotification(_) => "SignedFirmwareStatusNotification"
     SignedUpdateFirmware(_) => "SignedUpdateFirmware"
     ChangeAvailability(_) => "ChangeAvailability"
@@ -99,8 +109,12 @@ fn parse_typed_call(
     "BootNotification" =>
       BootNotification(parse_boot_notification_request(payload))
     "CancelReservation" => CancelReservation(parse_cancel_reservation(payload))
+    "CertificateSigned" =>
+      CertificateSigned(parse_certificate_signed_request(payload))
     "ClearCache" => ClearCache(parse_clear_cache_request(payload))
     "DataTransfer" => DataTransfer(parse_data_transfer(payload))
+    "DeleteCertificate" =>
+      DeleteCertificate(parse_delete_certificate_request(payload))
     "DiagnosticsStatusNotification" =>
       DiagnosticsStatusNotification(
         parse_diagnostics_status_notification(payload),
@@ -112,10 +126,16 @@ fn parse_typed_call(
     "GetCompositeSchedule" =>
       GetCompositeSchedule(parse_get_composite_schedule_request(payload))
     "GetDiagnostics" => GetDiagnostics(parse_get_diagnostics_request(payload))
+    "GetInstalledCertificateIds" =>
+      GetInstalledCertificateIds(
+        parse_get_installed_certificate_ids_request(payload),
+      )
     "GetLog" => GetLog(parse_get_log_request(payload))
     "GetLocalListVersion" =>
       GetLocalListVersion(parse_get_local_list_version(payload))
     "Heartbeat" => Heartbeat(parse_heartbeat_request(payload))
+    "InstallCertificate" =>
+      InstallCertificate(parse_install_certificate_request(payload))
     "LogStatusNotification" =>
       LogStatusNotification(parse_log_status_notification_request(payload))
     "StatusNotification" =>
@@ -133,6 +153,8 @@ fn parse_typed_call(
     "Reset" => Reset(parse_reset_request(payload))
     "SecurityEventNotification" =>
       SecurityEventNotification(parse_security_event_notification(payload))
+    "SignCertificate" =>
+      SignCertificate(parse_sign_certificate_request(payload))
     "SignedFirmwareStatusNotification" =>
       SignedFirmwareStatusNotification(
         parse_signed_firmware_status_notification(payload),

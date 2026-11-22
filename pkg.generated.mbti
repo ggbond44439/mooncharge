@@ -180,6 +180,67 @@ pub fn CancelReservationStatus::not_equal(Self, Self) -> Bool
 pub fn CancelReservationStatus::to_repr(Self) -> @debug.Repr
 
 #derive(Eq, @debug.Debug)
+pub(all) enum CertificateHashAlgorithm {
+  SHA256
+  SHA384
+  SHA512
+}
+pub fn CertificateHashAlgorithm::equal(Self, Self) -> Bool
+pub fn CertificateHashAlgorithm::not_equal(Self, Self) -> Bool
+pub fn CertificateHashAlgorithm::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) struct CertificateHashData {
+  hash_algorithm : CertificateHashAlgorithm
+  issuer_name_hash : String
+  issuer_key_hash : String
+  serial_number : String
+}
+pub fn CertificateHashData::equal(Self, Self) -> Bool
+pub fn CertificateHashData::from_json(@json.Json) -> Result[Self, ProtocolError]
+pub fn CertificateHashData::not_equal(Self, Self) -> Bool
+pub fn CertificateHashData::to_json(Self) -> @json.Json
+pub fn CertificateHashData::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) struct CertificateSignedRequest {
+  certificate_chain : String
+}
+pub fn CertificateSignedRequest::equal(Self, Self) -> Bool
+pub fn CertificateSignedRequest::from_json(@json.Json) -> Result[Self, ProtocolError]
+pub fn CertificateSignedRequest::not_equal(Self, Self) -> Bool
+pub fn CertificateSignedRequest::to_json(Self) -> @json.Json
+pub fn CertificateSignedRequest::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) struct CertificateSignedResponse {
+  status : CertificateSignedStatus
+}
+pub fn CertificateSignedResponse::equal(Self, Self) -> Bool
+pub fn CertificateSignedResponse::from_json(@json.Json) -> Result[Self, ProtocolError]
+pub fn CertificateSignedResponse::not_equal(Self, Self) -> Bool
+pub fn CertificateSignedResponse::to_json(Self) -> @json.Json
+pub fn CertificateSignedResponse::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) enum CertificateSignedStatus {
+  Accepted
+  Rejected
+}
+pub fn CertificateSignedStatus::equal(Self, Self) -> Bool
+pub fn CertificateSignedStatus::not_equal(Self, Self) -> Bool
+pub fn CertificateSignedStatus::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) enum CertificateUse {
+  CentralSystemRootCertificate
+  ManufacturerRootCertificate
+}
+pub fn CertificateUse::equal(Self, Self) -> Bool
+pub fn CertificateUse::not_equal(Self, Self) -> Bool
+pub fn CertificateUse::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
 pub(all) struct ChangeAvailabilityRequest {
   connector_id : Int32
   kind : AvailabilityType
@@ -643,6 +704,36 @@ pub fn DataTransferStatus::not_equal(Self, Self) -> Bool
 pub fn DataTransferStatus::to_repr(Self) -> @debug.Repr
 
 #derive(Eq, @debug.Debug)
+pub(all) struct DeleteCertificateRequest {
+  certificate_hash_data : CertificateHashData
+}
+pub fn DeleteCertificateRequest::equal(Self, Self) -> Bool
+pub fn DeleteCertificateRequest::from_json(@json.Json) -> Result[Self, ProtocolError]
+pub fn DeleteCertificateRequest::not_equal(Self, Self) -> Bool
+pub fn DeleteCertificateRequest::to_json(Self) -> @json.Json
+pub fn DeleteCertificateRequest::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) struct DeleteCertificateResponse {
+  status : DeleteCertificateStatus
+}
+pub fn DeleteCertificateResponse::equal(Self, Self) -> Bool
+pub fn DeleteCertificateResponse::from_json(@json.Json) -> Result[Self, ProtocolError]
+pub fn DeleteCertificateResponse::not_equal(Self, Self) -> Bool
+pub fn DeleteCertificateResponse::to_json(Self) -> @json.Json
+pub fn DeleteCertificateResponse::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) enum DeleteCertificateStatus {
+  Accepted
+  Failed
+  NotFound
+}
+pub fn DeleteCertificateStatus::equal(Self, Self) -> Bool
+pub fn DeleteCertificateStatus::not_equal(Self, Self) -> Bool
+pub fn DeleteCertificateStatus::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
 pub(all) enum DiagnosticsStatus {
   Idle
   Uploaded
@@ -908,6 +999,36 @@ pub fn GetDiagnosticsResponse::to_json(Self) -> @json.Json
 pub fn GetDiagnosticsResponse::to_repr(Self) -> @debug.Repr
 
 #derive(Eq, @debug.Debug)
+pub(all) struct GetInstalledCertificateIdsRequest {
+  certificate_type : CertificateUse
+}
+pub fn GetInstalledCertificateIdsRequest::equal(Self, Self) -> Bool
+pub fn GetInstalledCertificateIdsRequest::from_json(@json.Json) -> Result[Self, ProtocolError]
+pub fn GetInstalledCertificateIdsRequest::not_equal(Self, Self) -> Bool
+pub fn GetInstalledCertificateIdsRequest::to_json(Self) -> @json.Json
+pub fn GetInstalledCertificateIdsRequest::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) struct GetInstalledCertificateIdsResponse {
+  status : GetInstalledCertificateStatus
+  certificate_hash_data : Array[CertificateHashData]
+}
+pub fn GetInstalledCertificateIdsResponse::equal(Self, Self) -> Bool
+pub fn GetInstalledCertificateIdsResponse::from_json(@json.Json) -> Result[Self, ProtocolError]
+pub fn GetInstalledCertificateIdsResponse::not_equal(Self, Self) -> Bool
+pub fn GetInstalledCertificateIdsResponse::to_json(Self) -> @json.Json
+pub fn GetInstalledCertificateIdsResponse::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) enum GetInstalledCertificateStatus {
+  Accepted
+  NotFound
+}
+pub fn GetInstalledCertificateStatus::equal(Self, Self) -> Bool
+pub fn GetInstalledCertificateStatus::not_equal(Self, Self) -> Bool
+pub fn GetInstalledCertificateStatus::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
 pub struct GetLocalListVersionRequest {
   marker : Unit
 }
@@ -995,6 +1116,37 @@ pub fn IdTagInfo::from_json(@json.Json) -> Result[Self, ProtocolError]
 pub fn IdTagInfo::not_equal(Self, Self) -> Bool
 pub fn IdTagInfo::to_json(Self) -> @json.Json
 pub fn IdTagInfo::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) struct InstallCertificateRequest {
+  certificate_type : CertificateUse
+  certificate : String
+}
+pub fn InstallCertificateRequest::equal(Self, Self) -> Bool
+pub fn InstallCertificateRequest::from_json(@json.Json) -> Result[Self, ProtocolError]
+pub fn InstallCertificateRequest::not_equal(Self, Self) -> Bool
+pub fn InstallCertificateRequest::to_json(Self) -> @json.Json
+pub fn InstallCertificateRequest::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) struct InstallCertificateResponse {
+  status : InstallCertificateStatus
+}
+pub fn InstallCertificateResponse::equal(Self, Self) -> Bool
+pub fn InstallCertificateResponse::from_json(@json.Json) -> Result[Self, ProtocolError]
+pub fn InstallCertificateResponse::not_equal(Self, Self) -> Bool
+pub fn InstallCertificateResponse::to_json(Self) -> @json.Json
+pub fn InstallCertificateResponse::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) enum InstallCertificateStatus {
+  Accepted
+  Failed
+  Rejected
+}
+pub fn InstallCertificateStatus::equal(Self, Self) -> Bool
+pub fn InstallCertificateStatus::not_equal(Self, Self) -> Bool
+pub fn InstallCertificateStatus::to_repr(Self) -> @debug.Repr
 
 #derive(Eq, @debug.Debug)
 pub(all) struct LocalAuthorizationEntry {
@@ -1644,6 +1796,35 @@ pub fn SetChargingProfileResponse::to_json(Self) -> @json.Json
 pub fn SetChargingProfileResponse::to_repr(Self) -> @debug.Repr
 
 #derive(Eq, @debug.Debug)
+pub(all) struct SignCertificateRequest {
+  csr : String
+}
+pub fn SignCertificateRequest::equal(Self, Self) -> Bool
+pub fn SignCertificateRequest::from_json(@json.Json) -> Result[Self, ProtocolError]
+pub fn SignCertificateRequest::not_equal(Self, Self) -> Bool
+pub fn SignCertificateRequest::to_json(Self) -> @json.Json
+pub fn SignCertificateRequest::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) struct SignCertificateResponse {
+  status : SignCertificateStatus
+}
+pub fn SignCertificateResponse::equal(Self, Self) -> Bool
+pub fn SignCertificateResponse::from_json(@json.Json) -> Result[Self, ProtocolError]
+pub fn SignCertificateResponse::not_equal(Self, Self) -> Bool
+pub fn SignCertificateResponse::to_json(Self) -> @json.Json
+pub fn SignCertificateResponse::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) enum SignCertificateStatus {
+  Accepted
+  Rejected
+}
+pub fn SignCertificateStatus::equal(Self, Self) -> Bool
+pub fn SignCertificateStatus::not_equal(Self, Self) -> Bool
+pub fn SignCertificateStatus::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
 pub(all) enum SignedFirmwareStatus {
   Downloaded
   DownloadFailed
@@ -1994,16 +2175,20 @@ pub(all) enum TypedCall {
   Authorize(AuthorizeRequest)
   BootNotification(BootNotificationRequest)
   CancelReservation(CancelReservationRequest)
+  CertificateSigned(CertificateSignedRequest)
   ClearCache(ClearCacheRequest)
   DataTransfer(DataTransferRequest)
+  DeleteCertificate(DeleteCertificateRequest)
   DiagnosticsStatusNotification(DiagnosticsStatusNotificationRequest)
   ExtendedTriggerMessage(ExtendedTriggerMessageRequest)
   FirmwareStatusNotification(FirmwareStatusNotificationRequest)
   GetCompositeSchedule(GetCompositeScheduleRequest)
   GetDiagnostics(GetDiagnosticsRequest)
+  GetInstalledCertificateIds(GetInstalledCertificateIdsRequest)
   GetLog(GetLogRequest)
   GetLocalListVersion(GetLocalListVersionRequest)
   Heartbeat(HeartbeatRequest)
+  InstallCertificate(InstallCertificateRequest)
   LogStatusNotification(LogStatusNotificationRequest)
   StatusNotification(StatusNotificationRequest)
   StartTransaction(StartTransactionRequest)
@@ -2015,6 +2200,7 @@ pub(all) enum TypedCall {
   ReserveNow(ReserveNowRequest)
   Reset(ResetRequest)
   SecurityEventNotification(SecurityEventNotificationRequest)
+  SignCertificate(SignCertificateRequest)
   SignedFirmwareStatusNotification(SignedFirmwareStatusNotificationRequest)
   SignedUpdateFirmware(SignedUpdateFirmwareRequest)
   ChangeAvailability(ChangeAvailabilityRequest)
