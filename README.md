@@ -36,6 +36,7 @@ MoonCharge 把这些容易出错的边界集中到一个无 I/O 的协议层中�
 - `TimedChargingProfile` 时间语义：显式 epoch 有效期、Absolute/Relative、Daily/Weekly Recurring 和同 stack 替换。
 - 显式 `ElectricalModel` A/W 换算：区分 DC、单相、三相线电压和三相相电压，并校验相数与功率因数。
 - 稳定 `ChargePointSnapshot`：站点、交易、预约、本地鉴权和计时档位的 JSON 保存/恢复，含 v1 迁移和一致性校验。
+- 无 I/O 的 `OcppTransport` 生命周期：连接代次、断线重连、指数退避、重试上限、出站队列与协议错误隔离。
 - 完整 39 动作 OCPP 1.6 目录，包含方向、请求/确认必填字段和类型覆盖状态。
 - 帧级一致性审计：检查未知动作、方向错误、非对象 payload 和缺失必填字段。
 - 核心载荷的类型化解析和序列化：
@@ -49,7 +50,7 @@ MoonCharge 把这些容易出错的边界集中到一个无 I/O 的协议层中�
 - 按 `TxProfile > TxDefaultProfile` 和最高 stack level 选择活动档位，
   再应用 `ChargePointMaxProfile` 上限。
 - 无网络 CLI，用于帧检查、一致性审计、动作方向与充电档位求值。
-- 4 个可运行示例和跨后端 CI。
+- 11 个可运行示例和跨后端 CI。
 
 ## 安装
 
@@ -139,6 +140,20 @@ IANA 时区实现。
 4. 最后用 `ChargePointMaxProfile` 截断结果；
 5. A 与 W 不自动换算，单位不一致时返回 `RateUnitMismatch`。
 
+## 连接生命周期
+
+`OcppTransport` 不创建 socket、计时器或后台线程。调用方把连接事件交给状态机，
+再执行返回的动作：
+
+- `Open` 返回 `StartConnect`；
+- `Opened` 返回带连接代次的 `TransportReady`；
+- `TextReceived` 解析为 `VersionedFrame`，坏帧只返回 `ProtocolFailure`；
+- `PeerClosed` 或 `OpenFailed` 返回带指数退避延迟的 `ScheduleReconnect`；
+- 重试耗尽或 `LocalClose` 时返回 `CloseTransport` 与 `StopReconnect`。
+
+`queue_frame` 只在已连接状态接受帧，`flush` 原子地取出待发送文本。短暂断线时
+队列会保留，重连成功后可继续发送；关闭会清空队列，避免旧报文在重启后泄漏。
+
 ## CLI
 
 ```text
@@ -183,11 +198,13 @@ moon run examples/reservation_auth
 moon run examples/timed_profile_eval
 moon run examples/power_conversion
 moon run examples/snapshot_roundtrip
+moon run examples/transport_reconnect
 ```
 
 ## 明确不做
 
-- 不实现 WebSocket 握手、TLS、证书供应或网络重连。
+- 不创建 WebSocket/socket、计时器或后台线程；只提供确定性的连接与重连决策。
+- 不实现 TLS、证书供应或具体网络栈。
 - 不实现 OCPP 2.0.1 的完整消息集合；当前版本固定为 1.6J 核心。
 - 不实现 Plug & Charge、PKI 信任链或计费结算。
 - 不持久化交易与配置，不替调用方决定数据库事务边界。
@@ -213,11 +230,12 @@ moon run examples/reservation_auth
 moon run examples/timed_profile_eval
 moon run examples/power_conversion
 moon run examples/snapshot_roundtrip
+moon run examples/transport_reconnect
 moon package --list
 ```
 
 当前测试覆盖 framing、错误码、动作方向、交易载荷、充电档位选择、连接器生命
-周期和 CLI。
+周期、重连状态机和 CLI。
 
 ## 生态定位
 

@@ -1015,6 +1015,30 @@ pub fn OcppAction::request_direction(Self) -> MessageDirection
 pub fn OcppAction::to_repr(Self) -> @debug.Repr
 
 #derive(Eq, @debug.Debug)
+pub(all) struct OcppTransport {
+  version : OcppVersion
+  mut state : TransportState
+  max_outbound : Int32
+  reconnect_policy : ReconnectPolicy
+  mut reconnect_attempt : Int32
+  mut generation : Int64
+  mut outbound : Array[String]
+  mut last_error : String?
+}
+pub fn OcppTransport::equal(Self, Self) -> Bool
+pub fn OcppTransport::flush(Self) -> Result[Array[TransportAction], TransportError]
+pub fn OcppTransport::generation(Self) -> Int64
+pub fn OcppTransport::handle(Self, TransportEvent) -> Array[TransportAction]
+pub fn OcppTransport::last_error(Self) -> String?
+pub fn OcppTransport::new(OcppVersion, Int32, ReconnectPolicy) -> Result[Self, TransportError]
+pub fn OcppTransport::not_equal(Self, Self) -> Bool
+pub fn OcppTransport::pending_count(Self) -> Int32
+pub fn OcppTransport::queue_frame(Self, Frame) -> Result[Unit, TransportError]
+pub fn OcppTransport::reconnect_attempt(Self) -> Int32
+pub fn OcppTransport::state(Self) -> TransportState
+pub fn OcppTransport::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
 pub(all) enum OcppVersion {
   V16J
   V201
@@ -1107,6 +1131,18 @@ pub fn ProtocolError::output(Self, &Logger) -> Unit
 pub fn ProtocolError::to_repr(Self) -> @debug.Repr
 pub fn ProtocolError::to_string(Self) -> String
 pub impl Show for ProtocolError
+
+#derive(Eq, @debug.Debug)
+pub(all) struct ReconnectPolicy {
+  base_delay_ms : Int64
+  max_delay_ms : Int64
+  max_attempts : Int32
+}
+pub fn ReconnectPolicy::delay_for_attempt(Self, Int32) -> Int64
+pub fn ReconnectPolicy::equal(Self, Self) -> Bool
+pub fn ReconnectPolicy::new(Int64, Int64, max_attempts? : Int32) -> Result[Self, TransportError]
+pub fn ReconnectPolicy::not_equal(Self, Self) -> Bool
+pub fn ReconnectPolicy::to_repr(Self) -> @debug.Repr
 
 #derive(Eq, @debug.Debug)
 pub(all) enum RecurrencyKind {
@@ -1556,6 +1592,59 @@ pub(all) struct TimedChargingProfile {
 pub fn TimedChargingProfile::equal(Self, Self) -> Bool
 pub fn TimedChargingProfile::not_equal(Self, Self) -> Bool
 pub fn TimedChargingProfile::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) enum TransportAction {
+  StartConnect
+  TransportReady(Int64)
+  SendText(String)
+  FrameReceived(VersionedFrame)
+  ProtocolFailure(ProtocolError)
+  CloseTransport(String)
+  ScheduleReconnect(Int64, Int32)
+  StopReconnect
+  RejectedEvent(String, TransportState)
+}
+pub fn TransportAction::equal(Self, Self) -> Bool
+pub fn TransportAction::not_equal(Self, Self) -> Bool
+pub fn TransportAction::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) enum TransportError {
+  InvalidReconnectPolicy
+  InvalidMaxOutbound(Int32)
+  UnsupportedVersion(OcppVersion)
+  NotConnected(TransportState)
+  QueueFull(Int32)
+}
+pub fn TransportError::equal(Self, Self) -> Bool
+pub fn TransportError::not_equal(Self, Self) -> Bool
+pub fn TransportError::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) enum TransportEvent {
+  Open
+  Opened
+  TextReceived(String)
+  OpenFailed(String)
+  PeerClosed(String)
+  LocalClose(String)
+}
+pub fn TransportEvent::equal(Self, Self) -> Bool
+pub fn TransportEvent::not_equal(Self, Self) -> Bool
+pub fn TransportEvent::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) enum TransportState {
+  Disconnected
+  Connecting
+  Connected
+  Reconnecting
+  Closed
+}
+pub fn TransportState::equal(Self, Self) -> Bool
+pub fn TransportState::not_equal(Self, Self) -> Bool
+pub fn TransportState::to_repr(Self) -> @debug.Repr
 
 #derive(Eq, @debug.Debug)
 pub(all) enum TypedCall {

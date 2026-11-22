@@ -163,9 +163,30 @@ profiles. `save_snapshot` and `load_snapshot` validate consistency and duplicate
 identities. Version 1 connector-only documents are migrated automatically, and
 unknown JSON fields are ignored for forward-compatible reads.
 
+## Transport lifecycle
+
+`OcppTransport` is a deterministic, sans-I/O connection state machine. It turns
+application events into explicit actions:
+
+| Event | Accepted state | Action |
+| --- | --- | --- |
+| `Open` | Disconnected, Reconnecting | `StartConnect` |
+| `Opened` | Connecting | `TransportReady(generation)` |
+| `TextReceived` | Connected | `FrameReceived` or `ProtocolFailure` |
+| `OpenFailed` | Connecting | `ScheduleReconnect` or close |
+| `PeerClosed` | Connected | `ScheduleReconnect` or close |
+| `LocalClose` | Any open state | `CloseTransport`, `StopReconnect` |
+
+Reconnect delay uses bounded exponential backoff (`base_delay_ms`, doubling,
+`max_delay_ms`). A positive `max_attempts` closes the transport after exhaustion;
+zero means unlimited retries. The caller owns sockets, TLS, timers and delivery.
+The transport owns generation IDs, reconnect accounting and a bounded outbound
+queue. Malformed text reports `ProtocolFailure` without implicitly dropping a
+healthy connection, and local or exhausted closure clears pending output.
+
 ## Deliberately out of scope
 
-- WebSocket and HTTP transport
+- concrete WebSocket/socket, timer and HTTP implementations
 - complete certificate provisioning and trust-chain management
 - OCPP 2.0.1 complete transaction and device-model semantics
 - Plug & Charge trust chains

@@ -26,6 +26,9 @@
 - Versioned JSON snapshots for station, transaction, reservation, local-auth and
   timed-profile state, with v1 migration, idempotent restore and consistency
   validation.
+- Deterministic `OcppTransport` lifecycle with generation IDs, exponential
+  reconnect backoff, retry limits, bounded outbound queues and protocol-error
+  isolation.
 - Complete 39-action OCPP 1.6 conformance catalog with request direction,
   required fields and typed-coverage metadata.
 - Payload and CALL audit APIs for unknown actions, wrong directions, invalid

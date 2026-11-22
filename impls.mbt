@@ -750,3 +750,39 @@ pub extend ChargePointSnapshot with Eq::{not_equal, equal}
 
 ///|
 pub extend ChargePointSnapshot with @debug.Debug::{to_repr}
+
+///|
+pub extend TransportState with Eq::{not_equal, equal}
+
+///|
+pub extend TransportState with @debug.Debug::{to_repr}
+
+///|
+pub extend ReconnectPolicy with Eq::{not_equal, equal}
+
+///|
+pub extend ReconnectPolicy with @debug.Debug::{to_repr}
+
+///|
+pub extend TransportEvent with Eq::{not_equal, equal}
+
+///|
+pub extend TransportEvent with @debug.Debug::{to_repr}
+
+///|
+pub extend TransportAction with Eq::{not_equal, equal}
+
+///|
+pub extend TransportAction with @debug.Debug::{to_repr}
+
+///|
+pub extend TransportError with Eq::{not_equal, equal}
+
+///|
+pub extend TransportError with @debug.Debug::{to_repr}
+
+///|
+pub extend OcppTransport with Eq::{not_equal, equal}
+
+///|
+pub extend OcppTransport with @debug.Debug::{to_repr}
