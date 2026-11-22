@@ -40,6 +40,8 @@
   certificate-chain actions, completing all 39 OCPP 1.6 action payloads.
 - Runtime request routing with typed handlers, automatic result/error framing,
   bounded duplicate-message protection and explicit replay resets.
+- Versioned protocol journals with bounded retention, monotonic timestamps,
+  direction filtering, deterministic replay and validated JSON persistence.
 - Complete 39-action OCPP 1.6 conformance catalog with request direction,
   required fields and typed-coverage metadata.
 - Payload and CALL audit APIs for unknown actions, wrong directions, invalid

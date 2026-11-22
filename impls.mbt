@@ -854,6 +854,30 @@ pub extend OcppRequestRouter with Eq::{not_equal, equal}
 pub extend OcppRequestRouter with @debug.Debug::{to_repr}
 
 ///|
+pub extend JournalDirection with Eq::{not_equal, equal}
+
+///|
+pub extend JournalDirection with @debug.Debug::{to_repr}
+
+///|
+pub extend JournalEntry with Eq::{not_equal, equal}
+
+///|
+pub extend JournalEntry with @debug.Debug::{to_repr}
+
+///|
+pub extend JournalError with Eq::{not_equal, equal}
+
+///|
+pub extend JournalError with @debug.Debug::{to_repr}
+
+///|
+pub extend ProtocolJournal with Eq::{not_equal, equal}
+
+///|
+pub extend ProtocolJournal with @debug.Debug::{to_repr}
+
+///|
 pub extend PendingCall with Eq::{not_equal, equal}
 
 ///|

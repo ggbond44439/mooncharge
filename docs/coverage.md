@@ -193,6 +193,15 @@ ordered seen-id window rejects duplicate inbound calls while allowing old ids to
 be evicted after capacity is reached. `clear_seen` supports an explicit replay
 session.
 
+## Protocol journal
+
+`ProtocolJournal` stores inbound and outbound frames with monotonic caller-owned
+millisecond timestamps and stable sequence numbers. Capacity overflow evicts the
+oldest entries while preserving newer sequence continuity. Journals serialize to
+schema-versioned JSON; loading validates entry order, timestamp order, sequence
+continuity, capacity, direction and embedded frame syntax. `replay` and
+`replay_direction` return deterministic entry arrays without opening a socket.
+
 ## Deliberately out of scope
 
 - concrete WebSocket/socket, timer and HTTP implementations

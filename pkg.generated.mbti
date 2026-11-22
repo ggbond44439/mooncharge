@@ -41,6 +41,8 @@ pub fn find_action_spec(String) -> ActionSpec?
 
 pub fn find_action_spec_for(OcppVersion, String) -> Result[ActionSpec?, ProtocolError]
 
+pub fn load_journal(String) -> Result[ProtocolJournal, JournalError]
+
 pub fn load_snapshot(String) -> Result[ChargePointSnapshot, SnapshotError]
 
 pub fn normalize_charging_decision(ChargingDecision, ChargingRateUnit, ElectricalModel) -> Result[ChargingDecision, PowerConversionError]
@@ -62,6 +64,10 @@ pub fn versioned_action_direction(OcppVersion, String, Bool) -> Result[MessageDi
 pub fn watts_to_amps(Double, ElectricalModel, number_phases? : Int32?) -> Result[Double, PowerConversionError]
 
 // Errors
+pub(all) suberror JournalFailure {
+  Failure(JournalError)
+}
+
 pub(all) suberror ProtocolFailure {
   Failure(ProtocolError)
 }
@@ -1149,6 +1155,40 @@ pub fn InstallCertificateStatus::not_equal(Self, Self) -> Bool
 pub fn InstallCertificateStatus::to_repr(Self) -> @debug.Repr
 
 #derive(Eq, @debug.Debug)
+pub(all) enum JournalDirection {
+  Inbound
+  Outbound
+}
+pub fn JournalDirection::equal(Self, Self) -> Bool
+pub fn JournalDirection::not_equal(Self, Self) -> Bool
+pub fn JournalDirection::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) struct JournalEntry {
+  sequence : Int64
+  timestamp_ms : Int64
+  direction : JournalDirection
+  frame : Frame
+}
+pub fn JournalEntry::equal(Self, Self) -> Bool
+pub fn JournalEntry::not_equal(Self, Self) -> Bool
+pub fn JournalEntry::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) enum JournalError {
+  InvalidCapacity(Int32)
+  TimestampRegression(Int64, Int64)
+  InvalidJson
+  UnsupportedSchema(Int32)
+  MissingField(String)
+  InvalidField(String)
+  InvalidFrame(ProtocolError)
+}
+pub fn JournalError::equal(Self, Self) -> Bool
+pub fn JournalError::not_equal(Self, Self) -> Bool
+pub fn JournalError::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
 pub(all) struct LocalAuthorizationEntry {
   id_tag : String
   id_tag_info : IdTagInfo
@@ -1495,6 +1535,25 @@ pub fn ProtocolError::output(Self, &Logger) -> Unit
 pub fn ProtocolError::to_repr(Self) -> @debug.Repr
 pub fn ProtocolError::to_string(Self) -> String
 pub impl Show for ProtocolError
+
+#derive(Eq, @debug.Debug)
+pub(all) struct ProtocolJournal {
+  capacity : Int32
+  mut next_sequence : Int64
+  mut last_timestamp_ms : Int64?
+  mut entries : Array[JournalEntry]
+}
+pub fn ProtocolJournal::append(Self, Int64, JournalDirection, Frame) -> Result[Int64, JournalError]
+pub fn ProtocolJournal::clear(Self) -> Unit
+pub fn ProtocolJournal::entry_count(Self) -> Int32
+pub fn ProtocolJournal::equal(Self, Self) -> Bool
+pub fn ProtocolJournal::new(Int32) -> Result[Self, JournalError]
+pub fn ProtocolJournal::not_equal(Self, Self) -> Bool
+pub fn ProtocolJournal::replay(Self) -> Array[JournalEntry]
+pub fn ProtocolJournal::replay_direction(Self, JournalDirection) -> Array[JournalEntry]
+pub fn ProtocolJournal::to_json(Self) -> @json.Json
+pub fn ProtocolJournal::to_json_text(Self) -> String
+pub fn ProtocolJournal::to_repr(Self) -> @debug.Repr
 
 #derive(Eq, @debug.Debug)
 pub(all) struct ReconnectPolicy {
