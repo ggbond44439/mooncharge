@@ -57,6 +57,7 @@ jobs:
           moon run examples/certificate_workflow
           moon run examples/runtime_router
           moon run examples/journal_replay
+          moon run examples/station_health
 
       - name: CLI smoke test
         run: |

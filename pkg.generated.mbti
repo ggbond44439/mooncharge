@@ -35,6 +35,8 @@ pub fn dispatch_versioned_call(VersionedFrame, MessageDirection) -> Result[Typed
 
 pub fn evaluate_charging_profiles(Array[ChargingProfile], Int32?, Int32) -> Result[ChargingDecision, ChargingProfileError]
 
+pub fn evaluate_station_health(ChargePointSession, HealthCheckInput, HealthPolicy) -> StationHealthReport
+
 pub fn evaluate_timed_charging_profiles(Array[TimedChargingProfile], Int32?, Int64) -> Result[ChargingDecision, ChargingProfileError]
 
 pub fn find_action_spec(String) -> ActionSpec?
@@ -623,6 +625,17 @@ pub fn ConformanceSummary::not_equal(Self, Self) -> Bool
 pub fn ConformanceSummary::to_repr(Self) -> @debug.Repr
 
 #derive(Eq, @debug.Debug)
+pub(all) enum ConnectivityStatus {
+  Online
+  Reconnecting
+  Offline
+}
+pub fn ConnectivityStatus::equal(Self, Self) -> Bool
+pub fn ConnectivityStatus::from_transport(TransportState) -> Self
+pub fn ConnectivityStatus::not_equal(Self, Self) -> Bool
+pub fn ConnectivityStatus::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
 pub(all) struct ConnectorSession {
   connector_id : Int32
   status : ChargePointStatus
@@ -1089,6 +1102,70 @@ pub(all) enum GetLogStatus {
 pub fn GetLogStatus::equal(Self, Self) -> Bool
 pub fn GetLogStatus::not_equal(Self, Self) -> Bool
 pub fn GetLogStatus::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) struct HealthCheckInput {
+  connectivity : ConnectivityStatus
+  reconnect_attempt : Int32
+  last_heartbeat_age_ms : Int64?
+  active_alarms : Int32
+}
+pub fn HealthCheckInput::equal(Self, Self) -> Bool
+pub fn HealthCheckInput::from_transport(OcppTransport, Int64?, Int32) -> Result[Self, HealthError]
+pub fn HealthCheckInput::new(ConnectivityStatus, Int32, Int64?, Int32) -> Result[Self, HealthError]
+pub fn HealthCheckInput::not_equal(Self, Self) -> Bool
+pub fn HealthCheckInput::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) enum HealthError {
+  InvalidStaleHeartbeat(Int64)
+  InvalidMaxReconnectAttempts(Int32)
+  InvalidMaxActiveAlarms(Int32)
+  InvalidReconnectAttempt(Int32)
+  InvalidHeartbeatAge(Int64)
+  InvalidActiveAlarms(Int32)
+}
+pub fn HealthError::equal(Self, Self) -> Bool
+pub fn HealthError::not_equal(Self, Self) -> Bool
+pub fn HealthError::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) enum HealthIssue {
+  Disconnected
+  Reconnecting
+  ReconnectAttemptsExceeded(Int32, Int32)
+  HeartbeatStale(Int64, Int64)
+  MissingHeartbeat
+  FaultedConnectors(Int32)
+  InconsistentStation(Int32)
+  ActiveAlarms(Int32, Int32)
+  StationInoperative
+  AllConnectorsUnavailable
+}
+pub fn HealthIssue::equal(Self, Self) -> Bool
+pub fn HealthIssue::not_equal(Self, Self) -> Bool
+pub fn HealthIssue::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) enum HealthLevel {
+  Healthy
+  Degraded
+  Critical
+}
+pub fn HealthLevel::equal(Self, Self) -> Bool
+pub fn HealthLevel::not_equal(Self, Self) -> Bool
+pub fn HealthLevel::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) struct HealthPolicy {
+  stale_heartbeat_ms : Int64
+  max_reconnect_attempts : Int32
+  max_active_alarms : Int32
+}
+pub fn HealthPolicy::equal(Self, Self) -> Bool
+pub fn HealthPolicy::new(Int64, Int32, Int32) -> Result[Self, HealthError]
+pub fn HealthPolicy::not_equal(Self, Self) -> Bool
+pub fn HealthPolicy::to_repr(Self) -> @debug.Repr
 
 #derive(Eq, @debug.Debug)
 pub struct HeartbeatRequest {
@@ -2054,6 +2131,18 @@ pub(all) enum StationError {
 pub fn StationError::equal(Self, Self) -> Bool
 pub fn StationError::not_equal(Self, Self) -> Bool
 pub fn StationError::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) struct StationHealthReport {
+  level : HealthLevel
+  score : Int32
+  summary : StationSummary
+  issues : Array[HealthIssue]
+}
+pub fn StationHealthReport::equal(Self, Self) -> Bool
+pub fn StationHealthReport::not_equal(Self, Self) -> Bool
+pub fn StationHealthReport::requires_attention(Self) -> Bool
+pub fn StationHealthReport::to_repr(Self) -> @debug.Repr
 
 #derive(Eq, @debug.Debug)
 pub(all) enum StationMode {

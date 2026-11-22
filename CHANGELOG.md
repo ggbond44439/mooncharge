@@ -42,6 +42,8 @@
   bounded duplicate-message protection and explicit replay resets.
 - Versioned protocol journals with bounded retention, monotonic timestamps,
   direction filtering, deterministic replay and validated JSON persistence.
+- Station health reports combining connectivity, reconnect state, heartbeat
+  freshness, alarms, connector faults, consistency and availability.
 - Complete 39-action OCPP 1.6 conformance catalog with request direction,
   required fields and typed-coverage metadata.
 - Payload and CALL audit APIs for unknown actions, wrong directions, invalid

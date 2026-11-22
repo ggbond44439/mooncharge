@@ -202,6 +202,16 @@ schema-versioned JSON; loading validates entry order, timestamp order, sequence
 continuity, capacity, direction and embedded frame syntax. `replay` and
 `replay_direction` return deterministic entry arrays without opening a socket.
 
+## Station health
+
+`evaluate_station_health` combines the station summary with connectivity,
+reconnect attempts, heartbeat age, active alarms and a caller-provided policy.
+The report distinguishes Healthy, Degraded and Critical states, assigns a
+bounded score and lists actionable issues such as inconsistent station state,
+faulted connectors, stale heartbeats, reconnect exhaustion and unavailable
+capacity. `HealthCheckInput::from_transport` maps the transport lifecycle
+directly into the health input.
+
 ## Deliberately out of scope
 
 - concrete WebSocket/socket, timer and HTTP implementations

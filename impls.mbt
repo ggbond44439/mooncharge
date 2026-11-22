@@ -878,6 +878,48 @@ pub extend ProtocolJournal with Eq::{not_equal, equal}
 pub extend ProtocolJournal with @debug.Debug::{to_repr}
 
 ///|
+pub extend ConnectivityStatus with Eq::{not_equal, equal}
+
+///|
+pub extend ConnectivityStatus with @debug.Debug::{to_repr}
+
+///|
+pub extend HealthPolicy with Eq::{not_equal, equal}
+
+///|
+pub extend HealthPolicy with @debug.Debug::{to_repr}
+
+///|
+pub extend HealthError with Eq::{not_equal, equal}
+
+///|
+pub extend HealthError with @debug.Debug::{to_repr}
+
+///|
+pub extend HealthCheckInput with Eq::{not_equal, equal}
+
+///|
+pub extend HealthCheckInput with @debug.Debug::{to_repr}
+
+///|
+pub extend HealthLevel with Eq::{not_equal, equal}
+
+///|
+pub extend HealthLevel with @debug.Debug::{to_repr}
+
+///|
+pub extend HealthIssue with Eq::{not_equal, equal}
+
+///|
+pub extend HealthIssue with @debug.Debug::{to_repr}
+
+///|
+pub extend StationHealthReport with Eq::{not_equal, equal}
+
+///|
+pub extend StationHealthReport with @debug.Debug::{to_repr}
+
+///|
 pub extend PendingCall with Eq::{not_equal, equal}
 
 ///|

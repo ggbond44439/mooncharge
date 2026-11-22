@@ -43,6 +43,7 @@ MoonCharge 把这些容易出错的边界集中到一个无 I/O 的协议层中�
 - OCPP 1.6 全部 39 个动作均具备类型化请求与确认，覆盖证书安装、删除、查询、签名和签名链下发。
 - 带重复请求防护的 `OcppRequestRouter`：类型化 handler、自动 `CALLRESULT`/`CALLERROR` 封装、原始消息 ID 保留和有序容量淘汰。
 - 可持久化 `ProtocolJournal`：双向帧、单调时间戳、序号、容量淘汰、按方向回放和版本化 JSON 恢复。
+- `StationHealthReport`：综合连接、重连、心跳陈旧度、告警、故障连接器、站点一致性和可用性，输出健康等级、分数和可操作问题。
 - 完整 39 动作 OCPP 1.6 目录，包含方向、请求/确认必填字段和类型覆盖状态。
 - 帧级一致性审计：检查未知动作、方向错误、非对象 payload 和缺失必填字段。
 - 核心载荷的类型化解析和序列化：
@@ -56,7 +57,7 @@ MoonCharge 把这些容易出错的边界集中到一个无 I/O 的协议层中�
 - 按 `TxProfile > TxDefaultProfile` 和最高 stack level 选择活动档位，
   再应用 `ChargePointMaxProfile` 上限。
 - 无网络 CLI，用于帧检查、一致性审计、动作方向与充电档位求值。
-- 17 个可运行示例和跨后端 CI。
+- 18 个可运行示例和跨后端 CI。
 
 ## 安装
 
@@ -211,6 +212,7 @@ moon run examples/security_logging
 moon run examples/certificate_workflow
 moon run examples/runtime_router
 moon run examples/journal_replay
+moon run examples/station_health
 ```
 
 ## 明确不做
@@ -249,6 +251,7 @@ moon run examples/security_logging
 moon run examples/certificate_workflow
 moon run examples/runtime_router
 moon run examples/journal_replay
+moon run examples/station_health
 moon package --list
 ```
 
