@@ -756,6 +756,20 @@ pub fn ExtendedTriggerMessageResponse::to_json(Self) -> @json.Json
 pub fn ExtendedTriggerMessageResponse::to_repr(Self) -> @debug.Repr
 
 #derive(Eq, @debug.Debug)
+pub(all) struct FirmwareImage {
+  location : String
+  retrieve_date_time : String
+  install_date_time : String?
+  signing_certificate : String
+  signature : String
+}
+pub fn FirmwareImage::equal(Self, Self) -> Bool
+pub fn FirmwareImage::from_json(@json.Json) -> Result[Self, ProtocolError]
+pub fn FirmwareImage::not_equal(Self, Self) -> Bool
+pub fn FirmwareImage::to_json(Self) -> @json.Json
+pub fn FirmwareImage::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
 pub(all) enum FirmwareStatus {
   Downloaded
   DownloadFailed
@@ -915,6 +929,41 @@ pub fn GetLocalListVersionResponse::to_json(Self) -> @json.Json
 pub fn GetLocalListVersionResponse::to_repr(Self) -> @debug.Repr
 
 #derive(Eq, @debug.Debug)
+pub(all) struct GetLogRequest {
+  log_type : LogType
+  request_id : Int32
+  log : LogParameters
+  retries : Int32?
+  retry_interval : Int32?
+}
+pub fn GetLogRequest::equal(Self, Self) -> Bool
+pub fn GetLogRequest::from_json(@json.Json) -> Result[Self, ProtocolError]
+pub fn GetLogRequest::not_equal(Self, Self) -> Bool
+pub fn GetLogRequest::to_json(Self) -> @json.Json
+pub fn GetLogRequest::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) struct GetLogResponse {
+  status : GetLogStatus
+  filename : String?
+}
+pub fn GetLogResponse::equal(Self, Self) -> Bool
+pub fn GetLogResponse::from_json(@json.Json) -> Result[Self, ProtocolError]
+pub fn GetLogResponse::not_equal(Self, Self) -> Bool
+pub fn GetLogResponse::to_json(Self) -> @json.Json
+pub fn GetLogResponse::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) enum GetLogStatus {
+  Accepted
+  Rejected
+  AcceptedCanceled
+}
+pub fn GetLogStatus::equal(Self, Self) -> Bool
+pub fn GetLogStatus::not_equal(Self, Self) -> Bool
+pub fn GetLogStatus::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
 pub struct HeartbeatRequest {
   marker : Unit
 }
@@ -1001,6 +1050,63 @@ pub(all) enum LocalListUpdateType {
 pub fn LocalListUpdateType::equal(Self, Self) -> Bool
 pub fn LocalListUpdateType::not_equal(Self, Self) -> Bool
 pub fn LocalListUpdateType::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) struct LogParameters {
+  remote_location : String
+  oldest_timestamp : String?
+  latest_timestamp : String?
+}
+pub fn LogParameters::equal(Self, Self) -> Bool
+pub fn LogParameters::from_json(@json.Json) -> Result[Self, ProtocolError]
+pub fn LogParameters::not_equal(Self, Self) -> Bool
+pub fn LogParameters::to_json(Self) -> @json.Json
+pub fn LogParameters::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) struct LogStatusNotificationRequest {
+  status : LogUploadStatus
+  request_id : Int32?
+}
+pub fn LogStatusNotificationRequest::equal(Self, Self) -> Bool
+pub fn LogStatusNotificationRequest::from_json(@json.Json) -> Result[Self, ProtocolError]
+pub fn LogStatusNotificationRequest::not_equal(Self, Self) -> Bool
+pub fn LogStatusNotificationRequest::to_json(Self) -> @json.Json
+pub fn LogStatusNotificationRequest::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub struct LogStatusNotificationResponse {
+  marker : Unit
+}
+pub fn LogStatusNotificationResponse::equal(Self, Self) -> Bool
+pub fn LogStatusNotificationResponse::from_json(@json.Json) -> Result[Self, ProtocolError]
+pub fn LogStatusNotificationResponse::new() -> Self
+pub fn LogStatusNotificationResponse::not_equal(Self, Self) -> Bool
+pub fn LogStatusNotificationResponse::to_json(Self) -> @json.Json
+pub fn LogStatusNotificationResponse::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) enum LogType {
+  DiagnosticsLog
+  SecurityLog
+}
+pub fn LogType::equal(Self, Self) -> Bool
+pub fn LogType::not_equal(Self, Self) -> Bool
+pub fn LogType::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) enum LogUploadStatus {
+  BadMessage
+  Idle
+  NotSupportedOperation
+  PermissionDenied
+  Uploaded
+  UploadFailure
+  Uploading
+}
+pub fn LogUploadStatus::equal(Self, Self) -> Bool
+pub fn LogUploadStatus::not_equal(Self, Self) -> Bool
+pub fn LogUploadStatus::to_repr(Self) -> @debug.Repr
 
 #derive(Eq, @debug.Debug)
 pub(all) enum MessageDirection {
@@ -1458,6 +1564,29 @@ pub fn SampledValue::to_json(Self) -> @json.Json
 pub fn SampledValue::to_repr(Self) -> @debug.Repr
 
 #derive(Eq, @debug.Debug)
+pub(all) struct SecurityEventNotificationRequest {
+  event_type : String
+  timestamp : String
+  tech_info : String?
+}
+pub fn SecurityEventNotificationRequest::equal(Self, Self) -> Bool
+pub fn SecurityEventNotificationRequest::from_json(@json.Json) -> Result[Self, ProtocolError]
+pub fn SecurityEventNotificationRequest::not_equal(Self, Self) -> Bool
+pub fn SecurityEventNotificationRequest::to_json(Self) -> @json.Json
+pub fn SecurityEventNotificationRequest::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub struct SecurityEventNotificationResponse {
+  marker : Unit
+}
+pub fn SecurityEventNotificationResponse::equal(Self, Self) -> Bool
+pub fn SecurityEventNotificationResponse::from_json(@json.Json) -> Result[Self, ProtocolError]
+pub fn SecurityEventNotificationResponse::new() -> Self
+pub fn SecurityEventNotificationResponse::not_equal(Self, Self) -> Bool
+pub fn SecurityEventNotificationResponse::to_json(Self) -> @json.Json
+pub fn SecurityEventNotificationResponse::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
 pub(all) struct SendLocalListRequest {
   list_version : Int32
   update_type : LocalListUpdateType
@@ -1513,6 +1642,84 @@ pub fn SetChargingProfileResponse::from_json(@json.Json) -> Result[Self, Protoco
 pub fn SetChargingProfileResponse::not_equal(Self, Self) -> Bool
 pub fn SetChargingProfileResponse::to_json(Self) -> @json.Json
 pub fn SetChargingProfileResponse::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) enum SignedFirmwareStatus {
+  Downloaded
+  DownloadFailed
+  Downloading
+  DownloadScheduled
+  DownloadPaused
+  Idle
+  InstallationFailed
+  Installing
+  Installed
+  InstallRebooting
+  InstallScheduled
+  InstallVerificationFailed
+  InvalidSignature
+  SignatureVerified
+}
+pub fn SignedFirmwareStatus::equal(Self, Self) -> Bool
+pub fn SignedFirmwareStatus::not_equal(Self, Self) -> Bool
+pub fn SignedFirmwareStatus::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) struct SignedFirmwareStatusNotificationRequest {
+  status : SignedFirmwareStatus
+  request_id : Int32?
+}
+pub fn SignedFirmwareStatusNotificationRequest::equal(Self, Self) -> Bool
+pub fn SignedFirmwareStatusNotificationRequest::from_json(@json.Json) -> Result[Self, ProtocolError]
+pub fn SignedFirmwareStatusNotificationRequest::not_equal(Self, Self) -> Bool
+pub fn SignedFirmwareStatusNotificationRequest::to_json(Self) -> @json.Json
+pub fn SignedFirmwareStatusNotificationRequest::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub struct SignedFirmwareStatusNotificationResponse {
+  marker : Unit
+}
+pub fn SignedFirmwareStatusNotificationResponse::equal(Self, Self) -> Bool
+pub fn SignedFirmwareStatusNotificationResponse::from_json(@json.Json) -> Result[Self, ProtocolError]
+pub fn SignedFirmwareStatusNotificationResponse::new() -> Self
+pub fn SignedFirmwareStatusNotificationResponse::not_equal(Self, Self) -> Bool
+pub fn SignedFirmwareStatusNotificationResponse::to_json(Self) -> @json.Json
+pub fn SignedFirmwareStatusNotificationResponse::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) struct SignedUpdateFirmwareRequest {
+  request_id : Int32
+  firmware : FirmwareImage
+  retries : Int32?
+  retry_interval : Int32?
+}
+pub fn SignedUpdateFirmwareRequest::equal(Self, Self) -> Bool
+pub fn SignedUpdateFirmwareRequest::from_json(@json.Json) -> Result[Self, ProtocolError]
+pub fn SignedUpdateFirmwareRequest::not_equal(Self, Self) -> Bool
+pub fn SignedUpdateFirmwareRequest::to_json(Self) -> @json.Json
+pub fn SignedUpdateFirmwareRequest::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) struct SignedUpdateFirmwareResponse {
+  status : SignedUpdateFirmwareStatus
+}
+pub fn SignedUpdateFirmwareResponse::equal(Self, Self) -> Bool
+pub fn SignedUpdateFirmwareResponse::from_json(@json.Json) -> Result[Self, ProtocolError]
+pub fn SignedUpdateFirmwareResponse::not_equal(Self, Self) -> Bool
+pub fn SignedUpdateFirmwareResponse::to_json(Self) -> @json.Json
+pub fn SignedUpdateFirmwareResponse::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) enum SignedUpdateFirmwareStatus {
+  Accepted
+  Rejected
+  AcceptedCanceled
+  InvalidCertificate
+  RevokedCertificate
+}
+pub fn SignedUpdateFirmwareStatus::equal(Self, Self) -> Bool
+pub fn SignedUpdateFirmwareStatus::not_equal(Self, Self) -> Bool
+pub fn SignedUpdateFirmwareStatus::to_repr(Self) -> @debug.Repr
 
 #derive(Eq, @debug.Debug)
 pub(all) enum SnapshotError {
@@ -1794,8 +2001,10 @@ pub(all) enum TypedCall {
   FirmwareStatusNotification(FirmwareStatusNotificationRequest)
   GetCompositeSchedule(GetCompositeScheduleRequest)
   GetDiagnostics(GetDiagnosticsRequest)
+  GetLog(GetLogRequest)
   GetLocalListVersion(GetLocalListVersionRequest)
   Heartbeat(HeartbeatRequest)
+  LogStatusNotification(LogStatusNotificationRequest)
   StatusNotification(StatusNotificationRequest)
   StartTransaction(StartTransactionRequest)
   StopTransaction(StopTransactionRequest)
@@ -1805,6 +2014,9 @@ pub(all) enum TypedCall {
   RemoteStopTransaction(RemoteStopTransactionRequest)
   ReserveNow(ReserveNowRequest)
   Reset(ResetRequest)
+  SecurityEventNotification(SecurityEventNotificationRequest)
+  SignedFirmwareStatusNotification(SignedFirmwareStatusNotificationRequest)
+  SignedUpdateFirmware(SignedUpdateFirmwareRequest)
   ChangeAvailability(ChangeAvailabilityRequest)
   ChangeConfiguration(ChangeConfigurationRequest)
   GetConfiguration(GetConfigurationRequest)

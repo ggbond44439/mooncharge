@@ -632,6 +632,108 @@ pub extend GetCompositeScheduleResponse with Eq::{not_equal, equal}
 pub extend GetCompositeScheduleResponse with @debug.Debug::{to_repr}
 
 ///|
+pub extend LogType with Eq::{not_equal, equal}
+
+///|
+pub extend LogType with @debug.Debug::{to_repr}
+
+///|
+pub extend LogParameters with Eq::{not_equal, equal}
+
+///|
+pub extend LogParameters with @debug.Debug::{to_repr}
+
+///|
+pub extend GetLogRequest with Eq::{not_equal, equal}
+
+///|
+pub extend GetLogRequest with @debug.Debug::{to_repr}
+
+///|
+pub extend GetLogStatus with Eq::{not_equal, equal}
+
+///|
+pub extend GetLogStatus with @debug.Debug::{to_repr}
+
+///|
+pub extend GetLogResponse with Eq::{not_equal, equal}
+
+///|
+pub extend GetLogResponse with @debug.Debug::{to_repr}
+
+///|
+pub extend LogUploadStatus with Eq::{not_equal, equal}
+
+///|
+pub extend LogUploadStatus with @debug.Debug::{to_repr}
+
+///|
+pub extend LogStatusNotificationRequest with Eq::{not_equal, equal}
+
+///|
+pub extend LogStatusNotificationRequest with @debug.Debug::{to_repr}
+
+///|
+pub extend LogStatusNotificationResponse with Eq::{not_equal, equal}
+
+///|
+pub extend LogStatusNotificationResponse with @debug.Debug::{to_repr}
+
+///|
+pub extend SecurityEventNotificationRequest with Eq::{not_equal, equal}
+
+///|
+pub extend SecurityEventNotificationRequest with @debug.Debug::{to_repr}
+
+///|
+pub extend SecurityEventNotificationResponse with Eq::{not_equal, equal}
+
+///|
+pub extend SecurityEventNotificationResponse with @debug.Debug::{to_repr}
+
+///|
+pub extend SignedFirmwareStatus with Eq::{not_equal, equal}
+
+///|
+pub extend SignedFirmwareStatus with @debug.Debug::{to_repr}
+
+///|
+pub extend SignedFirmwareStatusNotificationRequest with Eq::{not_equal, equal}
+
+///|
+pub extend SignedFirmwareStatusNotificationRequest with @debug.Debug::{to_repr}
+
+///|
+pub extend SignedFirmwareStatusNotificationResponse with Eq::{not_equal, equal}
+
+///|
+pub extend SignedFirmwareStatusNotificationResponse with @debug.Debug::{to_repr}
+
+///|
+pub extend FirmwareImage with Eq::{not_equal, equal}
+
+///|
+pub extend FirmwareImage with @debug.Debug::{to_repr}
+
+///|
+pub extend SignedUpdateFirmwareRequest with Eq::{not_equal, equal}
+
+///|
+pub extend SignedUpdateFirmwareRequest with @debug.Debug::{to_repr}
+
+///|
+pub extend SignedUpdateFirmwareStatus with Eq::{not_equal, equal}
+
+///|
+pub extend SignedUpdateFirmwareStatus with @debug.Debug::{to_repr}
+
+///|
+pub extend SignedUpdateFirmwareResponse with Eq::{not_equal, equal}
+
+///|
+pub extend SignedUpdateFirmwareResponse with @debug.Debug::{to_repr}
+
+///|
 pub extend PendingCall with Eq::{not_equal, equal}
 
 ///|

@@ -503,10 +503,10 @@ test "OCPP 1.6J catalog covers every registered action" {
 test "conformance summary reflects the current typed coverage" {
   assert_eq(@mooncharge.conformance_summary(), {
     total_actions: 39,
-    typed_requests: 29,
-    typed_responses: 29,
-    catalog_only_requests: 10,
-    catalog_only_responses: 10,
+    typed_requests: 34,
+    typed_responses: 34,
+    catalog_only_requests: 5,
+    catalog_only_responses: 5,
   })
 }
 
@@ -623,7 +623,7 @@ test "CLI exposes conformance summary action and audit" {
   assert_eq(summary.exit_code, 0)
   assert_eq(
     summary.stdout,
-    "actions=39 typed_requests=29 typed_responses=29 catalog_only_requests=10 catalog_only_responses=10",
+    "actions=39 typed_requests=34 typed_responses=34 catalog_only_requests=5 catalog_only_responses=5",
   )
   let action = @mooncharge.run_cli(["conformance", "action", "StartTransaction"])
   assert_eq(action.exit_code, 0)

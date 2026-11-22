@@ -115,12 +115,12 @@ pub fn action_specs() -> Array[ActionSpec] {
       "status",
     ]),
     spec(GetLocalListVersion, true, true, [], ["listVersion"]),
-    spec(GetLog, false, false, ["logType", "requestId", "log"], ["status"]),
+    spec(GetLog, true, true, ["logType", "requestId", "log"], ["status"]),
     spec(Heartbeat, true, true, [], ["currentTime"]),
     spec(InstallCertificate, false, false, ["certificateType", "certificate"], [
       "status",
     ]),
-    spec(LogStatusNotification, false, false, ["status"], []),
+    spec(LogStatusNotification, true, true, ["status"], []),
     spec(MeterValues, true, true, ["connectorId", "meterValue"], []),
     spec(RemoteStartTransaction, true, true, ["idTag"], ["status"]),
     spec(RemoteStopTransaction, true, true, ["transactionId"], ["status"]),
@@ -132,7 +132,7 @@ pub fn action_specs() -> Array[ActionSpec] {
       ["status"],
     ),
     spec(Reset, true, true, ["type"], ["status"]),
-    spec(SecurityEventNotification, false, false, ["type", "timestamp"], []),
+    spec(SecurityEventNotification, true, true, ["type", "timestamp"], []),
     spec(SendLocalList, true, true, ["listVersion", "updateType"], ["status"]),
     spec(
       SetChargingProfile,
@@ -142,10 +142,8 @@ pub fn action_specs() -> Array[ActionSpec] {
       ["status"],
     ),
     spec(SignCertificate, false, false, ["csr"], ["status"]),
-    spec(SignedFirmwareStatusNotification, false, false, ["status"], []),
-    spec(SignedUpdateFirmware, false, false, ["requestId", "firmware"], [
-      "status",
-    ]),
+    spec(SignedFirmwareStatusNotification, true, true, ["status"], []),
+    spec(SignedUpdateFirmware, true, true, ["requestId", "firmware"], ["status"]),
     spec(
       StartTransaction,
       true,

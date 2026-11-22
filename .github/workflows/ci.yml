@@ -53,6 +53,7 @@ jobs:
           moon run examples/transport_reconnect
           moon run examples/firmware_diagnostics
           moon run examples/trigger_schedule
+          moon run examples/security_logging
 
       - name: CLI smoke test
         run: |

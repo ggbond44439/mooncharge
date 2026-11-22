@@ -34,6 +34,8 @@
   acknowledgements.
 - Typed TriggerMessage, ExtendedTriggerMessage and GetCompositeSchedule actions,
   including trigger targets, connector scope and full charging schedules.
+- Typed log upload, security-event and signed-firmware workflows, including log
+  filters, upload states, firmware verification states and signature material.
 - Complete 39-action OCPP 1.6 conformance catalog with request direction,
   required fields and typed-coverage metadata.
 - Payload and CALL audit APIs for unknown actions, wrong directions, invalid

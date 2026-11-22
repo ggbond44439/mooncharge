@@ -11,8 +11,10 @@ pub(all) enum TypedCall {
   FirmwareStatusNotification(FirmwareStatusNotificationRequest)
   GetCompositeSchedule(GetCompositeScheduleRequest)
   GetDiagnostics(GetDiagnosticsRequest)
+  GetLog(GetLogRequest)
   GetLocalListVersion(GetLocalListVersionRequest)
   Heartbeat(HeartbeatRequest)
+  LogStatusNotification(LogStatusNotificationRequest)
   StatusNotification(StatusNotificationRequest)
   StartTransaction(StartTransactionRequest)
   StopTransaction(StopTransactionRequest)
@@ -22,6 +24,9 @@ pub(all) enum TypedCall {
   RemoteStopTransaction(RemoteStopTransactionRequest)
   ReserveNow(ReserveNowRequest)
   Reset(ResetRequest)
+  SecurityEventNotification(SecurityEventNotificationRequest)
+  SignedFirmwareStatusNotification(SignedFirmwareStatusNotificationRequest)
+  SignedUpdateFirmware(SignedUpdateFirmwareRequest)
   ChangeAvailability(ChangeAvailabilityRequest)
   ChangeConfiguration(ChangeConfigurationRequest)
   GetConfiguration(GetConfigurationRequest)
@@ -46,8 +51,10 @@ pub fn TypedCall::action_name(self : TypedCall) -> String {
     FirmwareStatusNotification(_) => "FirmwareStatusNotification"
     GetCompositeSchedule(_) => "GetCompositeSchedule"
     GetDiagnostics(_) => "GetDiagnostics"
+    GetLog(_) => "GetLog"
     GetLocalListVersion(_) => "GetLocalListVersion"
     Heartbeat(_) => "Heartbeat"
+    LogStatusNotification(_) => "LogStatusNotification"
     StatusNotification(_) => "StatusNotification"
     StartTransaction(_) => "StartTransaction"
     StopTransaction(_) => "StopTransaction"
@@ -57,6 +64,9 @@ pub fn TypedCall::action_name(self : TypedCall) -> String {
     RemoteStopTransaction(_) => "RemoteStopTransaction"
     ReserveNow(_) => "ReserveNow"
     Reset(_) => "Reset"
+    SecurityEventNotification(_) => "SecurityEventNotification"
+    SignedFirmwareStatusNotification(_) => "SignedFirmwareStatusNotification"
+    SignedUpdateFirmware(_) => "SignedUpdateFirmware"
     ChangeAvailability(_) => "ChangeAvailability"
     ChangeConfiguration(_) => "ChangeConfiguration"
     GetConfiguration(_) => "GetConfiguration"
@@ -102,9 +112,12 @@ fn parse_typed_call(
     "GetCompositeSchedule" =>
       GetCompositeSchedule(parse_get_composite_schedule_request(payload))
     "GetDiagnostics" => GetDiagnostics(parse_get_diagnostics_request(payload))
+    "GetLog" => GetLog(parse_get_log_request(payload))
     "GetLocalListVersion" =>
       GetLocalListVersion(parse_get_local_list_version(payload))
     "Heartbeat" => Heartbeat(parse_heartbeat_request(payload))
+    "LogStatusNotification" =>
+      LogStatusNotification(parse_log_status_notification_request(payload))
     "StatusNotification" =>
       StatusNotification(parse_status_notification_request(payload))
     "StartTransaction" =>
@@ -118,6 +131,14 @@ fn parse_typed_call(
     "RemoteStopTransaction" => RemoteStopTransaction(parse_remote_stop(payload))
     "ReserveNow" => ReserveNow(parse_reserve_now(payload))
     "Reset" => Reset(parse_reset_request(payload))
+    "SecurityEventNotification" =>
+      SecurityEventNotification(parse_security_event_notification(payload))
+    "SignedFirmwareStatusNotification" =>
+      SignedFirmwareStatusNotification(
+        parse_signed_firmware_status_notification(payload),
+      )
+    "SignedUpdateFirmware" =>
+      SignedUpdateFirmware(parse_signed_update_firmware_request(payload))
     "ChangeAvailability" =>
       ChangeAvailability(parse_change_availability(payload))
     "ChangeConfiguration" =>
