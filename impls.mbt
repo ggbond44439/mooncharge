@@ -572,6 +572,66 @@ pub extend UpdateFirmwareResponse with Eq::{not_equal, equal}
 pub extend UpdateFirmwareResponse with @debug.Debug::{to_repr}
 
 ///|
+pub extend TriggerMessageName with Eq::{not_equal, equal}
+
+///|
+pub extend TriggerMessageName with @debug.Debug::{to_repr}
+
+///|
+pub extend TriggerMessageRequest with Eq::{not_equal, equal}
+
+///|
+pub extend TriggerMessageRequest with @debug.Debug::{to_repr}
+
+///|
+pub extend TriggerMessageStatus with Eq::{not_equal, equal}
+
+///|
+pub extend TriggerMessageStatus with @debug.Debug::{to_repr}
+
+///|
+pub extend TriggerMessageResponse with Eq::{not_equal, equal}
+
+///|
+pub extend TriggerMessageResponse with @debug.Debug::{to_repr}
+
+///|
+pub extend ExtendedTriggerMessageName with Eq::{not_equal, equal}
+
+///|
+pub extend ExtendedTriggerMessageName with @debug.Debug::{to_repr}
+
+///|
+pub extend ExtendedTriggerMessageRequest with Eq::{not_equal, equal}
+
+///|
+pub extend ExtendedTriggerMessageRequest with @debug.Debug::{to_repr}
+
+///|
+pub extend ExtendedTriggerMessageResponse with Eq::{not_equal, equal}
+
+///|
+pub extend ExtendedTriggerMessageResponse with @debug.Debug::{to_repr}
+
+///|
+pub extend GetCompositeScheduleRequest with Eq::{not_equal, equal}
+
+///|
+pub extend GetCompositeScheduleRequest with @debug.Debug::{to_repr}
+
+///|
+pub extend GetCompositeScheduleStatus with Eq::{not_equal, equal}
+
+///|
+pub extend GetCompositeScheduleStatus with @debug.Debug::{to_repr}
+
+///|
+pub extend GetCompositeScheduleResponse with Eq::{not_equal, equal}
+
+///|
+pub extend GetCompositeScheduleResponse with @debug.Debug::{to_repr}
+
+///|
 pub extend PendingCall with Eq::{not_equal, equal}
 
 ///|

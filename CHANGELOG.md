@@ -32,6 +32,8 @@
 - Typed `GetDiagnostics` and `UpdateFirmware` requests and confirmations,
   including retry scheduling, diagnostic file names and strict empty firmware
   acknowledgements.
+- Typed TriggerMessage, ExtendedTriggerMessage and GetCompositeSchedule actions,
+  including trigger targets, connector scope and full charging schedules.
 - Complete 39-action OCPP 1.6 conformance catalog with request direction,
   required fields and typed-coverage metadata.
 - Payload and CALL audit APIs for unknown actions, wrong directions, invalid

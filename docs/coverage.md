@@ -32,10 +32,10 @@ The catalog contains 39 OCPP 1.6 actions and records their request direction,
 required request fields, required confirmation fields and current payload
 coverage. The initial baseline has:
 
-- 26 typed requests;
-- 26 typed confirmations;
-- 13 catalog-only requests;
-- 13 catalog-only confirmations.
+- 29 typed requests;
+- 29 typed confirmations;
+- 10 catalog-only requests;
+- 10 catalog-only confirmations.
 
 The required-field inventory was checked against the public
 `mobilityhouse/ocpp` OCPP 1.6 JSON Schemas. The catalog is available through:
@@ -61,9 +61,9 @@ The required-field inventory was checked against the public
 | `DataTransfer` | Typed | Typed |
 | `DeleteCertificate` | Catalog only | Catalog only |
 | `DiagnosticsStatusNotification` | Typed | Typed |
-| `ExtendedTriggerMessage` | Catalog only | Catalog only |
+| `ExtendedTriggerMessage` | Typed | Typed |
 | `FirmwareStatusNotification` | Typed | Typed |
-| `GetCompositeSchedule` | Catalog only | Catalog only |
+| `GetCompositeSchedule` | Typed | Typed |
 | `GetConfiguration` | Typed | Typed |
 | `GetDiagnostics` | Typed | Typed |
 | `GetInstalledCertificateIds` | Catalog only | Catalog only |
@@ -86,7 +86,7 @@ The required-field inventory was checked against the public
 | `StartTransaction` | Typed | Typed |
 | `StatusNotification` | Typed | Typed |
 | `StopTransaction` | Typed | Typed |
-| `TriggerMessage` | Catalog only | Catalog only |
+| `TriggerMessage` | Typed | Typed |
 | `UnlockConnector` | Typed | Typed |
 | `UpdateFirmware` | Typed | Typed |
 

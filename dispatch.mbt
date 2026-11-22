@@ -7,13 +7,16 @@ pub(all) enum TypedCall {
   ClearCache(ClearCacheRequest)
   DataTransfer(DataTransferRequest)
   DiagnosticsStatusNotification(DiagnosticsStatusNotificationRequest)
+  ExtendedTriggerMessage(ExtendedTriggerMessageRequest)
   FirmwareStatusNotification(FirmwareStatusNotificationRequest)
+  GetCompositeSchedule(GetCompositeScheduleRequest)
   GetDiagnostics(GetDiagnosticsRequest)
   GetLocalListVersion(GetLocalListVersionRequest)
   Heartbeat(HeartbeatRequest)
   StatusNotification(StatusNotificationRequest)
   StartTransaction(StartTransactionRequest)
   StopTransaction(StopTransactionRequest)
+  TriggerMessage(TriggerMessageRequest)
   MeterValues(MeterValuesRequest)
   RemoteStartTransaction(RemoteStartTransactionRequest)
   RemoteStopTransaction(RemoteStopTransactionRequest)
@@ -39,13 +42,16 @@ pub fn TypedCall::action_name(self : TypedCall) -> String {
     ClearCache(_) => "ClearCache"
     DataTransfer(_) => "DataTransfer"
     DiagnosticsStatusNotification(_) => "DiagnosticsStatusNotification"
+    ExtendedTriggerMessage(_) => "ExtendedTriggerMessage"
     FirmwareStatusNotification(_) => "FirmwareStatusNotification"
+    GetCompositeSchedule(_) => "GetCompositeSchedule"
     GetDiagnostics(_) => "GetDiagnostics"
     GetLocalListVersion(_) => "GetLocalListVersion"
     Heartbeat(_) => "Heartbeat"
     StatusNotification(_) => "StatusNotification"
     StartTransaction(_) => "StartTransaction"
     StopTransaction(_) => "StopTransaction"
+    TriggerMessage(_) => "TriggerMessage"
     MeterValues(_) => "MeterValues"
     RemoteStartTransaction(_) => "RemoteStartTransaction"
     RemoteStopTransaction(_) => "RemoteStopTransaction"
@@ -89,8 +95,12 @@ fn parse_typed_call(
       DiagnosticsStatusNotification(
         parse_diagnostics_status_notification(payload),
       )
+    "ExtendedTriggerMessage" =>
+      ExtendedTriggerMessage(parse_extended_trigger_message_request(payload))
     "FirmwareStatusNotification" =>
       FirmwareStatusNotification(parse_firmware_status_notification(payload))
+    "GetCompositeSchedule" =>
+      GetCompositeSchedule(parse_get_composite_schedule_request(payload))
     "GetDiagnostics" => GetDiagnostics(parse_get_diagnostics_request(payload))
     "GetLocalListVersion" =>
       GetLocalListVersion(parse_get_local_list_version(payload))
@@ -101,6 +111,7 @@ fn parse_typed_call(
       StartTransaction(parse_start_transaction_request(payload))
     "StopTransaction" =>
       StopTransaction(parse_stop_transaction_request(payload))
+    "TriggerMessage" => TriggerMessage(parse_trigger_message_request(payload))
     "MeterValues" => MeterValues(parse_meter_values_request(payload))
     "RemoteStartTransaction" =>
       RemoteStartTransaction(parse_remote_start(payload))

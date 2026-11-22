@@ -52,6 +52,7 @@ jobs:
           moon run examples/snapshot_roundtrip
           moon run examples/transport_reconnect
           moon run examples/firmware_diagnostics
+          moon run examples/trigger_schedule
 
       - name: CLI smoke test
         run: |

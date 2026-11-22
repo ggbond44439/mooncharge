@@ -721,6 +721,41 @@ pub fn EpochInterval::not_equal(Self, Self) -> Bool
 pub fn EpochInterval::to_repr(Self) -> @debug.Repr
 
 #derive(Eq, @debug.Debug)
+pub(all) enum ExtendedTriggerMessageName {
+  BootNotification
+  LogStatusNotification
+  FirmwareStatusNotification
+  Heartbeat
+  MeterValues
+  SignChargePointCertificate
+  StatusNotification
+}
+pub fn ExtendedTriggerMessageName::equal(Self, Self) -> Bool
+pub fn ExtendedTriggerMessageName::not_equal(Self, Self) -> Bool
+pub fn ExtendedTriggerMessageName::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) struct ExtendedTriggerMessageRequest {
+  requested_message : ExtendedTriggerMessageName
+  connector_id : Int32?
+}
+pub fn ExtendedTriggerMessageRequest::equal(Self, Self) -> Bool
+pub fn ExtendedTriggerMessageRequest::from_json(@json.Json) -> Result[Self, ProtocolError]
+pub fn ExtendedTriggerMessageRequest::not_equal(Self, Self) -> Bool
+pub fn ExtendedTriggerMessageRequest::to_json(Self) -> @json.Json
+pub fn ExtendedTriggerMessageRequest::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) struct ExtendedTriggerMessageResponse {
+  status : TriggerMessageStatus
+}
+pub fn ExtendedTriggerMessageResponse::equal(Self, Self) -> Bool
+pub fn ExtendedTriggerMessageResponse::from_json(@json.Json) -> Result[Self, ProtocolError]
+pub fn ExtendedTriggerMessageResponse::not_equal(Self, Self) -> Bool
+pub fn ExtendedTriggerMessageResponse::to_json(Self) -> @json.Json
+pub fn ExtendedTriggerMessageResponse::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
 pub(all) enum FirmwareStatus {
   Downloaded
   DownloadFailed
@@ -779,6 +814,39 @@ pub(all) struct FrameLimits {
 pub fn FrameLimits::default() -> Self
 pub fn FrameLimits::new(max_input_bytes? : Int32, max_nesting_depth? : Int32, max_message_id_bytes? : Int32, max_action_bytes? : Int32, max_payload_fields? : Int32, reject_duplicate_keys? : Bool) -> Self
 pub fn FrameLimits::validate(Self) -> Result[Unit, ProtocolError]
+
+#derive(Eq, @debug.Debug)
+pub(all) struct GetCompositeScheduleRequest {
+  connector_id : Int32
+  duration : Int32
+  charging_rate_unit : ChargingRateUnit?
+}
+pub fn GetCompositeScheduleRequest::equal(Self, Self) -> Bool
+pub fn GetCompositeScheduleRequest::from_json(@json.Json) -> Result[Self, ProtocolError]
+pub fn GetCompositeScheduleRequest::not_equal(Self, Self) -> Bool
+pub fn GetCompositeScheduleRequest::to_json(Self) -> @json.Json
+pub fn GetCompositeScheduleRequest::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) struct GetCompositeScheduleResponse {
+  status : GetCompositeScheduleStatus
+  connector_id : Int32?
+  schedule : ChargingSchedule?
+}
+pub fn GetCompositeScheduleResponse::equal(Self, Self) -> Bool
+pub fn GetCompositeScheduleResponse::from_json(@json.Json) -> Result[Self, ProtocolError]
+pub fn GetCompositeScheduleResponse::not_equal(Self, Self) -> Bool
+pub fn GetCompositeScheduleResponse::to_json(Self) -> @json.Json
+pub fn GetCompositeScheduleResponse::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) enum GetCompositeScheduleStatus {
+  Accepted
+  Rejected
+}
+pub fn GetCompositeScheduleStatus::equal(Self, Self) -> Bool
+pub fn GetCompositeScheduleStatus::not_equal(Self, Self) -> Bool
+pub fn GetCompositeScheduleStatus::to_repr(Self) -> @debug.Repr
 
 #derive(Eq, @debug.Debug)
 pub(all) struct GetConfigurationRequest {
@@ -1671,6 +1739,50 @@ pub fn TransportState::not_equal(Self, Self) -> Bool
 pub fn TransportState::to_repr(Self) -> @debug.Repr
 
 #derive(Eq, @debug.Debug)
+pub(all) enum TriggerMessageName {
+  BootNotification
+  DiagnosticsStatusNotification
+  FirmwareStatusNotification
+  Heartbeat
+  MeterValues
+  StatusNotification
+}
+pub fn TriggerMessageName::equal(Self, Self) -> Bool
+pub fn TriggerMessageName::not_equal(Self, Self) -> Bool
+pub fn TriggerMessageName::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) struct TriggerMessageRequest {
+  requested_message : TriggerMessageName
+  connector_id : Int32?
+}
+pub fn TriggerMessageRequest::equal(Self, Self) -> Bool
+pub fn TriggerMessageRequest::from_json(@json.Json) -> Result[Self, ProtocolError]
+pub fn TriggerMessageRequest::not_equal(Self, Self) -> Bool
+pub fn TriggerMessageRequest::to_json(Self) -> @json.Json
+pub fn TriggerMessageRequest::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) struct TriggerMessageResponse {
+  status : TriggerMessageStatus
+}
+pub fn TriggerMessageResponse::equal(Self, Self) -> Bool
+pub fn TriggerMessageResponse::from_json(@json.Json) -> Result[Self, ProtocolError]
+pub fn TriggerMessageResponse::not_equal(Self, Self) -> Bool
+pub fn TriggerMessageResponse::to_json(Self) -> @json.Json
+pub fn TriggerMessageResponse::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub(all) enum TriggerMessageStatus {
+  Accepted
+  Rejected
+  NotImplemented
+}
+pub fn TriggerMessageStatus::equal(Self, Self) -> Bool
+pub fn TriggerMessageStatus::not_equal(Self, Self) -> Bool
+pub fn TriggerMessageStatus::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
 pub(all) enum TypedCall {
   Authorize(AuthorizeRequest)
   BootNotification(BootNotificationRequest)
@@ -1678,13 +1790,16 @@ pub(all) enum TypedCall {
   ClearCache(ClearCacheRequest)
   DataTransfer(DataTransferRequest)
   DiagnosticsStatusNotification(DiagnosticsStatusNotificationRequest)
+  ExtendedTriggerMessage(ExtendedTriggerMessageRequest)
   FirmwareStatusNotification(FirmwareStatusNotificationRequest)
+  GetCompositeSchedule(GetCompositeScheduleRequest)
   GetDiagnostics(GetDiagnosticsRequest)
   GetLocalListVersion(GetLocalListVersionRequest)
   Heartbeat(HeartbeatRequest)
   StatusNotification(StatusNotificationRequest)
   StartTransaction(StartTransactionRequest)
   StopTransaction(StopTransactionRequest)
+  TriggerMessage(TriggerMessageRequest)
   MeterValues(MeterValuesRequest)
   RemoteStartTransaction(RemoteStartTransactionRequest)
   RemoteStopTransaction(RemoteStopTransactionRequest)

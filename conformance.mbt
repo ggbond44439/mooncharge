@@ -104,9 +104,9 @@ pub fn action_specs() -> Array[ActionSpec] {
     spec(DataTransfer, true, true, ["vendorId"], ["status"]),
     spec(DeleteCertificate, false, false, ["certificateHashData"], ["status"]),
     spec(DiagnosticsStatusNotification, true, true, ["status"], []),
-    spec(ExtendedTriggerMessage, false, false, ["requestedMessage"], ["status"]),
+    spec(ExtendedTriggerMessage, true, true, ["requestedMessage"], ["status"]),
     spec(FirmwareStatusNotification, true, true, ["status"], []),
-    spec(GetCompositeSchedule, false, false, ["connectorId", "duration"], [
+    spec(GetCompositeSchedule, true, true, ["connectorId", "duration"], [
       "status",
     ]),
     spec(GetConfiguration, true, true, [], []),
@@ -167,7 +167,7 @@ pub fn action_specs() -> Array[ActionSpec] {
       ["transactionId", "timestamp", "meterStop"],
       [],
     ),
-    spec(TriggerMessage, false, false, ["requestedMessage"], ["status"]),
+    spec(TriggerMessage, true, true, ["requestedMessage"], ["status"]),
     spec(UnlockConnector, true, true, ["connectorId"], ["status"]),
     spec(UpdateFirmware, true, true, ["location", "retrieveDate"], []),
   ]
